@@ -1,25 +1,24 @@
 let modInfo = {
-	name: "The ??? Tree",
-	author: "nobody",
-	pointsName: "points",
-	modFiles: ["layers.js", "tree.js"],
+	name: "Justcubing97's Something Tree",
+	author: "Justcubing97",
+	pointsName: "Points",
+	modFiles: ["unlock.js", "fundamental.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
-	initialStartPoints: new Decimal (10), // Used for hard resets and new players
+	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.0",
-	name: "Literally nothing",
+	num: "0.1",
+	name: "Release Update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
-	<h3>v0.0</h3><br>
-		- Added things.<br>
-		- Added stuff.`
+	<h3>v0.1</h3><br>
+		- Added Unlock and Fundamental layers.`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -42,6 +41,15 @@ function getPointGen() {
 		return new Decimal(0)
 
 	let gain = new Decimal(1)
+	//add
+	if (hasUpgrade("fundamental", 13)) gain = gain.add(1)
+	//mul
+	if (hasUpgrade("fundamental", 11)) gain = gain.mul(2)
+	if (hasUpgrade("fundamental", 12)) gain = gain.mul(3)
+	if (hasUpgrade("fundamental", 15)) gain = gain.mul(3)
+	if (hasUpgrade("fundamental", 16)) gain = gain.mul(15)
+	//exp
+	//other hypers
 	return gain
 }
 
