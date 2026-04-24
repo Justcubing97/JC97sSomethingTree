@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["unlock.js", "fundamental.js", "tree.js"],
+	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -43,11 +43,17 @@ function getPointGen() {
 	let gain = new Decimal(1)
 	//add
 	if (hasUpgrade("fundamental", 13)) gain = gain.add(1)
+	if (hasUpgrade("fundamental", 16)) gain = gain.add(5)
+	if (hasUpgrade("primitive", 11)) gain = gain.add(5)
 	//mul
 	if (hasUpgrade("fundamental", 11)) gain = gain.mul(2)
 	if (hasUpgrade("fundamental", 12)) gain = gain.mul(3)
 	if (hasUpgrade("fundamental", 15)) gain = gain.mul(3)
 	if (hasUpgrade("fundamental", 16)) gain = gain.mul(15)
+	if (hasUpgrade("fundamental", 17)) gain = gain.mul(upgradeEffect("fundamental", 17))
+	if (hasMilestone("primitive", 1)) gain = gain.mul(50)
+	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
+	if (getBuyableAmount("fundamental", 11).gte(1)) gain = gain.mul(buyableEffect("fundamental", 11))
 	//exp
 	//other hypers
 	return gain

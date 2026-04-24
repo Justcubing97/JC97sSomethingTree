@@ -12,11 +12,12 @@ addLayer("unlock", {
     baseResource: "Points", // Name of resource prestige is based on
     baseAmount() {return player.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.01, // Prestige currency exponent
+    exponent: 0.1, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         //add
         //mul
+        if (hasUpgrade("fundamental", 24)) mult = mult.mul(100)
         //exp in gainExp
         //other hypers
         return mult
@@ -25,7 +26,7 @@ addLayer("unlock", {
         let exp = new Decimal(1)
         return exp
     },
-    row: 1, // Row the layer is in on the tree (0 is the first row)
+    row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "u", description: "U: Reset for Unlock Points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -36,6 +37,13 @@ addLayer("unlock", {
             description: "Unlock the Fundamental layer: the beginning of JC97's Something Tree.",
             cost: new Decimal(1),
             onPurchase() {return player.fundamental.unlocked = true},
+        },
+
+        12: {
+            title: "Unlock the Primitive layer",
+            description: "Unlock the Primitive layer: the first reset layer.",
+            cost: new Decimal("1e5"),
+            onPurchase() {return player.primitive.unlocked = true},
         },
     },
     branches: ["fundamental"],
