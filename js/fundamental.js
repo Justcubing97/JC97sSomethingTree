@@ -22,7 +22,7 @@ addLayer("fundamental", {
         if (hasUpgrade("fundamental", 14)) mult = mult.mul(5)
         if (hasUpgrade("fundamental", 21)) mult = mult.mul(upgradeEffect("fundamental", 21))
         if (hasUpgrade("primitive", 11)) mult = mult.mul(5)
-        if (hasUpgrade("fundamental", 25)) mult = mult.mul(25)
+        if (hasUpgrade("fundamental", 25)) mult = mult.mul(upgradeEffect("fundamental", 25))
         if (hasMilestone("primitive", 2)) mult = mult.mul(100)
         if (getBuyableAmount("fundamental", 11).gte(1)) mult = mult.mul(buyableEffect("fundamental", 11))
         //exp in gainExp
@@ -39,6 +39,13 @@ addLayer("fundamental", {
     ],
     layerShown(){return player.fundamental.unlocked},
     passiveGeneration() {if (hasUpgrade("fundamental", 23)) return 1},
+    softcap() {return new Decimal("1e50")},
+    softcapPower() {
+        let numerator = new Decimal(1000);
+        if (hasUpgrade("fundamental", 31)) numerator = new Decimal("1e6");
+        let power = numerator.div(player.fundamental.points.div("1e46").add(1))
+        return power
+    },
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
         if (layers[resettingLayer].row <= this.row) return;
@@ -46,6 +53,22 @@ addLayer("fundamental", {
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
         if (hasMilestone("primitive", 2)) keptUpgrades.push(23)
+        if (hasUpgrade("primitive", 15)) {
+            keptUpgrades.push(11)
+            keptUpgrades.push(12)
+            keptUpgrades.push(13)
+            keptUpgrades.push(14)
+            keptUpgrades.push(15)
+            keptUpgrades.push(16)
+            keptUpgrades.push(17)
+            keptUpgrades.push(21)
+            keptUpgrades.push(22)
+            keptUpgrades.push(23)
+            keptUpgrades.push(24)
+            keptUpgrades.push(25)
+            keptUpgrades.push(26)
+            keptUpgrades.push(27)
+        }
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -160,9 +183,11 @@ addLayer("fundamental", {
 
         25: {
             title: "Welcome Back!",
-            description: "x25 Fundamentality.",
+            description: "Fundamentality boosts itself.",
             cost: new Decimal("5e16"),
             unlocked() {return hasUpgrade("primitive", 12)},
+            effect() { return player.fundamental.points.add(1).pow(0.15)},
+            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
         },
 
         26: {
@@ -171,10 +196,24 @@ addLayer("fundamental", {
             cost: new Decimal("1e21"),
             unlocked() {return hasUpgrade("primitive", 12)},
         },
+
+        27: {
+            title: "Wrong Layer",
+            description: "x2 Numbers.",
+            cost: new Decimal("1e51"),
+            unlocked() {return hasUpgrade("primitive", 12)},
+        },
+
+        31: {
+            title: "New Row!",
+            description: "x1000 to Fundamentality softcap numerator and x5 Numbers.",
+            cost: new Decimal("1e52"),
+            unlocked() {return hasUpgrade("fundamental", 27)},
+        },
     },
     buyables: {
         11: {
-            cost(x) { return new Decimal(15).pow(x).mul("1e25") },
+            cost(x) { return new Decimal(1000).pow(x).mul("1e30") },
             title: "Exponential Increase",
             display() { return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: " + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost()) },

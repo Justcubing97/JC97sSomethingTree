@@ -42,5 +42,17 @@ achievements: {
     tooltip:"Primitive reset for the first time.",
     unlocked() {return true},
   },
+  15: {
+    name: "Decillionare!",
+    done(){return player.points.gte("1e33")},
+    tooltip:"Have 1e33 points.",
+    unlocked() {return true},
+  },
+  16: {
+    name: "Softcap era...",
+    done(){return player.fundamental.points.gte("1e50")},
+    tooltip:"Reach the first Fundamentality softcap.",
+    unlocked() {return true},
+  },
 },
 })

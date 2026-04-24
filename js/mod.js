@@ -54,6 +54,7 @@ function getPointGen() {
 	if (hasMilestone("primitive", 1)) gain = gain.mul(50)
 	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
 	if (getBuyableAmount("fundamental", 11).gte(1)) gain = gain.mul(buyableEffect("fundamental", 11))
+	if (hasUpgrade("primitive", 14)) gain = gain.mul(upgradeEffect("primitive", 14))
 	//exp
 	//other hypers
 	return gain
@@ -69,7 +70,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.points.gte(new Decimal("e280000000"))
+	return player.primitive.points.gte(new Decimal("15e14"))
 }
 
 

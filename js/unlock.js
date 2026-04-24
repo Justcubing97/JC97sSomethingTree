@@ -60,18 +60,39 @@ addLayer("unlock", {
             content: [
                 ["infobox", "d1"],
                 ["infobox", "d2"],
+                ["infobox", "d3"],
             ],
         },
     },
     infoboxes: {
         d1: {
             title: "Document 1: The Beginning",
-            body() { return "Well... this is awkward. Hello, player, I guess. You may not know who I am. I'm Justcubing97, some random person stuck in The Void. I also made this game. Welcome to JC97's Something Tree, or JST. My room isn't very interesting nor large, about as spacious as a normal kitchen, albeit with all the human necessities crammed into this space. It's getting late; I probably should rest. See you in the morning, player." },
+            body() { return "Well... this is awkward. Hello, player, I guess. You may not know who I am. " +
+                "I'm Justcubing97, some random person stuck in The Void. I also made this game. " +
+                "Welcome to JC97's Something Tree, or JST. My room isn't very interesting nor large, " +
+                "about as spacious as a normal kitchen, albeit with all the human necessities crammed into this space. " +
+                "It's getting late; I probably should rest. See you in the morning, player." },
         },
         d2: {
             title: "Document 2: The Morning",
-            body() { return "It's been a great 8 hours since I've seen you. If you're reading this, you actually sort of enjoy JST! Because to read this message, you need to have \"The Second REAL Upgrade\" purchased. Anyway, let me tell you more about The Void. It's basically a giant triangle plane, where the centroid is at the... well... centroid of the giant triangle. It's the command center of The Void. Hold on, they're coming to let me out for morning activities. See you in a bit. Or 2,147,483,647 bits." },
-            unlocked() {return hasUpgrade("fundamental", 12)}
+            body() { return "It's been a great 8 hours since I've seen you. If you're reading this, you actually sort of play JST! " +
+                "Because to read this message, you need to have \"The Second REAL Upgrade\" purchased. " +
+                "Anyway, let me tell you more about The Void. It's basically a giant triangle plane, where the centroid is at the... " +
+                "well... centroid of the giant triangle. It's the command center of The Void. Hold on, " +
+                "they're coming to let me out for morning activities. See you in a bit. Or 2,147,483,647 bits." },
+            unlocked() {return hasUpgrade("fundamental", 12) || player.primitive.unlocked},
+        },
+        d3: {
+            title: "Document 3: Normalcy",
+            body() { return "Alright, I'm back from my morning activities. They're nothing special, it's just like... " +
+                "getting ready for the day, taking a shower, eating breakfast, which is, by the way, kinda amazing. " +
+                "Like, when does bacon and eggs taste THIS GOOD? Anyway, you must like playing JST, because to read this, " +
+                "you need to have 1e14 Numbers. Not that I haven't made astronomically larger numbers, because of another thing " +
+                "called JOS, or Justcubing97's Omeganization System. It's a number system that's intended to be super easy to understand. " +
+                "Alright... I guess it's time to spend all my time in my room, reading some dumb AP textbooks in the super convenient " + 
+                "bookshelf in the corner. See you in a bit. Or... [O]{10 & 100} bits. (Yes, that was from JOS.)"
+             },
+            unlocked() {return hasMilestone("primitive", 3)}
         },
     },
     resetsNothing: true,

@@ -17,6 +17,9 @@ addLayer("primitive", {
         mult = new Decimal(1)
         //add
         //mul
+        if (hasUpgrade("primitive", 14)) mult = mult.mul(5)
+        if (hasUpgrade("fundamental", 27)) mult = mult.mul(2)
+        if (hasUpgrade("fundamental", 31)) mult = mult.mul(5)
         //exp in gainExp
         //other hypers
         return mult
@@ -45,7 +48,19 @@ addLayer("primitive", {
         13: {
             title: "Repetition",
             description: "Unlock the first Fundamental buyable.",
-            cost: new Decimal(20000),
+            cost: new Decimal("1e6"),
+        },
+        14: {
+            title: "Primitive Boost",
+            description: "x5 Numbers, and Numbers boosts Points.",
+            cost: new Decimal("500e6"),
+            effect() { return new Decimal(player.primitive.points.logarithm(10)).add(1).pow(2) },
+            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+        },
+        15: {
+            title: "Preservation",
+            description: "Keep the first 14 Fundamental upgrades on Primitive reset.",
+            cost: new Decimal("2e14"),
         },
     },
     milestones: {
@@ -59,7 +74,13 @@ addLayer("primitive", {
             requirementDescription: "3000 Numbers",
             effectDescription: "Keep  \"Generation\" on Primitive reset and x100 Fundamentality.",
             done() { return player.primitive.points.gte(3000) },
-        }
+        },
+
+        3: {
+            requirementDescription: "1e14 Numbers",
+            effectDescription: "x3 Fundamentality and unlock Document 3.",
+            done() { return player.primitive.points.gte("1e14") },
+        },
     }
 })
 
