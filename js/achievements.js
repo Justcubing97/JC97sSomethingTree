@@ -62,7 +62,7 @@ achievements: {
   },
   21: {
     name: "JST Enjoyer",
-    done(){return player.fundamental.points.gte("1e30")},
+    done(){return player.primitive.points.gte("1e30")},
     tooltip:"Have 1e30 Numbers.",
     unlocked() {return true},
   },
