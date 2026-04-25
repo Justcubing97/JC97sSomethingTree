@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "tree.js"],
+	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "arithmetic.js", "arith-operations.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -17,8 +17,13 @@ let VERSION = {
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.2</h3><br>
+		- Added Arithmetic layer. <br>
+		- Added new currencies: Addition, Subtraction <br>
+		- Endgame: 25 Operation Power. <br>
 	<h3>v0.1</h3><br>
-		- Added Unlock, Fundamental, and Primitive layers. Endgame: 1e15 Numbers."`
+		- Added Unlock, Fundamental, and Primitive layers. <br>
+		- Endgame: 1e15 Numbers. <br>`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -53,9 +58,12 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 17)) gain = gain.mul(upgradeEffect("fundamental", 17))
 	if (hasMilestone("primitive", 1)) gain = gain.mul(50)
 	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
-	if (getBuyableAmount("fundamental", 11).gte(1)) gain = gain.mul(buyableEffect("fundamental", 11))
+	gain = gain.mul(buyableEffect("fundamental", 11))
 	if (hasUpgrade("primitive", 14)) gain = gain.mul(upgradeEffect("primitive", 14))
 	if (hasMilestone("primitive", 4)) mult = mult.mul(100)
+	if (hasUpgrade("fundamental", 33)) gain = gain.mul(1000000)
+	if (hasUpgrade("fundamental", 35)) gain = gain.mul(1000)
+	if (hasUpgrade("arithmetic", 11)) gain = gain.mul(100)
 	//exp
 	//other hypers
 	return gain
@@ -71,7 +79,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return player.primitive.points.gte(new Decimal("15e14"))
+	return (player.arithmetic.points.gte(new Decimal("25")))
 }
 
 

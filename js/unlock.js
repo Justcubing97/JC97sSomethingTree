@@ -18,6 +18,7 @@ addLayer("unlock", {
         //add
         //mul
         if (hasUpgrade("fundamental", 24)) mult = mult.mul(100)
+        if (hasUpgrade("fundamental", 34)) mult = mult.mul(500)
         //exp in gainExp
         //other hypers
         return mult
@@ -26,24 +27,31 @@ addLayer("unlock", {
         let exp = new Decimal(1)
         return exp
     },
-    row: 2, // Row the layer is in on the tree (0 is the first row)
+    row: 4, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "u", description: "U: Reset for Unlock Points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
     upgrades: {
         11: {
-            title: "Unlock the Fundamental layer",
+            title: "Fundamental layer",
             description: "Unlock the Fundamental layer: the beginning of JC97's Something Tree.",
             cost: new Decimal(1),
             onPurchase() {return player.fundamental.unlocked = true},
         },
 
         12: {
-            title: "Unlock the Primitive layer",
+            title: "Primitive layer",
             description: "Unlock the Primitive layer: the first reset layer.",
             cost: new Decimal("1e5"),
             onPurchase() {return player.primitive.unlocked = true},
+        },
+
+        13: {
+            title: "Arithmetic layer",
+            description: "Unlock the Arithmetic layer: the second reset layer.",
+            cost: new Decimal("1e20"),
+            onPurchase() {return player.arithmetic.unlocked = true},
         },
     },
     branches: ["fundamental"],
@@ -61,6 +69,7 @@ addLayer("unlock", {
                 ["infobox", "d1"],
                 ["infobox", "d2"],
                 ["infobox", "d3"],
+                ["infobox", "d4"],
             ],
         },
     },
@@ -91,8 +100,21 @@ addLayer("unlock", {
                 "called JOS, or Justcubing97's Omeganization System. It's a number system that's intended to be super easy to understand. " +
                 "Alright... I guess it's time to spend all my time in my room, reading some dumb AP textbooks in the super convenient " + 
                 "bookshelf in the corner. See you in a bit. Or... [O]{10 & 100} bits. (Yes, that was from JOS.)"
-             },
-            unlocked() {return hasMilestone("primitive", 3)}
+            },
+            unlocked() {return hasMilestone("primitive", 3) || player.arithmetic.unlocked}
+        },
+        d4: {
+            title: "Document 4: AP World History",
+            body() { return "Now I'm not a fan of AP World History. But, learn something instead of nothing, right? " +
+                "Reading this requires having the Arithmetic layer unlocked. So if you're reading this, good job! " +
+                "You did what most players couldn't do and reached the \"pink level\" in those annoying mobile game ads. " +
+                "Moving onto AP World History for real this time, the Mongol Empire seemed pretty cool. But, " +
+                "I kinda like the Ottoman Empire more. They utilized gunpowder weapons early on, and lasted for quite a while. " +
+                "Sad they became the dead man of Europe later, but at that time, Japan and the Meiji Restoration made " +
+                "Japan my new favorite empire. And then the United States appeared after WWII. I love science, and the US making " +
+                "atomic bombs first is pretty darn cool. Okay, time to move onto AP Calculus. See ya."
+            },
+            unlocked() {return player.arithmetic.unlocked},
         },
     },
     resetsNothing: true,

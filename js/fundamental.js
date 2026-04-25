@@ -24,7 +24,7 @@ addLayer("fundamental", {
         if (hasUpgrade("primitive", 11)) mult = mult.mul(5)
         if (hasUpgrade("fundamental", 25)) mult = mult.mul(upgradeEffect("fundamental", 25))
         if (hasMilestone("primitive", 2)) mult = mult.mul(100)
-        if (getBuyableAmount("fundamental", 11).gte(1)) mult = mult.mul(buyableEffect("fundamental", 11))
+        mult = mult.mul(buyableEffect("fundamental", 11))
         if (hasMilestone("primitive", 4)) mult = mult.mul(100)
         //exp in gainExp
         //other hypers
@@ -39,17 +39,23 @@ addLayer("fundamental", {
         {key: "f", description: "F: Reset for Fundamentality", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.fundamental.unlocked},
-    passiveGeneration() {if (hasUpgrade("fundamental", 23)) return 1},
+    passiveGeneration() {if (hasUpgrade("fundamental", 23) || hasUpgrade("arithmetic", 12)) return 1},
     softcap() {return new Decimal("1e50")},
     directMult() {
-        if (hasUpgrade("primitive", 17)) return upgradeEffect("primitive", 17)
+        let dMult = new Decimal(1)
+        if (hasUpgrade("primitive", 17)) dMult = dMult.mul(upgradeEffect("primitive", 17))
+        if (hasUpgrade("fundamental", 32)) dMult = dMult.mul(250)
+
+        if (hasUpgrade("fundamental", 34)) dMult = dMult.pow(1.5)
+        if (hasUpgrade("arithmetic", 11)) dMult = dMult.mul(100)
+        return dMult
     },
     softcapPower() {
-        let numerator = new Decimal(1000);
-        if (hasUpgrade("fundamental", 31)) numerator = numerator.mul(1000)
-        if (hasUpgrade("fundamental", 32)) numerator = numerator.mul(100)
+        let numerator = new Decimal(1)
+        if (hasUpgrade("fundamental", 31)) numerator = numerator.add(10)
 
-        let power = numerator.div(player.fundamental.points.div("1e46").add(1))
+        let power = numerator
+        power = power.div(new Decimal(1).add(player.fundamental.points.div("1e50").logarithm(10)))
         return power
     },
     doReset(resettingLayer) {
@@ -60,24 +66,11 @@ addLayer("fundamental", {
         let keptUpgrades = []
         if (hasMilestone("primitive", 2)) keptUpgrades.push(23)
         if (hasUpgrade("primitive", 15)) {
-            keptUpgrades.push(11)
-            keptUpgrades.push(12)
-            keptUpgrades.push(13)
-            keptUpgrades.push(14)
-            keptUpgrades.push(15)
-            keptUpgrades.push(16)
-            keptUpgrades.push(17)
-            keptUpgrades.push(21)
-            keptUpgrades.push(22)
-            keptUpgrades.push(23)
-            keptUpgrades.push(24)
-            keptUpgrades.push(25)
-            keptUpgrades.push(26)
-            keptUpgrades.push(27)
+            keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 26, 27)
         }
 
         let keptBuyables = []
-        if (hasUpgrade("primitive", 21)) keptBuyables.push(11)
+        if (hasUpgrade("primitive", 21)) {keptBuyables.push(getBuyableAmount("fundamental", 11))}
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -88,7 +81,7 @@ addLayer("fundamental", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier
         player[this.layer].upgrades.push(...keptUpgrades)
-        player[this.layer].buyables.push(...keptBuyables)
+        setBuyableAmount("fundamental", 11, keptBuyables[0] || new Decimal(0))
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     tabFormat: {
         "Main": {
@@ -156,9 +149,13 @@ addLayer("fundamental", {
             cost: new Decimal(2500),
             unlocked() {return hasUpgrade("fundamental", 11) || player.primitive.unlocked},
             effect() {
-                if (hasUpgrade("fundamental", 22)) {return player[this.layer].points.add(1).pow(0.75)} else {return player[this.layer].points.add(1).pow(0.33)}
+                if (hasUpgrade("fundamental", 22)) {
+                    return player[this.layer].points.add(1).pow(0.75).pow(buyableEffect("fundamental", 12))
+                } else {
+                    return player[this.layer].points.add(1).pow(0.33).pow(buyableEffect("fundamental", 12))
+                }
             },
-            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
         },
 
         21: {
@@ -166,8 +163,10 @@ addLayer("fundamental", {
             description: "Points boosts Fundamentality.",
             cost: new Decimal(25000),
             unlocked() {return hasUpgrade("fundamental", 17) || player.primitive.unlocked},
-            effect() { return player.points.add(1).pow(0.25)},
-            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+            effect() {
+                return player.points.add(1).pow(0.25).pow(buyableEffect("fundamental", 12))
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
         },
 
         22: {
@@ -195,44 +194,58 @@ addLayer("fundamental", {
             title: "Welcome Back!",
             description: "Fundamentality boosts itself.",
             cost: new Decimal("5e16"),
-            unlocked() {return hasUpgrade("primitive", 12)},
+            unlocked() {return hasUpgrade("primitive", 12) || player.arithmetic.unlocked},
             effect() { return player.fundamental.points.add(1).pow(0.15)},
-            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
         },
 
         26: {
             title: "1 Sextillion.",
             description: "x25 Points.",
             cost: new Decimal("1e21"),
-            unlocked() {return hasUpgrade("primitive", 12)},
+            unlocked() {return hasUpgrade("primitive", 12) || player.arithmetic.unlocked},
         },
 
         27: {
             title: "Wrong Layer",
             description: "x2 Numbers.",
             cost: new Decimal("1e51"),
-            unlocked() {return hasUpgrade("primitive", 12)},
+            unlocked() {return hasUpgrade("primitive", 12) || player.arithmetic.unlocked},
         },
 
         31: {
             title: "New Row!",
-            description: "x1000 to Fundamentality softcap numerator and x5 Numbers.",
+            description: "+10 to Fundamentality softcap numerator and x5 Numbers.",
             cost: new Decimal("1e52"),
-            unlocked() {return hasUpgrade("fundamental", 27)},
+            unlocked() {return hasUpgrade("fundamental", 27) || player.arithmetic.unlocked},
         },
 
         32: {
             title: "Need Help?",
-            description: "x25 Numbers and x10 to Fundamentality softcap numerator.",
-            cost: new Decimal("1e54"),
-            unlocked() {return hasUpgrade("fundamental", 27)},
+            description: "x25 Numbers and x250 Fundamentality after softcap.",
+            cost: new Decimal("1e63"),
+            unlocked() {return hasUpgrade("fundamental", 27) || player.arithmetic.unlocked},
         },
 
         33: {
             title: "That was... Fast...",
             description: "x1e6 to Points.",
-            cost: new Decimal("1e999"),
-            unlocked() {return hasUpgrade("fundamental", 27)},
+            cost: new Decimal("1e69"),
+            unlocked() {return hasUpgrade("fundamental", 27) || player.arithmetic.unlocked},
+        },
+
+        34: {
+            title: "Placeholder Name",
+            description: "^1.5 Fundamentality after softcap. Also, x500 Unlock Points.",
+            cost: new Decimal("1e72"),
+            unlocked() {return hasUpgrade("fundamental", 27) || player.arithmetic.unlocked},
+        },
+
+        35: {
+            title: "x1e21",
+            description: "x1000 Points and x20 Numbers.",
+            cost: new Decimal("1e93"),
+            unlocked() {return hasUpgrade("fundamental", 27) || player.arithmetic.unlocked},
         },
     },
     buyables: {
@@ -242,16 +255,29 @@ addLayer("fundamental", {
                 return new Decimal(1000).pow(x).mul("1e30")
             },
             title: "Exponential Increase",
-            display() { return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: " + format(this.effect()) },
+            display() { return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) { return new Decimal(2).pow(x) },
-            unlocked() {return hasUpgrade("primitive", 13)},
+            unlocked() {return hasUpgrade("primitive", 13) || player.arithmetic.unlocked},
         },
-    }
+        12: {
+            cost(x) {
+                return new Decimal("1e5").pow(x).mul("1e70")
+            },
+            title: "Dynamic Improvement",
+            display() { return "Improves \"Progressing\" and \"Mutual Relationship\" per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: ^" + format(this.effect()) },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(x) { return new Decimal(1).add(x.div(10)) },
+            unlocked() {return hasUpgrade("primitive", 22) || player.arithmetic.unlocked},
+        },
+    },
+    branches: ["primitive"],
 })
-
-//eyJ0YWIiOiJvcHRpb25zLXRhYiIsIm5hdlRhYiI6InRyZWUtdGFiIiwidGltZSI6MTc3NjkwNzk2MjQwOCwibm90aWZ5Ijp7fSwidmVyc2lvblR5cGUiOiJKdXN0Y3ViaW5nOTcncy1Tb21ldGhpbmctVHJlZS1KdXN0Y3ViaW5nOTciLCJ2ZXJzaW9uIjoiMC4xIiwidGltZVBsYXllZCI6NTc3Ny43NDI5OTk5OTk2ODYsImtlZXBHb2luZyI6ZmFsc2UsImhhc05hTiI6ZmFsc2UsInBvaW50cyI6IjEuODQ5NDQwOTQyMTM5MzUzNGUyNiIsInN1YnRhYnMiOnsiY2hhbmdlbG9nLXRhYiI6e30sInVubG9jayI6eyJtYWluVGFicyI6Ik1haW4ifSwiZnVuZGFtZW50YWwiOnsibWFpblRhYnMiOiJCdXlhYmxlcyJ9fSwibGFzdFNhZmVUYWIiOiJmdW5kYW1lbnRhbCIsImluZm9ib3hlcyI6eyJ1bmxvY2siOnsiZDEiOmZhbHNlLCJkMiI6ZmFsc2V9fSwiaW5mby10YWIiOnsidW5sb2NrZWQiOnRydWUsInRvdGFsIjoiMCIsImJlc3QiOiIwIiwicmVzZXRUaW1lIjo1Nzc3Ljc0Mjk5OTk5OTY4NiwiZm9yY2VUb29sdGlwIjpmYWxzZSwiYnV5YWJsZXMiOnt9LCJub1Jlc3BlY0NvbmZpcm0iOmZhbHNlLCJjbGlja2FibGVzIjp7fSwic3BlbnRPbkJ1eWFibGVzIjoiMCIsInVwZ3JhZGVzIjpbXSwibWlsZXN0b25lcyI6W10sImxhc3RNaWxlc3RvbmUiOm51bGwsImFjaGlldmVtZW50cyI6W10sImNoYWxsZW5nZXMiOnt9LCJncmlkIjp7fSwicHJldlRhYiI6IiJ9LCJvcHRpb25zLXRhYiI6eyJ1bmxvY2tlZCI6dHJ1ZSwidG90YWwiOiIwIiwiYmVzdCI6IjAiLCJyZXNldFRpbWUiOjU3NzcuNzQyOTk5OTk5Njg2LCJmb3JjZVRvb2x0aXAiOmZhbHNlLCJidXlhYmxlcyI6e30sIm5vUmVzcGVjQ29uZmlybSI6ZmFsc2UsImNsaWNrYWJsZXMiOnt9LCJzcGVudE9uQnV5YWJsZXMiOiIwIiwidXBncmFkZXMiOltdLCJtaWxlc3RvbmVzIjpbXSwibGFzdE1pbGVzdG9uZSI6bnVsbCwiYWNoaWV2ZW1lbnRzIjpbXSwiY2hhbGxlbmdlcyI6e30sImdyaWQiOnt9LCJwcmV2VGFiIjoiIn0sImNoYW5nZWxvZy10YWIiOnsidW5sb2NrZWQiOnRydWUsInRvdGFsIjoiMCIsImJlc3QiOiIwIiwicmVzZXRUaW1lIjo1Nzc3Ljc0Mjk5OTk5OTY4NiwiZm9yY2VUb29sdGlwIjpmYWxzZSwiYnV5YWJsZXMiOnt9LCJub1Jlc3BlY0NvbmZpcm0iOmZhbHNlLCJjbGlja2FibGVzIjp7fSwic3BlbnRPbkJ1eWFibGVzIjoiMCIsInVwZ3JhZGVzIjpbXSwibWlsZXN0b25lcyI6W10sImxhc3RNaWxlc3RvbmUiOm51bGwsImFjaGlldmVtZW50cyI6W10sImNoYWxsZW5nZXMiOnt9LCJncmlkIjp7fSwicHJldlRhYiI6IiJ9LCJ1bmxvY2siOnsidW5sb2NrZWQiOnRydWUsInBvaW50cyI6IjQzNzQiLCJ0b3RhbCI6IjEwNDM3NSIsImJlc3QiOiIxMDQzNzQiLCJyZXNldFRpbWUiOjU3NzcuNzQyOTk5OTk5Njg2LCJmb3JjZVRvb2x0aXAiOmZhbHNlLCJidXlhYmxlcyI6e30sIm5vUmVzcGVjQ29uZmlybSI6ZmFsc2UsImNsaWNrYWJsZXMiOnt9LCJzcGVudE9uQnV5YWJsZXMiOiIwIiwidXBncmFkZXMiOlsxMSwxMl0sIm1pbGVzdG9uZXMiOltdLCJsYXN0TWlsZXN0b25lIjpudWxsLCJhY2hpZXZlbWVudHMiOltdLCJjaGFsbGVuZ2VzIjp7fSwiZ3JpZCI6e30sInByZXZUYWIiOiIifSwiYSI6eyJ1bmxvY2tlZCI6dHJ1ZSwicG9pbnRzIjoiMCIsInRvdGFsIjoiMCIsImJlc3QiOiIwIiwicmVzZXRUaW1lIjo1Nzc3Ljc0Mjk5OTk5OTY4NiwiZm9yY2VUb29sdGlwIjpmYWxzZSwiYnV5YWJsZXMiOnt9LCJub1Jlc3BlY0NvbmZpcm0iOmZhbHNlLCJjbGlja2FibGVzIjp7fSwic3BlbnRPbkJ1eWFibGVzIjoiMCIsInVwZ3JhZGVzIjpbXSwibWlsZXN0b25lcyI6W10sImxhc3RNaWxlc3RvbmUiOm51bGwsImFjaGlldmVtZW50cyI6WyIxMSIsIjEyIiwiMTMiXSwiY2hhbGxlbmdlcyI6e30sImdyaWQiOnt9LCJwcmV2VGFiIjoiIn0sImZ1bmRhbWVudGFsIjp7InVubG9ja2VkIjp0cnVlLCJwb2ludHMiOiIyLjQ1MzA1OTQ0NjYyMTgxMWUyNSIsInRvdGFsIjoiMi40NTMxNTk0NTE2MjE4NDllMjUiLCJiZXN0IjoiMi40NTMwNTk0NDY2MjE4MTFlMjUiLCJyZXNldFRpbWUiOjUyLjg0NTk5OTk5OTk5OTU1LCJmb3JjZVRvb2x0aXAiOmZhbHNlLCJidXlhYmxlcyI6eyIxMSI6IjAifSwibm9SZXNwZWNDb25maXJtIjpmYWxzZSwiY2xpY2thYmxlcyI6e30sInNwZW50T25CdXlhYmxlcyI6IjAiLCJ1cGdyYWRlcyI6WzIzLDExLDIxLDEyLDEzLDE0LDE1LDE2LDE3LDIyLDI0LDI1LDI2XSwibWlsZXN0b25lcyI6W10sImxhc3RNaWxlc3RvbmUiOm51bGwsImFjaGlldmVtZW50cyI6W10sImNoYWxsZW5nZXMiOnt9LCJncmlkIjp7fSwicHJldlRhYiI6IiIsImFjdGl2ZUNoYWxsZW5nZSI6bnVsbH0sInByaW1pdGl2ZSI6eyJ1bmxvY2tlZCI6dHJ1ZSwicG9pbnRzIjoiMTgwNzgxMSIsInRvdGFsIjoiMTgyNzg1MiIsImJlc3QiOiIxODA3ODExIiwicmVzZXRUaW1lIjo1Mi44NDU5OTk5OTk5OTk1NSwiZm9yY2VUb29sdGlwIjpmYWxzZSwiYnV5YWJsZXMiOnt9LCJub1Jlc3BlY0NvbmZpcm0iOmZhbHNlLCJjbGlja2FibGVzIjp7fSwic3BlbnRPbkJ1eWFibGVzIjoiMCIsInVwZ3JhZGVzIjpbMTEsMTIsMTNdLCJtaWxlc3RvbmVzIjpbIjEiLCIyIl0sImxhc3RNaWxlc3RvbmUiOiIyIiwiYWNoaWV2ZW1lbnRzIjpbXSwiY2hhbGxlbmdlcyI6e30sImdyaWQiOnt9LCJwcmV2VGFiIjoiIn0sImJsYW5rIjp7InVubG9ja2VkIjp0cnVlLCJ0b3RhbCI6IjAiLCJiZXN0IjoiMCIsInJlc2V0VGltZSI6NTc3Ny43NDI5OTk5OTk2ODYsImZvcmNlVG9vbHRpcCI6ZmFsc2UsImJ1eWFibGVzIjp7fSwibm9SZXNwZWNDb25maXJtIjpmYWxzZSwiY2xpY2thYmxlcyI6e30sInNwZW50T25CdXlhYmxlcyI6IjAiLCJ1cGdyYWRlcyI6W10sIm1pbGVzdG9uZXMiOltdLCJsYXN0TWlsZXN0b25lIjpudWxsLCJhY2hpZXZlbWVudHMiOltdLCJjaGFsbGVuZ2VzIjp7fSwiZ3JpZCI6e30sInByZXZUYWIiOiIifSwidHJlZS10YWIiOnsidW5sb2NrZWQiOnRydWUsInRvdGFsIjoiMCIsImJlc3QiOiIwIiwicmVzZXRUaW1lIjo1Nzc3Ljc0Mjk5OTk5OTY4NiwiZm9yY2VUb29sdGlwIjpmYWxzZSwiYnV5YWJsZXMiOnt9LCJub1Jlc3BlY0NvbmZpcm0iOmZhbHNlLCJjbGlja2FibGVzIjp7fSwic3BlbnRPbkJ1eWFibGVzIjoiMCIsInVwZ3JhZGVzIjpbXSwibWlsZXN0b25lcyI6W10sImxhc3RNaWxlc3RvbmUiOm51bGwsImFjaGlldmVtZW50cyI6W10sImNoYWxsZW5nZXMiOnt9LCJncmlkIjp7fSwicHJldlRhYiI6IiJ9fQ==

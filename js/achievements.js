@@ -51,7 +51,31 @@ achievements: {
   16: {
     name: "Softcap era...",
     done(){return player.fundamental.points.gte("1e50")},
-    tooltip:"Reach the first Fundamentality softcap.",
+    tooltip:"Reach the Fundamentality softcap.",
+    unlocked() {return true},
+  },
+  17: {
+    name: "Googol!",
+    done(){return player.points.gte("1e100")},
+    tooltip:"Have 1e100 Points.",
+    unlocked() {return true},
+  },
+  21: {
+    name: "JST Enjoyer",
+    done(){return player.fundamental.points.gte("1e30")},
+    tooltip:"Have 1e30 Numbers.",
+    unlocked() {return true},
+  },
+  22: {
+    name: "I HATE MATH!",
+    done(){return player.arithmetic.points.gte(1)},
+    tooltip:"Arithmetic reset for the first time.",
+    unlocked() {return true},
+  },
+  23: {
+    name: "Googol again?",
+    done(){return player.fundamental.points.gte("1e100")},
+    tooltip:"Have 1e100 Fundamentality.",
     unlocked() {return true},
   },
 },

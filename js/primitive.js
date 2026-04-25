@@ -23,6 +23,8 @@ addLayer("primitive", {
         if (hasUpgrade("fundamental", 31)) mult = mult.mul(5)
         if (hasUpgrade("primitive", 16)) mult = mult.mul(upgradeEffect("primitive", 16))
         if (hasUpgrade("fundamental", 32)) mult = mult.mul(25)
+        if (hasUpgrade("fundamental", 35)) mult = mult.mul(20)
+        if (hasUpgrade("arithmetic", 11)) mult = mult.mul(100)
         //exp in gainExp
         //other hypers
         return mult
@@ -37,6 +39,7 @@ addLayer("primitive", {
     ],
     layerShown(){return player.primitive.unlocked},
     layerDataReset() { if (hasMilestone("primitive", 2)) return ["23"]},
+    passiveGeneration() {if (hasUpgrade("arithmetic", 12)) return 1},
     upgrades: {
         11: {
             title: "Primitivity",
@@ -57,32 +60,54 @@ addLayer("primitive", {
             title: "Primitive Boost",
             description: "x5 Numbers, and Numbers boosts Points.",
             cost: new Decimal("500e6"),
-            effect() { return new Decimal(player.primitive.points.logarithm(10)).add(1).pow(2) },
-            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+            effect() {
+                if (hasMilestone("primitive", 5)) {
+                    return new Decimal(player.primitive.points.add(1).logarithm(8)).add(1).pow(2.5)
+                } else {
+                    return new Decimal(player.primitive.points.add(1).logarithm(10)).add(1).pow(2)
+                }
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
         },
         15: {
             title: "Preservation",
             description: "Keep the first 14 Fundamental upgrades on Primitive reset.",
             cost: new Decimal("2e14"),
+            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
         },
         16: {
             title: "Recursion",
             description: "Numbers boosts itself.",
             cost: new Decimal("1e15"),
-            effect() { return new Decimal(player.primitive.points.pow(0.1)).add(1) },
-            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+            effect() {return new Decimal(player.primitive.points.pow(0.1)).add(1)},
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
+            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
         },
         17: {
             title: "Slowing down?",
             description: "Numbers boost Fundamentality after softcap.",
             cost: new Decimal("1.5e16"),
-            effect() { return player.primitive.points.pow(0.2) },
-            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+            effect() {
+                if (hasMilestone("primitive", 5)) {
+                    return new Decimal(player.primitive.points.pow(0.35)).add(1)
+                } else {
+                    return new Decimal(player.primitive.points.pow(0.2)).add(1)
+                }
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
+            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
         },
         21: {
             title: "Quality of Life Incoming!",
             description: "Keep Fundamental buyable 1, and reduce its scaling to x600.",
-            cost: new Decimal("1.5e16"),
+            cost: new Decimal("5e25"),
+            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
+        },
+        22: {
+            title: "Repetition+",
+            description: "Unlock the second Fundamental buyable.",
+            cost: new Decimal("1e27"),
+            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
         },
     },
     milestones: {
@@ -105,9 +130,15 @@ addLayer("primitive", {
         },
 
         4: {
-            requirementDescription: "1e19 Numbers",
+            requirementDescription: "1e24 Numbers",
             effectDescription: "x100 Points, Fundamentality, and +5 Numbers.",
-            done() { return player.primitive.points.gte("1e19") },
+            done() { return player.primitive.points.gte("1e24") },
+        },
+
+        5: {
+            requirementDescription: "1e30 Numbers",
+            effectDescription: "Improve \"Slowing down?\" and \"Primitive Boost.\" x10 Numbers.",
+            done() { return player.primitive.points.gte("1e30") },
         },
     }
 })
