@@ -25,6 +25,7 @@ addLayer("fundamental", {
         if (hasUpgrade("fundamental", 25)) mult = mult.mul(upgradeEffect("fundamental", 25))
         if (hasMilestone("primitive", 2)) mult = mult.mul(100)
         if (getBuyableAmount("fundamental", 11).gte(1)) mult = mult.mul(buyableEffect("fundamental", 11))
+        if (hasMilestone("primitive", 4)) mult = mult.mul(100)
         //exp in gainExp
         //other hypers
         return mult
@@ -40,9 +41,14 @@ addLayer("fundamental", {
     layerShown(){return player.fundamental.unlocked},
     passiveGeneration() {if (hasUpgrade("fundamental", 23)) return 1},
     softcap() {return new Decimal("1e50")},
+    directMult() {
+        if (hasUpgrade("primitive", 17)) return upgradeEffect("primitive", 17)
+    },
     softcapPower() {
         let numerator = new Decimal(1000);
-        if (hasUpgrade("fundamental", 31)) numerator = new Decimal("1e6");
+        if (hasUpgrade("fundamental", 31)) numerator = numerator.mul(1000)
+        if (hasUpgrade("fundamental", 32)) numerator = numerator.mul(100)
+
         let power = numerator.div(player.fundamental.points.div("1e46").add(1))
         return power
     },
@@ -70,6 +76,9 @@ addLayer("fundamental", {
             keptUpgrades.push(27)
         }
 
+        let keptBuyables = []
+        if (hasUpgrade("primitive", 21)) keptBuyables.push(11)
+
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
         //if (someOtherCondition) keep.push("milestones");
@@ -79,6 +88,7 @@ addLayer("fundamental", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier
         player[this.layer].upgrades.push(...keptUpgrades)
+        player[this.layer].buyables.push(...keptBuyables)
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     tabFormat: {
         "Main": {
@@ -210,10 +220,27 @@ addLayer("fundamental", {
             cost: new Decimal("1e52"),
             unlocked() {return hasUpgrade("fundamental", 27)},
         },
+
+        32: {
+            title: "Need Help?",
+            description: "x25 Numbers and x10 to Fundamentality softcap numerator.",
+            cost: new Decimal("1e54"),
+            unlocked() {return hasUpgrade("fundamental", 27)},
+        },
+
+        33: {
+            title: "That was... Fast...",
+            description: "x1e6 to Points.",
+            cost: new Decimal("1e999"),
+            unlocked() {return hasUpgrade("fundamental", 27)},
+        },
     },
     buyables: {
         11: {
-            cost(x) { return new Decimal(1000).pow(x).mul("1e30") },
+            cost(x) {
+                if (hasUpgrade("primitive", 21)) return new Decimal(600).pow(x).mul("1e30")
+                return new Decimal(1000).pow(x).mul("1e30")
+            },
             title: "Exponential Increase",
             display() { return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: " + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost()) },

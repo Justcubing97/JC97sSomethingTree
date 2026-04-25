@@ -18,7 +18,7 @@ let VERSION = {
 
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.1</h3><br>
-		- Added Unlock and Fundamental layers.`
+		- Added Unlock, Fundamental, and Primitive layers. Endgame: 1e15 Numbers."`
 
 let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
 
@@ -55,6 +55,7 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
 	if (getBuyableAmount("fundamental", 11).gte(1)) gain = gain.mul(buyableEffect("fundamental", 11))
 	if (hasUpgrade("primitive", 14)) gain = gain.mul(upgradeEffect("primitive", 14))
+	if (hasMilestone("primitive", 4)) mult = mult.mul(100)
 	//exp
 	//other hypers
 	return gain

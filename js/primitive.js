@@ -16,10 +16,13 @@ addLayer("primitive", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         //add
+        if (hasMilestone("primitive", 4)) mult = mult.add(5)
         //mul
         if (hasUpgrade("primitive", 14)) mult = mult.mul(5)
         if (hasUpgrade("fundamental", 27)) mult = mult.mul(2)
         if (hasUpgrade("fundamental", 31)) mult = mult.mul(5)
+        if (hasUpgrade("primitive", 16)) mult = mult.mul(upgradeEffect("primitive", 16))
+        if (hasUpgrade("fundamental", 32)) mult = mult.mul(25)
         //exp in gainExp
         //other hypers
         return mult
@@ -62,6 +65,25 @@ addLayer("primitive", {
             description: "Keep the first 14 Fundamental upgrades on Primitive reset.",
             cost: new Decimal("2e14"),
         },
+        16: {
+            title: "Recursion",
+            description: "Numbers boosts itself.",
+            cost: new Decimal("1e15"),
+            effect() { return new Decimal(player.primitive.points.pow(0.1)).add(1) },
+            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+        },
+        17: {
+            title: "Slowing down?",
+            description: "Numbers boost Fundamentality after softcap.",
+            cost: new Decimal("1.5e16"),
+            effect() { return player.primitive.points.pow(0.2) },
+            effectDisplay() { return "Currently: x" + format(upgradeEffect(this.layer, this.id)) },
+        },
+        21: {
+            title: "Quality of Life Incoming!",
+            description: "Keep Fundamental buyable 1, and reduce its scaling to x600.",
+            cost: new Decimal("1.5e16"),
+        },
     },
     milestones: {
         1: {
@@ -80,6 +102,12 @@ addLayer("primitive", {
             requirementDescription: "1e14 Numbers",
             effectDescription: "x3 Fundamentality and unlock Document 3.",
             done() { return player.primitive.points.gte("1e14") },
+        },
+
+        4: {
+            requirementDescription: "1e19 Numbers",
+            effectDescription: "x100 Points, Fundamentality, and +5 Numbers.",
+            done() { return player.primitive.points.gte("1e19") },
         },
     }
 })
