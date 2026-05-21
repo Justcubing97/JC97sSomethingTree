@@ -96,7 +96,7 @@ addLayer("unlock", {
             title: "Document 2: The Morning",
             body() { return "It's been a great 8 hours since I've seen you. If you're reading this, you actually sort of play JST! " +
                 "Because to read this message, you need to have \"The Second REAL Upgrade\" purchased. " +
-                "Anyway, let me tell you more about The Void. It's basically a giant triangle plane, where the centroid is at the... " +
+                "Anyway, let me tell you more about The Void. It's basically a giant triangle plane, where the Centroid is at the... " +
                 "well... centroid of the giant triangle. It's the command center of The Void. Hold on, " +
                 "they're coming to let me out for morning activities. See you in a bit. Or 2,147,483,647 bits." },
             unlocked() {return hasUpgrade("fundamental", 12) || player.primitive.unlocked},
