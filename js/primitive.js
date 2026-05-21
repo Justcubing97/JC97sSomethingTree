@@ -93,7 +93,7 @@ addLayer("primitive", {
         14: {
             title: "Primitive Boost",
             description: "x5 Numbers, and Numbers boosts Points.",
-            cost: new Decimal("500e6"),
+            cost: new Decimal("250e6"),
             effect() {
                 if (hasMilestone("dimension", 2)) return new Decimal(player.primitive.points.add(1).logarithm(7)).add(1).pow(3)
                 if (hasMilestone("primitive", 5)) { 
