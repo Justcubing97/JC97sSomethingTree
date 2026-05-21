@@ -17,6 +17,7 @@ addLayer("primitive", {
         mult = new Decimal(1)
         //add
         if (hasMilestone("primitive", 4)) mult = mult.add(5)
+        if (getClickableState("addition", 12) == "Active" && !inChallenge("arithmetic", 12)) mult = mult.add(clickableEffect("addition", 12))
         //mul
         if (hasUpgrade("primitive", 14)) mult = mult.mul(5)
         if (hasUpgrade("fundamental", 27)) mult = mult.mul(2)
@@ -25,13 +26,25 @@ addLayer("primitive", {
         if (hasUpgrade("fundamental", 32)) mult = mult.mul(25)
         if (hasUpgrade("fundamental", 35)) mult = mult.mul(20)
         if (hasUpgrade("arithmetic", 11)) mult = mult.mul(100)
-        //exp in gainExp
+        if (hasUpgrade("primitive", 23)) mult = mult.mul(5)
+        //exp 
+        if (inChallenge("arithmetic", 11)) mult = mult.pow(0.8)
         //other hypers
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
-        let exp = new Decimal(1)
+        let exp = new Decimal(1) //DO NOT USE
         return exp
+    },
+    softcap() {return new Decimal("1e50")},
+    directMult() {
+        let dMult = new Decimal(1)
+        if (hasUpgrade("subtraction", 13)) dMult = dMult.mul(100)
+        return dMult
+    },
+    softcapPower() {
+        if (hasUpgrade("subtraction", 12)) return 0.55
+        return 0.5
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
@@ -40,6 +53,27 @@ addLayer("primitive", {
     layerShown(){return player.primitive.unlocked},
     layerDataReset() { if (hasMilestone("primitive", 2)) return ["23"]},
     passiveGeneration() {if (hasUpgrade("arithmetic", 12)) return 1},
+    doReset(resettingLayer) {
+        // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        if (layers[resettingLayer].row <= this.row) return;
+
+        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
+        let keptUpgrades = []
+        if (hasAchievement("achievements", 24)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23)
+        if (hasAchievement("achievements", 34)) keptUpgrades.push(24)
+
+        let keptBuyables = []
+
+        // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
+        let keep = [];
+        //if (someOtherCondition) keep.push("milestones");
+
+        // Stage 4, do the actual data reset
+        layerDataReset(this.layer, keep);
+
+        // Stage 5, add back in the specific subfeatures you saved earlier
+        player[this.layer].upgrades.push(...keptUpgrades)
+    }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     upgrades: {
         11: {
             title: "Primitivity",
@@ -61,7 +95,8 @@ addLayer("primitive", {
             description: "x5 Numbers, and Numbers boosts Points.",
             cost: new Decimal("500e6"),
             effect() {
-                if (hasMilestone("primitive", 5)) {
+                if (hasMilestone("dimension", 2)) return new Decimal(player.primitive.points.add(1).logarithm(7)).add(1).pow(3)
+                if (hasMilestone("primitive", 5)) { 
                     return new Decimal(player.primitive.points.add(1).logarithm(8)).add(1).pow(2.5)
                 } else {
                     return new Decimal(player.primitive.points.add(1).logarithm(10)).add(1).pow(2)
@@ -79,7 +114,10 @@ addLayer("primitive", {
             title: "Recursion",
             description: "Numbers boosts itself.",
             cost: new Decimal("1e15"),
-            effect() {return new Decimal(player.primitive.points.pow(0.1)).add(1)},
+            effect() {
+                if (hasMilestone("dimension", 2)) return new Decimal(player.primitive.points.pow(0.2)).add(1)
+                return new Decimal(player.primitive.points.pow(0.1)).add(1)
+            },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
             unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
         },
@@ -108,6 +146,26 @@ addLayer("primitive", {
             description: "Unlock the second Fundamental buyable.",
             cost: new Decimal("1e27"),
             unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
+        },
+        23: {
+            title: "It's Been a While",
+            description: "Simple! x1e10 Points and x5 Numbers.",
+            cost: new Decimal("1e55"),
+            unlocked() {return hasMilestone("primitive", 6)},
+        },
+        24: {
+            title: "Minuscule Boost",
+            description: "+2 to Fundamentality softcap logarithm base.",
+            cost: new Decimal("1e58"),
+            unlocked() {return hasMilestone("primitive", 6)},
+        },
+        25: {
+            title: "Ran Out of Name Ideas",
+            effect() {return new Decimal(player.primitive.points.pow(0.02)).add(1)},
+            effectDisplay() {return "+" + format(upgradeEffect(this.layer, this.id))},
+            description: "Numbers boost Addition base.",
+            cost: new Decimal("1e125"),
+            unlocked() {return hasMilestone("primitive", 6)},
         },
     },
     milestones: {
@@ -140,6 +198,32 @@ addLayer("primitive", {
             effectDescription: "Improve \"Slowing down?\" and \"Primitive Boost.\" x10 Numbers.",
             done() { return player.primitive.points.gte("1e30") },
         },
-    }
+
+        6: {
+            requirementDescription: "1e48 Numbers",
+            effectDescription: "Unlock more Fundamentality and Number upgrades.",
+            done() { return player.primitive.points.gte("1e48") },
+            unlocked() {return player.arithmetic.unlocked},
+        },
+
+        7: {
+            requirementDescription: "1e60 Numbers",
+            effectDescription: "Improve Addition boosters to Fundamentality and Numbers. Unlock a third booster that boosts Points (it is not affected by this milestone).",
+            done() { return player.primitive.points.gte("1e60") },
+            unlocked() {return player.arithmetic.unlocked},
+        },
+        8: {
+            requirementDescription: "1e93 Numbers",
+            effectDescription() {
+                let text = "A trigintillion! For every Fundamental buyable 3, "
+                if (hasUpgrade("multiplication", 11)) text = text + "+0.5 to Fundamental buyable 1's base. Currently: " + format(getBuyableAmount("fundamental", 13).mul(0.5))
+                else text = text + "+0.1 to Fundamental buyable 1's base. Currently: +" + format(getBuyableAmount("fundamental", 13).mul(0.1))
+                return text
+            },
+            done() { return player.primitive.points.gte("1e93") },
+            unlocked() {return player.arithmetic.unlocked},
+        },
+    },
+    branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 10]],
 })
 

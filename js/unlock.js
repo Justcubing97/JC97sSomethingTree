@@ -19,6 +19,7 @@ addLayer("unlock", {
         //mul
         if (hasUpgrade("fundamental", 24)) mult = mult.mul(100)
         if (hasUpgrade("fundamental", 34)) mult = mult.mul(500)
+        if (hasUpgrade("fundamental", 37)) mult = mult.mul(1e10)
         //exp in gainExp
         //other hypers
         return mult
@@ -53,8 +54,15 @@ addLayer("unlock", {
             cost: new Decimal("1e20"),
             onPurchase() {return player.arithmetic.unlocked = true},
         },
+
+        14: {
+            title: "Dimension layer",
+            description: "Unlock the Dimension layer: a sub-reset layer.",
+            cost: new Decimal("1e50"),
+            onPurchase() {return player.dimension.unlocked = true},
+        },
     },
-    branches: ["fundamental"],
+    branches: [["fundamental", "#FFC800", 10], ["primitive", "#00C8FF", 10], ["arithmetic", "#FF0080", 10], ["dimension", "#A0FFA0", 10]],
     tabFormat: {
         "Main": {
             content: [
@@ -70,6 +78,7 @@ addLayer("unlock", {
                 ["infobox", "d2"],
                 ["infobox", "d3"],
                 ["infobox", "d4"],
+                ["infobox", "d5"],
             ],
         },
     },
@@ -115,6 +124,19 @@ addLayer("unlock", {
                 "atomic bombs first is pretty darn cool. Okay, time to move onto AP Calculus. See ya."
             },
             unlocked() {return player.arithmetic.unlocked},
+        },
+        d5: {
+            title: "Document 5: The Area Surrounding",
+            body() { return "Decided to not document AP Calculus. I already know almost all of the material. " + 
+                "Instead, I left my little dorm room which I described in Document 1 and started exploring. " +
+                "As I've told you in Document 2, The Void is a giant triangle. Some say it's equilateral, some say it's isosceles, " +
+                "but I want to find out for myself, as the Centroid would be... in an interesting place... and I have plans." +
+                "Outside, you can't really tell where you are besides the maps postered every so often on the walls, " +
+                "and there are a few landmarks. 1, the Centroid, of course. 2, the labryinth, and only THREE people have made it out. " +
+                "3, the reset field, which is the ONLY OTHER COLOR IN THE VOID: green. And 4, the transit. " +
+                "It's the only place where you can enter and exit. Well, see ya. Have fun with Arithmetic Challenges."
+            },
+            unlocked() {return hasUpgrade("arithmetic", 17)},
         },
     },
     resetsNothing: true,

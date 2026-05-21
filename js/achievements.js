@@ -1,4 +1,4 @@
-addLayer("a", {
+addLayer("achievements", {
   name: "achievements", // This is optional, only used in a few places, If absent it just uses the layer id.
   symbol: "A", // This appears on the layer's node. Default is the id with the first letter capitalized
   color: "#FFFF00",
@@ -12,7 +12,7 @@ addLayer("a", {
   type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
   row: "side", // Row the layer is in on the tree (0 is the first row)
 tabFormat: [
-  ["display-text", () => `You have ${player.a.achievements.length}/n achievements`],
+  ["display-text", () => `You have ${player.achievements.achievements.length}/n achievements`],
   "blank",
   "achievements"
 ],
@@ -76,6 +76,60 @@ achievements: {
     name: "Googol again?",
     done(){return player.fundamental.points.gte("1e100")},
     tooltip:"Have 1e100 Fundamentality.",
+    unlocked() {return true},
+  },
+  24: {
+    name: "Manual Labor is Over",
+    done(){return player.points.gte("1e180")},
+    tooltip:"Have 1e180 Points. Reward: Keep the first 20 Fundamental upgrades and the first 10 Primitive upgrades on Arithmetic reset.",
+    unlocked() {return true},
+  },
+  25: {
+    name: "Timewall Upgrades Incoming",
+    done(){return hasUpgrade("subtraction", 11)},
+    tooltip:"Buy the first Subtraction upgrade.",
+    unlocked() {return true},
+  },
+  26: {
+    name: "DO NOT BE AFRAID",
+    done(){return hasUpgrade("arithmetic", 17)},
+    tooltip:"Unlock Arithmetic Challenges.",
+    unlocked() {return true},
+  },
+  27: {
+    name: "Infinity?",
+    done(){return player.points.gte("1.79e308")},
+    tooltip:"Have 1.79e308 Points. You're past normal JavaScript numbers!",
+    unlocked() {return true},
+  },
+  31: {
+    name: "ANTIMATTER DIMENSIONS??? No.",
+    done(){return player.dimension.points.gte(1)},
+    tooltip:"Dimensionize for the first time.",
+    unlocked() {return true},
+  },
+  32: {
+    name: "Fundamentally Squared Googol",
+    done(){return player.fundamental.points.gte("1e200")},
+    tooltip:"Have 1e200 Fundamentality.",
+    unlocked() {return true},
+  },
+  33: {
+    name: "Advanced Addition",
+    done(){return player.multiplication.unlocked},
+    tooltip:"Unlock Multiplication.",
+    unlocked() {return true},
+  },
+  34: {
+    name: "Scientific Notation Recursion Level 1",
+    done(){return player.points.gte("1e1000")},
+    tooltip:"Have 1e1000 Points. Reward: Keep the 21st Fundamental upgrade, the 11th Primitive upgrade on Arithmetic reset, and Fundamental buyable 3 as well for the fun of it.",
+    unlocked() {return true},
+  },
+  35: {
+    name: "Polyhedra",
+    done(){return player.dimension.points.gte("3")},
+    tooltip:"Have 3 Dimensions. You are now on the same level as reality.",
     unlocked() {return true},
   },
 },

@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "arithmetic.js", "arith-operations.js", "tree.js"],
+	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "dimension.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -12,11 +12,17 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.2",
-	name: "Arithmetic layer update",
+	num: "0.3",
+	name: "Dimension layer update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.3</h3><br>
+		- Added Dimension and Multiplication layer. <br>
+		- Added new currencies: Dimensions, Multiplication <br>
+		- Added Arithmetic Challenges. <br>
+		- Added more Achievements. <br>
+		- Endgame: 3 Dimensions. <br>
 	<h3>v0.2</h3><br>
 		- Added Arithmetic layer. <br>
 		- Added new currencies: Addition, Subtraction <br>
@@ -50,6 +56,7 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 13)) gain = gain.add(1)
 	if (hasUpgrade("fundamental", 16)) gain = gain.add(5)
 	if (hasUpgrade("primitive", 11)) gain = gain.add(5)
+	if (getClickableState("addition", 13) == "Active" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
 	//mul
 	if (hasUpgrade("fundamental", 11)) gain = gain.mul(2)
 	if (hasUpgrade("fundamental", 12)) gain = gain.mul(3)
@@ -58,13 +65,25 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 17)) gain = gain.mul(upgradeEffect("fundamental", 17))
 	if (hasMilestone("primitive", 1)) gain = gain.mul(50)
 	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
-	gain = gain.mul(buyableEffect("fundamental", 11))
+		
+	if (!inChallenge("arithmetic", 11)) gain = gain.mul(buyableEffect("fundamental", 11))
+
 	if (hasUpgrade("primitive", 14)) gain = gain.mul(upgradeEffect("primitive", 14))
 	if (hasMilestone("primitive", 4)) mult = mult.mul(100)
 	if (hasUpgrade("fundamental", 33)) gain = gain.mul(1000000)
 	if (hasUpgrade("fundamental", 35)) gain = gain.mul(1000)
 	if (hasUpgrade("arithmetic", 11)) gain = gain.mul(100)
+	if (hasUpgrade("arithmetic", 14)) gain = gain.mul(upgradeEffect("arithmetic", 14))
+	if (hasUpgrade("primitive", 23)) gain = gain.mul(1e10)
+	if (hasUpgrade("subtraction", 13)) gain = gain.mul(100)
+	if (hasUpgrade("arithmetic", 21)) gain = gain.mul(upgradeEffect("arithmetic", 21))
+	if (hasUpgrade("multiplication", 21)) gain = gain.mul("1e15")
+	if (hasUpgrade("arithmetic", 23)) gain = gain.mul("500")
 	//exp
+	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
+	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
+	if (inChallenge("arithmetic", 12)) gain = gain.pow(0.5)
+	if (player.multiplication.points.gte(1)) gain = gain.pow(player.multiplication.points.pow(0.03))
 	//other hypers
 	return gain
 }
@@ -75,11 +94,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
+	"Current endgame: 3 Dimensions <br> JST by Justcubing97"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.arithmetic.points.gte(new Decimal("25")))
+	return (player.dimension.points.gte(new Decimal("3")))
 }
 
 
