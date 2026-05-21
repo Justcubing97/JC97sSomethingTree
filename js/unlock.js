@@ -28,7 +28,7 @@ addLayer("unlock", {
         let exp = new Decimal(1)
         return exp
     },
-    row: 4, // Row the layer is in on the tree (0 is the first row)
+    row: 5, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "u", description: "U: Reset for Unlock Points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -69,6 +69,9 @@ addLayer("unlock", {
                 "main-display",
                 "prestige-button",
                 "blank",
+                ["display-text", "This bar is logarithmic base 10. Do not complain!"], "blank",
+                ["bar", "nextAt"],
+                "blank",
                 "upgrades"
             ],
         },
@@ -81,6 +84,31 @@ addLayer("unlock", {
                 ["infobox", "d5"],
                 ["infobox", "d6"],
             ],
+        },
+    },
+    bars: {
+        nextAt: {
+            direction: RIGHT,
+            width: 400,
+            height: 75,
+            display() {
+                let text = "Your next major reset layer is at "
+                if (!hasUpgrade("unlock", 11)) text += "1 Unlock Point, unlocking the Fundamental layer. <br> Progress: " + player.unlock.points.div(1).mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 12)) text += "1e5 Unlock Points, unlocking the Primitive layer. <br> Progress: " + player.unlock.points.log10().div("5").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 13)) text += "1e20 Unlock Points, unlocking the Arithmetic layer. <br> Progress: " + player.unlock.points.log10().div("20").mul(100).toFixed(2) + "%"
+                else text = "You have unlocked all major reset layers! Congratulations! (For now...)"
+                return text
+            },
+            progress() {
+                let prog = new Decimal(0)
+                if (!hasUpgrade("unlock", 11)) prog = player.unlock.points.div(1)
+                else if (!hasUpgrade("unlock", 12)) prog = player.unlock.points.log10().div("5")
+                else if (!hasUpgrade("unlock", 13)) prog = player.unlock.points.log10().div("20")
+                else prog = new Decimal(1)
+                return prog
+            },
+            baseStyle() { return {"background-color": "#200050",} },
+            fillStyle() { return {"background-color": "#6000E0",} },
         },
     },
     infoboxes: {
