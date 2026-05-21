@@ -79,6 +79,7 @@ addLayer("unlock", {
                 ["infobox", "d3"],
                 ["infobox", "d4"],
                 ["infobox", "d5"],
+                ["infobox", "d6"],
             ],
         },
     },
@@ -132,11 +133,22 @@ addLayer("unlock", {
                 "As I've told you in Document 2, The Void is a giant triangle. Some say it's equilateral, some say it's isosceles, " +
                 "but I want to find out for myself, as the Centroid would be... in an interesting place... and I have plans." +
                 "Outside, you can't really tell where you are besides the maps postered every so often on the walls, " +
-                "and there are a few landmarks. 1, the Centroid, of course. 2, the labryinth, and only THREE people have made it out. " +
-                "3, the reset field, which is the ONLY OTHER COLOR IN THE VOID: green. And 4, the transit. " +
+                "and there are a few landmarks. 1, the Centroid, of course. 2, the Labryinth, and only THREE people have made it out. " +
+                "3, the Reset Field, which has the ONLY OTHER COLOR IN THE VOID: green. And 4, the Transit. " +
                 "It's the only place where you can enter and exit. Well, see ya. Have fun with Arithmetic Challenges."
             },
             unlocked() {return hasUpgrade("arithmetic", 17)},
+        },
+        d6: {
+            title: "Document 6: The Transit",
+            body() { return "It's a long walk, but I managed to get to the Transit. There's always four guards stationed there, " +
+                "and there are four groups of four guards in four different 6-hour shifts. WHY DO THE NUMBERS NOT LINE UP??? " +
+                "Apparently, you can only enter. That just makes things a centillion times harder, because how would you leave now? " +
+                "I tried communicating with them, negotiating, bribing, even physical force, but nothing worked. " +
+                "The only way, they said, to leave is to have Dark Matter in your possession. I don't even know how to get that? " +
+                "I guess I'll try my luck in the Labryinth. And I'm bringing a flashlight. See you in a few hours."
+            },
+            unlocked() {return player.dimension.points.gte(3)},
         },
     },
     resetsNothing: true,
