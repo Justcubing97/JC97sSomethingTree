@@ -170,9 +170,9 @@ addLayer("primitive", {
     },
     milestones: {
         1: {
-            requirementDescription: "25 Numbers",
+            requirementDescription: "10 Numbers",
             effectDescription: "x50 Points.",
-            done() { return player.primitive.points.gte(25) },
+            done() { return player.primitive.points.gte(10) },
         },
 
         2: {
