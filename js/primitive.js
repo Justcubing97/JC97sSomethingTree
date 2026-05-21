@@ -108,7 +108,7 @@ addLayer("primitive", {
             title: "Preservation",
             description: "Keep the first 14 Fundamental upgrades on Primitive reset.",
             cost: new Decimal("2e14"),
-            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
+            unlocked() {return hasUpgrade("primitive", 14) || player.arithmetic.unlocked},
         },
         16: {
             title: "Recursion",
@@ -119,7 +119,7 @@ addLayer("primitive", {
                 return new Decimal(player.primitive.points.pow(0.1)).add(1)
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
-            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
+            unlocked() {return hasUpgrade("primitive", 14) || player.arithmetic.unlocked},
         },
         17: {
             title: "Slowing down?",
@@ -133,19 +133,19 @@ addLayer("primitive", {
                 }
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
-            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
+            unlocked() {return hasUpgrade("primitive", 14) || player.arithmetic.unlocked},
         },
         21: {
             title: "Quality of Life Incoming!",
             description: "Keep Fundamental buyable 1, and reduce its scaling to x600.",
             cost: new Decimal("5e25"),
-            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
+            unlocked() {return hasUpgrade("primitive", 14) || player.arithmetic.unlocked},
         },
         22: {
             title: "Repetition+",
             description: "Unlock the second Fundamental buyable.",
             cost: new Decimal("1e27"),
-            unlocked() {return hasUpgrade("fundamental", 14) || player.arithmetic.unlocked},
+            unlocked() {return hasUpgrade("primitive", 14) || player.arithmetic.unlocked},
         },
         23: {
             title: "It's Been a While",
