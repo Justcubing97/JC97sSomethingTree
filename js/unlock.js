@@ -43,14 +43,14 @@ addLayer("unlock", {
 
         12: {
             title: "Primitive layer",
-            description: "Unlock the Primitive layer: the first reset layer.",
+            description: "Unlock the Primitive layer: the first major reset layer.",
             cost: new Decimal("1e5"),
             onPurchase() {return player.primitive.unlocked = true},
         },
 
         13: {
             title: "Arithmetic layer",
-            description: "Unlock the Arithmetic layer: the second reset layer.",
+            description: "Unlock the Arithmetic layer: the second major reset layer.",
             cost: new Decimal("1e20"),
             onPurchase() {return player.arithmetic.unlocked = true},
         },
@@ -61,8 +61,15 @@ addLayer("unlock", {
             cost: new Decimal("1e50"),
             onPurchase() {return player.dimension.unlocked = true},
         },
+
+        15: {
+            title: "Polygon layer",
+            description: "Unlock the Polygon layer: the third major reset layer.",
+            cost: new Decimal("1e250"),
+            onPurchase() {return player.polygon.unlocked = true},
+        },
     },
-    branches: [["fundamental", "#FFC800", 10], ["primitive", "#00C8FF", 10], ["arithmetic", "#FF0080", 10], ["dimension", "#A0FFA0", 10]],
+    branches: [["fundamental", "#FFC800", 10], ["primitive", "#00C8FF", 10], ["arithmetic", "#FF0080", 10], ["dimension", "#A0FFA0", 10], ["polygon", "#2050FF", 10]],
     tabFormat: {
         "Main": {
             content: [
@@ -85,6 +92,11 @@ addLayer("unlock", {
                 ["infobox", "d6"],
             ],
         },
+        "Lore (Chapter 2)": {
+            content: [
+                ["infobox", "d7"],
+            ],
+        },
     },
     bars: {
         nextAt: {
@@ -96,6 +108,7 @@ addLayer("unlock", {
                 if (!hasUpgrade("unlock", 11)) text += "1 Unlock Point, unlocking the Fundamental layer. <br> Progress: " + player.unlock.points.div(1).mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 12)) text += "1e5 Unlock Points, unlocking the Primitive layer. <br> Progress: " + player.unlock.points.log10().div("5").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 13)) text += "1e20 Unlock Points, unlocking the Arithmetic layer. <br> Progress: " + player.unlock.points.log10().div("20").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 15)) text += "1e250 Unlock Points, unlocking the Polygon layer. <br> Progress: " + player.unlock.points.log10().div("250").mul(100).toFixed(2) + "%"
                 else text = "You have unlocked all major reset layers! Congratulations! (For now...)"
                 return text
             },
@@ -104,6 +117,7 @@ addLayer("unlock", {
                 if (!hasUpgrade("unlock", 11)) prog = player.unlock.points.div(1)
                 else if (!hasUpgrade("unlock", 12)) prog = player.unlock.points.log10().div("5")
                 else if (!hasUpgrade("unlock", 13)) prog = player.unlock.points.log10().div("20")
+                else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.log10().div("250")
                 else prog = new Decimal(1)
                 return prog
             },
@@ -159,13 +173,13 @@ addLayer("unlock", {
             body() { return "Decided to not document AP Calculus. I already know almost all of the material. " + 
                 "Instead, I left my little dorm room which I described in Document 1 and started exploring. " +
                 "As I've told you in Document 2, The Void is a giant triangle. Some say it's equilateral, some say it's isosceles, " +
-                "but I want to find out for myself, as the Centroid would be... in an interesting place... and I have plans." +
+                "but I want to find out for myself, as the Centroid would be... in an interesting place... and I have plans. " +
                 "Outside, you can't really tell where you are besides the maps postered every so often on the walls, " +
                 "and there are a few landmarks. 1, the Centroid, of course. 2, the Labryinth, and only THREE people have made it out. " +
                 "3, the Reset Field, which has the ONLY OTHER COLOR IN THE VOID: green. And 4, the Transit. " +
                 "It's the only place where you can enter and exit. Well, see ya. Have fun with Arithmetic Challenges."
             },
-            unlocked() {return hasUpgrade("arithmetic", 17)},
+            unlocked() {return hasUpgrade("arithmetic", 17) || player.dimension.unlocked},
         },
         d6: {
             title: "Document 6: The Transit",
@@ -174,9 +188,23 @@ addLayer("unlock", {
                 "Apparently, you can only enter. That just makes things a centillion times harder, because how would you leave now? " +
                 "I tried communicating with them, negotiating, bribing, even physical force, but nothing worked. " +
                 "The only way, they said, to leave is to have Dark Matter in your possession. I don't even know how to get that? " +
-                "I guess I'll try my luck in the Labryinth. And I'm bringing a flashlight. See you in a few hours."
+                "I guess I'll try my luck in the Labryinth. And I'm bringing a flashlight. See you in a few hours. " +
+                "Nice job getting 1e137 Numbers and reached the 3rd Dimension in JST. Proud of you."
             },
             unlocked() {return player.dimension.points.gte(3)},
+        },
+
+        d7: {
+            title: "Document 7: The Three-Hour+ Journey Inside the Labyrinth",
+            body() { return "So, how do I traverse such a space? Easy. I get a marker, and I mark the walls, but ONLY ON THE RIGHT SIDE. " +
+                "This is so I don't get lost like the dozens of others that had seemingly disappeared in here. I also have a flashlight, " +
+                "which on second thought, doesn't make sense because everything is pitch black. The red marker shows up unexpectedly bright though. " +
+                "-[TRANSMISSION IDLE]- Hold on. HOLD ON. Why is there a girl following me??? She's your average pretty girl, " +
+                "although I'm not looking forward to any romance because I just want to get out of here. I learned her name is Ashley, though, " +
+                "and I give her my nickname. If you don't remember, it's Justcubing97. I never tell people my real name. " +
+                "Anyway, good job on unlocking the Polygon layer. It's been 3 hours and 8 minutes already, and she... hasn't ate breakfast. Darn, Ashley. "
+            },
+            unlocked() {return player.polygon.points.gte(1)},
         },
     },
     resetsNothing: true,

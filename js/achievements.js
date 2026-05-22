@@ -132,5 +132,23 @@ achievements: {
     tooltip:"Have 3 Dimensions. You are now on the same level as reality.",
     unlocked() {return true},
   },
+  36: {
+    name: "Quadruple Stack",
+    done(){return hasUpgrade("fundamental", 41)},
+    tooltip:"Buy the 22nd Fundamental upgrade. You now have access to FOUR UPGRADE ROWS.",
+    unlocked() {return true},
+  },
+  37: {
+    name: "UNPARALLELED",
+    done(){return hasChallenge("arithmetic", 13)},
+    tooltip:"Complete the third Arithmetic Challenge. You won't have to deal with those for quite a while after this.",
+    unlocked() {return true},
+  },
+  41: {
+    name: "Closed Polygonal-Chain of Line Segments...",
+    done(){return player.polygon.points.gte(1)},
+    tooltip:"Polygonify for the first time.",
+    unlocked() {return true},
+  },
 },
 })

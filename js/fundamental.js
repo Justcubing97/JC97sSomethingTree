@@ -5,6 +5,7 @@ addLayer("fundamental", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        softcapExponent: new Decimal(0)
     }},
     color: "#FFC800",
     requires: new Decimal(10), // Can be a function that takes requirement increases into account
@@ -28,6 +29,8 @@ addLayer("fundamental", {
         if (hasMilestone("primitive", 4)) mult = mult.mul(100)
         if (hasUpgrade("subtraction", 13)) mult = mult.mul(100)
         //exp
+        if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
+        if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         //other hypers
         return mult
     },
@@ -51,6 +54,7 @@ addLayer("fundamental", {
         if (hasUpgrade("arithmetic", 23)) dMult = dMult.mul(100)
 
         if (hasUpgrade("fundamental", 34)) dMult = dMult.pow(1.5)
+        if (hasUpgrade("multiplication", 31)) dMult = dMult.pow(1.2)
         return dMult
     },
     softcapPower() {
@@ -60,12 +64,22 @@ addLayer("fundamental", {
             if (hasUpgrade("fundamental", 36)) numerator = numerator.add(5)
 
             let power = numerator
+
             if (hasUpgrade("primitive", 24)) power = power.div(new Decimal(1).add(player.fundamental.points.div("1e50").logarithm(12)))
             else power = power.div(new Decimal(1).add(player.fundamental.points.div("1e50").logarithm(10)))
             if (hasUpgrade("arithmetic", 16)) power = power.add(new Decimal(0.1))
+            if (player.fundamental.points.gte("1e500")) power = power.div(1.1)
+            player.fundamental.softcapExponent = power
             return power
         }
         return (new Decimal(1)) 
+    },
+    effectDescription() {
+        let text = ""
+        if (player.fundamental.points.gte("1e500")) text = text + "supercapped by ^" + player.fundamental.softcapExponent.toFixed(6) + " to its gain."
+        else if (player.fundamental.points.gte("1e50")) text = text + "softcapped by ^" + player.fundamental.softcapExponent.toFixed(6) + " to its gain."
+        else return
+        return text
     },
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
@@ -295,6 +309,26 @@ addLayer("fundamental", {
             cost: new Decimal("1e156"),
             unlocked() {return hasMilestone("primitive", 6)},
         },
+
+        41: {
+            title: "Fundamental Exponent",
+            effect() {
+                let effect = player.fundamental.points
+                effect = effect.add(1).pow(0.0002)
+                return effect
+            },
+            effectDisplay() { return "^" + format(upgradeEffect(this.layer, this.id)) },
+            description: "Oh, hi. Raise Numbers based on Fundamentality.",
+            cost: new Decimal("1e321"),
+            unlocked() {return hasMilestone("addition", 1)},
+        },
+
+        42: {
+            title: "Random Number",
+            description: "+100 to Subtraction base and x354.82 Numbers.",
+            cost: new Decimal("4.82e354"),
+            unlocked() {return hasMilestone("addition", 1)},
+        },
     },
     buyables: {
         11: {
@@ -311,12 +345,14 @@ addLayer("fundamental", {
             },
             effect(x) {
                 let base = new Decimal(2)
-                if (hasMilestone("dimension", 1)) base = base.add(3)
+                if (hasMilestone("dimension", 1) && !inChallenge("arithmetic", 13)) base = base.add(3)
                 if (hasMilestone("primitive", 8)) {
                     if (hasUpgrade("multiplication", 11)) base = base.add(getBuyableAmount("fundamental", 13).mul(0.5))
                     else base = base.add(getBuyableAmount("fundamental", 13).mul(0.1))
                 }
-                return base.pow(x)
+                let effect = base.pow(x)
+                if (inChallenge("arithmetic", 13)) effect = effect.pow(0.75)
+                return effect
             },
             unlocked() {return hasUpgrade("primitive", 13) || player.arithmetic.unlocked},
         },

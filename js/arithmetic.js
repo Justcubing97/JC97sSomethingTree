@@ -21,7 +21,10 @@ addLayer("arithmetic", {
         if (hasUpgrade("subtraction", 13)) mult = mult.mul(100)
         if (hasUpgrade("multiplication", 22)) mult = mult.mul(5)
         //exp
+        if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         //other hypers
+        //final effects
+        if (hasUpgrade("multiplication", 32)) mult = mult.div(0.2)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -43,6 +46,8 @@ addLayer("arithmetic", {
                 "main-display",
                 "prestige-button",
                 "blank",
+                ["display-text", "After buying \"Operation Gain,\" manually reset the new layers to gain their benefits."],
+                ["display-text", "<sup>No idea why this has to be done, but I guess it's not that bad.</sup>"],
                 "upgrades"
             ],
         },
@@ -95,7 +100,11 @@ addLayer("arithmetic", {
         },
         21: {
             title: "Insane Math",
-            effect() {return new Decimal(player.addition.points).pow(0.6).add(1)},
+            effect() {
+                let effect = new Decimal(player.arithmetic.points).pow(1.2).add(1)
+                if (hasMilestone("addition", 1)) effect = effect.mul(player.arithmetic.points.pow(0.1).add(1))
+                return effect
+            },
             description: "Operation Power boosts Points, Addition, and Subtraction.",
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
             cost: new Decimal("1e9"),
@@ -112,6 +121,29 @@ addLayer("arithmetic", {
             description: "Even more simple. x100 Addition, Fundamentality (after softcap), and x500 Points.",
             cost: new Decimal("1e21"),
             unlocked(){return player.dimension.points.gte(1)},
+        },
+        24: {
+            title: "Distributive Property",
+            effect() {
+                let effect = new Decimal(player.multiplication.points).mul(player.multiplication.points.pow(0.5)).pow(2.5).add(1)
+                return effect
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id))},
+            description: "Multiplication boosts Addition gain.",
+            cost: new Decimal("1e30"),
+            unlocked(){return player.dimension.points.gte(3)},
+        },
+        25: {
+            title: "Arithmetic Difficulty Rise",
+            description: "Unlock the third Arithmetic Challenge.",
+            cost: new Decimal("1e33"),
+            unlocked(){return player.dimension.points.gte(3)},
+        },
+        26: {
+            title: "Purely Point-Based",
+            description: "^1.05 Points.",
+            cost: new Decimal("1e50"),
+            unlocked(){return player.dimension.points.gte(3)},
         },
     },
     challenges: {
@@ -131,6 +163,14 @@ addLayer("arithmetic", {
             canComplete: function() {return player.primitive.points.gte("1e63")},
             unlocked() {return hasUpgrade("arithmetic", 22)},
         },
+        13: {
+            name: "Dimensionless Reality",
+            challengeDescription: "<i>\"The concept of spatial dimensions is nothing but a silly mistake.\"</i> Dimension milestones do not work. ^0.75 to Addition, Subtraction, Points, Fundamentality, Fundamental buyable 1's boost, and Numbers.",
+            goalDescription: "Have 1e90 Numbers.",
+            rewardDescription: "^1.05 Points, Fundamentality, Numbers, and Operation Points.",
+            canComplete: function() {return player.primitive.points.gte("1e90")},
+            unlocked() {return hasUpgrade("arithmetic", 25)},
+        },
     },
-    branches: [["addition", "#FF00FF", 5], ["subtraction", "#FF00FF", 5], ["multiplication", "#FF00FF", 5]],
+    branches: [["addition", "#FF00FF", 5], ["subtraction", "#FF00FF", 5], ["multiplication", "#FF00FF", 5], ["polygon", "#FFFFFF", 10]],
 })

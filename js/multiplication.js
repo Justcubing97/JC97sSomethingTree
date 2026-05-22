@@ -57,6 +57,7 @@ addLayer("multiplication", {
     },
     effect() {return player.multiplication.total.pow(0.03)},
     effectDescription() {return "raising Points ^" + format(player.multiplication.total.pow(0.03))},
+    canBuyMax() {return true},
     tabFormat: {
         "Main": {
             content: [
@@ -66,7 +67,8 @@ addLayer("multiplication", {
                 ["infobox", "treeLimit"],
                 "blank",
                 ["upgrades", [1]],"blank",
-                ["upgrades", [2, 3]],"blank",
+                ["upgrades", [2]],"blank",
+                ["upgrades", [3]],"blank",
             ],
         },
         "Buyables": {
@@ -82,8 +84,8 @@ addLayer("multiplication", {
         treeLimit: {
             title: "The Multiplication Tree",
             body() { return "Yes, I'm more than just a character in the lore. I actually give information! " +
-                "Anyway, in The Multiplication Tree, NOT The Modding Tree, you can only have 1 upgrade in each row." +
-                "This persists until you get upgrades in The Multiplication Tree (referred to as TMT in this game) " +
+                "Anyway, in The Multiplication Tree, NOT The Modding Tree, you can only have 1 upgrade in each row. " +
+                "This persists until you get upgrades in The Multiplication Tree (referred to as TMT in this game) or elsewhere " +
                 "that allow for multiple upgrades in a single row. WAIT! If you ever need to respec TMT, " +
                 "just Arithmetic reset."
              },
@@ -95,6 +97,9 @@ addLayer("multiplication", {
             description: "You know what? Improve the 8th Primitive milestone.",
             cost: new Decimal(1),
             branches: [[21, "#FFFFFF", 10], [22, "#FFFFFF", 10]],
+            canAfford() {
+                if (player.multiplication.points.lt(1)) return false
+            },
             pay() {return new Decimal(0)}
         },
 
@@ -102,8 +107,10 @@ addLayer("multiplication", {
             title: "Why Multiplication?",
             description: "x1e15 Points and x5 Operation Power.",
             cost: new Decimal(3),
+            branches: [[31, "#FFFFFF", 10]],
             canAfford() {
-                if (hasUpgrade("multiplication", 22)) {return false}
+                if (player.multiplication.points.lt(3)) return false
+                if (hasUpgrade("multiplication", 22)) return false
                 return hasUpgrade("multiplication", 11)
             },
             pay() {return new Decimal(0)}
@@ -114,9 +121,33 @@ addLayer("multiplication", {
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
             description: "Improve the Point Addition booster by total Multiplication.",
             cost: new Decimal(3),
+            branches: [[32, "#FFFFFF", 10]],
             canAfford() {
-                if (hasUpgrade("multiplication", 21)) {return false}
+                if (player.multiplication.points.lt(3)) return false
+                if (hasUpgrade("multiplication", 21) && !hasUpgrade("multiplication", 31)) return false
                 return hasUpgrade("multiplication", 11)
+            },
+            pay() {return new Decimal(0)}
+        },
+        31: {
+            title: "Multi-Upgrade",
+            description: "+1 upgrade in the 2nd row, and ^1.2 Fundamentality after softcap.",
+            cost: new Decimal(5),
+            canAfford() {
+                if (player.multiplication.points.lt(5)) return false
+                if (hasUpgrade("multiplication", 32)) return false
+                return hasUpgrade("multiplication", 21)
+            },
+            pay() {return new Decimal(0)}
+        },
+        32: {
+            title: "Trade-Off",
+            description: "/5 Operation Power, but ^1.05 Numbers (after softcap), ^1.1 Addition, and ^1.05 Subtraction.",
+            cost: new Decimal(5),
+            canAfford() {
+                if (player.multiplication.points.lt(5)) return false
+                if (hasUpgrade("multiplication", 31)) return false
+                return hasUpgrade("multiplication", 22)
             },
             pay() {return new Decimal(0)}
         },

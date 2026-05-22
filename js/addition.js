@@ -21,10 +21,12 @@ addLayer("addition", {
         mult = mult.mul(player.arithmetic.points.div(10).add(1))
         if (hasUpgrade("arithmetic", 21)) mult = mult.mul(upgradeEffect("arithmetic", 21))
         if (hasUpgrade("arithmetic", 23)) mult = mult.mul(100)
+        if (hasUpgrade("arithmetic", 24)) mult = mult.mul(upgradeEffect("arithmetic", 24))
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
-        if (hasMilestone("dimension", 3)) mult = mult.pow(1.2)
-        
+        if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13)) mult = mult.pow(1.5)
+        if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
+        if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.1)
         //other hypers
         return mult
     },
@@ -57,6 +59,16 @@ addLayer("addition", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
     },
+    tabFormat: [
+        "main-display",
+        "prestige-button",
+        ["display-text", function() { return "You have " + format(player.arithmetic.points) + " Operation Power" }],
+        ["display-text", function() { return "You are gaining " + format(getResetGain("addition")) + " Addition per second" }],
+        "blank",
+        "clickables",
+        "blank",
+        "milestones",
+    ],
     clickables: {
         11: {
             title: "Add to Fundamental",
@@ -105,6 +117,15 @@ addLayer("addition", {
                 setClickableState("addition", 11, "Inactive")
                 setClickableState("addition", 12, "Inactive")
             },
+            unlocked() {return hasMilestone("primitive", 7)},
+        },
+    },
+    milestones: {
+        1: {
+            requirementDescription: "1e85 Addition",
+            effectDescription: "The milestone virus is spreading... HEAVILY improve \"Primitive Boost,\" \"Insane Math,\" and unlock more Fundamental upgrades.",
+            done() { return player.addition.points.gte("1e85") },
+            unlocked() {return player.dimension.points.gte(3)},
         },
     },
 })

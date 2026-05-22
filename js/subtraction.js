@@ -16,12 +16,15 @@ addLayer("subtraction", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         //add
+        if (hasUpgrade("fundamental", 42)) mult = mult.add(100)
         //mul
         mult = mult.mul(player.arithmetic.points.div(10).add(1))
         if (hasUpgrade("arithmetic", 21)) mult = mult.mul(upgradeEffect("arithmetic", 21))
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
-        if (hasMilestone("dimension", 3)) mult = mult.pow(1.2)
+        if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13)) mult = mult.pow(1.5)
+        if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
+        if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.05)
         //other hypers
         return mult
     },

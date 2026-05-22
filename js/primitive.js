@@ -5,6 +5,7 @@ addLayer("primitive", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        softcapExponent: new Decimal(0),
     }},
     color: "#00C8FF",
     requires: new Decimal("1e12"), // Can be a function that takes requirement increases into account
@@ -27,8 +28,12 @@ addLayer("primitive", {
         if (hasUpgrade("fundamental", 35)) mult = mult.mul(20)
         if (hasUpgrade("arithmetic", 11)) mult = mult.mul(100)
         if (hasUpgrade("primitive", 23)) mult = mult.mul(5)
+        if (hasUpgrade("fundamental", 42)) mult = mult.mul(354.82)
         //exp 
         if (inChallenge("arithmetic", 11)) mult = mult.pow(0.8)
+        if (hasUpgrade("fundamental", 41)) mult = mult.pow(upgradeEffect("fundamental", 41))
+        if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
+        if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         //other hypers
         return mult
     },
@@ -40,11 +45,20 @@ addLayer("primitive", {
     directMult() {
         let dMult = new Decimal(1)
         if (hasUpgrade("subtraction", 13)) dMult = dMult.mul(100)
+        if (hasUpgrade("multiplication", 32)) dMult = dMult.pow(1.05)
         return dMult
     },
     softcapPower() {
-        if (hasUpgrade("subtraction", 12)) return 0.55
-        return 0.5
+        let power = new Decimal(0.5)
+        if (hasUpgrade("subtraction", 12)) power = power.add(0.05)
+        player.primitive.softcapExponent = power
+        return power
+    },
+    effectDescription() {
+        let text = ""
+        if (player.primitive.points.gte("1e50")) text = text + "softcapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
+        else return 
+        return text
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
@@ -66,7 +80,7 @@ addLayer("primitive", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
-        //if (someOtherCondition) keep.push("milestones");
+        if (hasMilestone("polygon", 1)) keep.push("milestones");
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -95,12 +109,13 @@ addLayer("primitive", {
             description: "x5 Numbers, and Numbers boosts Points.",
             cost: new Decimal("250e6"),
             effect() {
-                if (hasMilestone("dimension", 2)) return new Decimal(player.primitive.points.add(1).logarithm(7)).add(1).pow(3)
-                if (hasMilestone("primitive", 5)) { 
-                    return new Decimal(player.primitive.points.add(1).logarithm(8)).add(1).pow(2.5)
-                } else {
-                    return new Decimal(player.primitive.points.add(1).logarithm(10)).add(1).pow(2)
-                }
+                let effect = player.primitive.points
+                if (hasMilestone("dimension", 2)&& !inChallenge("arithmetic", 13)) effect = new Decimal(effect.add(1).logarithm(7)).add(1).pow(3)
+                else if (hasMilestone("primitive", 5)) effect = new Decimal(effect.add(1).logarithm(8)).add(1).pow(2.5)
+                else effect = new Decimal(effect.add(1).logarithm(10)).add(1).pow(2)
+
+                if (hasMilestone("addition", 1)) effect = effect.pow(5)
+                return effect
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
         },
@@ -115,7 +130,7 @@ addLayer("primitive", {
             description: "Numbers boosts itself.",
             cost: new Decimal("1e15"),
             effect() {
-                if (hasMilestone("dimension", 2)) return new Decimal(player.primitive.points.pow(0.2)).add(1)
+                if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13)) return new Decimal(player.primitive.points.pow(0.2)).add(1)
                 return new Decimal(player.primitive.points.pow(0.1)).add(1)
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -201,7 +216,7 @@ addLayer("primitive", {
 
         6: {
             requirementDescription: "1e48 Numbers",
-            effectDescription: "Unlock more Fundamentality and Number upgrades.",
+            effectDescription: "Unlock more Fundamental and Primitive upgrades.",
             done() { return player.primitive.points.gte("1e48") },
             unlocked() {return player.arithmetic.unlocked},
         },
@@ -224,6 +239,6 @@ addLayer("primitive", {
             unlocked() {return player.arithmetic.unlocked},
         },
     },
-    branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 10]],
+    branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5]],
 })
 

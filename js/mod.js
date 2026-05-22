@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "dimension.js", "tree.js"],
+	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "dimension.js", "polygon.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -12,11 +12,17 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.3",
-	name: "Dimension layer update",
+	num: "0.4",
+	name: "Polygon layer update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.4</h3><br>
+		- Polygon layer. <br>
+		- New currency: Shapes. <br>
+		- 3 Arithmetic Challenges. <br>
+		- 22 Achievements. <br>
+		- Endgame: 1 Shape. <br>
 	<h3>v0.3</h3><br>
 		- Added Dimension and Multiplication layer. <br>
 		- Added new currencies: Dimensions, Multiplication <br>
@@ -84,6 +90,9 @@ function getPointGen() {
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
 	if (inChallenge("arithmetic", 12)) gain = gain.pow(0.5)
 	if (player.multiplication.points.gte(1)) gain = gain.pow(player.multiplication.points.pow(0.03))
+	if (inChallenge("arithmetic", 13)) gain = gain.pow(0.75)
+	if (hasChallenge("arithmetic", 13)) gain = gain.pow(1.05)
+	if (hasUpgrade("arithmetic", 26)) gain = gain.pow(1.05)
 	//other hypers
 	return gain
 }
@@ -94,12 +103,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 3 Dimensions <br> JST by Justcubing97"
+	"Current endgame: 1 Shape <br> JST by Justcubing97"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.dimension.points.gte(new Decimal("3")))
+	return (player.polygon.points.gte(new Decimal("1")))
 }
 
 
