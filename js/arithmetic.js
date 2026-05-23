@@ -7,7 +7,7 @@ addLayer("arithmetic", {
 		points: new Decimal(0),
     }},
     color: "#FF0080",
-    requires: new Decimal("1e37"), // Can be a function that takes requirement increases into account
+    requires: new Decimal("1e36"), // Can be a function that takes requirement increases into account
     resource: "Operation Power", // Name of prestige currency
     baseResource: "Numbers", // Name of resource prestige is based on
     baseAmount() {return player.primitive.points}, // Get the current amount of baseResource
