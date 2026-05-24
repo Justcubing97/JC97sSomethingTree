@@ -92,7 +92,7 @@ addLayer("primitive", {
     upgrades: {
         11: {
             title: "Primitivity",
-            description: "x5 Fundamentality and +5 Points.",
+            description: "x10 Fundamentality and +5 Points.",
             cost: new Decimal(1),
         },
         12: {
@@ -112,7 +112,7 @@ addLayer("primitive", {
             effect() {
                 let effect = player.primitive.points
                 if (hasMilestone("dimension", 2)&& !inChallenge("arithmetic", 13)) effect = new Decimal(effect.add(1).logarithm(7)).add(1).pow(3)
-                else if (hasMilestone("primitive", 5)) effect = new Decimal(effect.add(1).logarithm(8)).add(1).pow(2.5)
+                else if (hasMilestone("primitive", 5)) effect = new Decimal(effect.add(1).logarithm(6)).add(1).pow(3)
                 else effect = new Decimal(effect.add(1).logarithm(10)).add(1).pow(2)
 
                 if (hasMilestone("addition", 1)) effect = effect.pow(5)
@@ -123,13 +123,13 @@ addLayer("primitive", {
         15: {
             title: "Preservation",
             description: "Keep the first 14 Fundamental upgrades on Primitive reset.",
-            cost: new Decimal("2e14"),
+            cost: new Decimal("1e14"),
             unlocked() {return hasUpgrade("primitive", 14) || player.arithmetic.unlocked},
         },
         16: {
             title: "Recursion",
             description: "Numbers boosts itself.",
-            cost: new Decimal("1e15"),
+            cost: new Decimal("1e20"),
             effect() {
                 if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13)) return new Decimal(player.primitive.points.pow(0.2)).add(1)
                 return new Decimal(player.primitive.points.pow(0.1)).add(1)
@@ -140,10 +140,10 @@ addLayer("primitive", {
         17: {
             title: "Slowing down?",
             description: "Numbers boost Fundamentality after softcap.",
-            cost: new Decimal("1.5e16"),
+            cost: new Decimal("5e22"),
             effect() {
                 if (hasMilestone("primitive", 5)) {
-                    return new Decimal(player.primitive.points.pow(0.35)).add(1)
+                    return new Decimal(player.primitive.points.pow(0.4)).add(1)
                 } else {
                     return new Decimal(player.primitive.points.pow(0.2)).add(1)
                 }
@@ -192,15 +192,15 @@ addLayer("primitive", {
         },
 
         2: {
-            requirementDescription: "3000 Numbers",
+            requirementDescription: "100,000 Numbers",
             effectDescription: "Keep  \"Generation\" on Primitive reset and x100 Fundamentality.",
-            done() { return player.primitive.points.gte(3000) },
+            done() { return player.primitive.points.gte("1e5") },
         },
 
         3: {
-            requirementDescription: "1e14 Numbers",
-            effectDescription: "x3 Fundamentality and unlock Document 3.",
-            done() { return player.primitive.points.gte("1e14") },
+            requirementDescription: "1e11 Numbers",
+            effectDescription: "x25 Fundamentality and unlock Document 3.",
+            done() { return player.primitive.points.gte("1e11") },
         },
 
         4: {

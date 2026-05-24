@@ -17,15 +17,16 @@ addLayer("fundamental", {
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         //add
-        if (hasUpgrade("fundamental", 15)) mult = mult.add(2)
+        if (hasUpgrade("fundamental", 15)) mult = mult.add(5)
         if (getClickableState("addition", 11) == "Active" && !inChallenge("arithmetic", 12)) mult = mult.add(clickableEffect("addition", 11))
         //mul
         if (hasUpgrade("fundamental", 11)) mult = mult.mul(2)
         if (hasUpgrade("fundamental", 14)) mult = mult.mul(5)
         if (hasUpgrade("fundamental", 21)) mult = mult.mul(upgradeEffect("fundamental", 21))
-        if (hasUpgrade("primitive", 11)) mult = mult.mul(5)
+        if (hasUpgrade("primitive", 11)) mult = mult.mul(10)
         if (hasUpgrade("fundamental", 25)) mult = mult.mul(upgradeEffect("fundamental", 25))
         if (!inChallenge("arithmetic", 11)) mult = mult.mul(buyableEffect("fundamental", 11))
+        if (hasMilestone("primitive", 3)) mult = mult.mul(25)
         if (hasMilestone("primitive", 4)) mult = mult.mul(100)
         if (hasUpgrade("subtraction", 13)) mult = mult.mul(100)
         //exp
@@ -177,7 +178,7 @@ addLayer("fundamental", {
 
         15: {
             title: "The 5th Upgrade",
-            description: "x3 Points and +2 Fundamentality.",
+            description: "x3 Points and +5 Fundamentality.",
             cost: new Decimal(150),
             unlocked() {return hasUpgrade("fundamental", 11) || player.primitive.unlocked},
         },

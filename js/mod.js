@@ -12,11 +12,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.4.2",
+	num: "0.4.3",
 	name: "Polygon layer update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.4.3</h3><br>
+		- Fixed an Addition booster bug. <br>
+		- Adjusted progression in Fundamental and Primitive layers. <br>
+		- Endgame: 5 Polygonifications. <br>
 	<h3>v0.4.2</h3><br>
 		- Fixed a bug that made the game unplayable. <br>
 		- More Polygon content. <br>
@@ -69,7 +73,8 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 13)) gain = gain.add(1)
 	if (hasUpgrade("fundamental", 16)) gain = gain.add(5)
 	if (hasUpgrade("primitive", 11)) gain = gain.add(5)
-	if (!getClickableState("addition", 13) == "Inactive" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
+	if (getClickableState("addition", 13) == "Active" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
+	console.log(getClickableState("addition", 13))
 	//mul
 	if (hasUpgrade("fundamental", 11)) gain = gain.mul(2)
 	if (hasUpgrade("fundamental", 12)) gain = gain.mul(3)
