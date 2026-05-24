@@ -12,11 +12,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.4.1",
+	num: "0.4.2",
 	name: "Polygon layer update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.4.2</h3><br>
+		- Fixed a bug that made the game unplayable. <br>
+		- More Polygon content. <br>
+		- Endgame: 5 Polygonifications. <br>
 	<h3>v0.4.1</h3><br>
 		- Fixed Arithmetic Challenge 1. <br>
 		- Endgame: 1 Shape. <br>
@@ -65,7 +69,7 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 13)) gain = gain.add(1)
 	if (hasUpgrade("fundamental", 16)) gain = gain.add(5)
 	if (hasUpgrade("primitive", 11)) gain = gain.add(5)
-	if (getClickableState("addition", 13) == "Active" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
+	if (!getClickableState("addition", 13) == "Inactive" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
 	//mul
 	if (hasUpgrade("fundamental", 11)) gain = gain.mul(2)
 	if (hasUpgrade("fundamental", 12)) gain = gain.mul(3)
@@ -74,6 +78,7 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 17)) gain = gain.mul(upgradeEffect("fundamental", 17))
 	if (hasMilestone("primitive", 1)) gain = gain.mul(50)
 	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
+	if (hasUpgrade("arithmetic", 27)) gain = gain.mul(upgradeEffect("arithmetic", 27))
 		
 	if (!inChallenge("arithmetic", 11)) gain = gain.mul(buyableEffect("fundamental", 11))
 
@@ -106,12 +111,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 1 Shape <br> JST by Justcubing97"
+	"Current endgame: 5 Polygonifications <br> JST by Justcubing97"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.polygon.points.gte(new Decimal("1")))
+	return (player.polygon.resets.gte(new Decimal("5")))
 }
 
 

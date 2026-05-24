@@ -157,4 +157,9 @@ addLayer("multiplication", {
             pay() {return new Decimal(0)}
         },
     },
+    tooltip() {
+        let able = canReset("multiplication")
+        if (!able) return format(player.multiplication.points) + " Multiplication (Unable to reset)"
+        return format(player.multiplication.points) + " Multiplication (+" + format(getResetGain("multiplication")) + " Multiplication on reset)"
+    },
 })

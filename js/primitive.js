@@ -75,6 +75,7 @@ addLayer("primitive", {
         let keptUpgrades = []
         if (hasAchievement("achievements", 24)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23)
         if (hasAchievement("achievements", 34)) keptUpgrades.push(24)
+        if (hasMilestone("polygon", 3)) keptUpgrades.push(25)
 
         let keptBuyables = []
 
@@ -166,13 +167,13 @@ addLayer("primitive", {
             title: "It's Been a While",
             description: "Simple! x1e10 Points and x5 Numbers.",
             cost: new Decimal("1e55"),
-            unlocked() {return hasMilestone("primitive", 6)},
+            unlocked() {return hasMilestone("primitive", 6) || player.polygon.unlocked},
         },
         24: {
             title: "Minuscule Boost",
             description: "+2 to Fundamentality softcap logarithm base.",
             cost: new Decimal("1e58"),
-            unlocked() {return hasMilestone("primitive", 6)},
+            unlocked() {return hasMilestone("primitive", 6) || player.polygon.unlocked},
         },
         25: {
             title: "Ran Out of Name Ideas",
@@ -180,7 +181,7 @@ addLayer("primitive", {
             effectDisplay() {return "+" + format(upgradeEffect(this.layer, this.id))},
             description: "Numbers boost Addition base.",
             cost: new Decimal("1e125"),
-            unlocked() {return hasMilestone("primitive", 6)},
+            unlocked() {return hasMilestone("primitive", 6) || player.polygon.unlocked},
         },
     },
     milestones: {
@@ -240,5 +241,6 @@ addLayer("primitive", {
         },
     },
     branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5]],
+    tooltip() {return format(player.primitive.points) + " Numbers (+" + format(getResetGain("primitive")) + " Numbers on reset)"},
 })
 

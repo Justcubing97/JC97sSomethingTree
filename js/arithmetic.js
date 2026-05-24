@@ -5,6 +5,7 @@ addLayer("arithmetic", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        softcapExponent: new Decimal(0),
     }},
     color: "#FF0080",
     requires: new Decimal("1e36"), // Can be a function that takes requirement increases into account
@@ -40,6 +41,39 @@ addLayer("arithmetic", {
         let dMult = new Decimal(1)
         return dMult
     },
+    softcap() {return new Decimal("1e75")},
+    softcapPower() {
+        let power = new Decimal(0.25)
+        if (player.arithmetic.points.gte("1e75")){power = new Decimal(1).div(player.arithmetic.points.div("1e75").pow(0.1))}
+        player.arithmetic.softcapExponent = power
+        return power
+    },
+    effectDescription() {
+        let text = ""
+        if (player.arithmetic.points.gte("1e75")) text = text + "softcapped by ^" + player.arithmetic.softcapExponent.toFixed(6) + " to its gain."
+        else return 
+        return text
+    },
+    passiveGeneration() {if (hasMilestone("polygon", 4)) return 1},
+    doReset(resettingLayer) {
+        // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        if (layers[resettingLayer].row <= this.row) return;
+
+        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
+        let keptUpgrades = []
+        if (hasMilestone("polygon", 3)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17)
+
+        let keptBuyables = []
+
+        // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
+        let keep = [];
+
+        // Stage 4, do the actual data reset
+        layerDataReset(this.layer, keep);
+
+        // Stage 5, add back in the specific subfeatures you saved earlier
+        player[this.layer].upgrades.push(...keptUpgrades)
+    }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     tabFormat: {
         "Main": {
             content: [
@@ -79,7 +113,7 @@ addLayer("arithmetic", {
         14: {
             title: "Arithmetic Combination",
             effect() {
-                let effect = new Decimal(player.addition.points).add(player.subtraction.points)
+                let effect = new Decimal(player.addition.points).add(player.subtraction.points).add(1)
                 if (player.polygon.points.gte(1)) effect = effect.pow(player.polygon.effect)
                 return effect
             },
@@ -149,6 +183,17 @@ addLayer("arithmetic", {
             cost: new Decimal("1e50"),
             unlocked(){return player.dimension.points.gte(3)},
         },
+        27: {
+            title: "No Longer Useless",
+            effect() {
+                let effect = player.subtraction.points.pow(0.33).add(1)
+                return effect
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id))},
+            description: "Subtraction boosts Points.",
+            cost: new Decimal("1e80"),
+            unlocked(){return player.polygon.unlocked},
+        },
     },
     challenges: {
         11: {
@@ -157,7 +202,7 @@ addLayer("arithmetic", {
             goalDescription: "Have 1e110 Fundamentality.",
             rewardDescription: "Unlock a third Fundamentality buyable.",
             canComplete: function() {return player.fundamental.points.gte("1e110")},
-            unlocked() {return hasUpgrade("arithmetic", 17)},
+            unlocked() {return hasUpgrade("arithmetic", 17) || hasMilestone("polygon", 2)},
         },
         12: {
             name: "UNKNOWN OPERATION",
@@ -165,7 +210,7 @@ addLayer("arithmetic", {
             goalDescription: "Have 1e63 Numbers.",
             rewardDescription: "Unlock Multiplication.",
             canComplete: function() {return player.primitive.points.gte("1e63")},
-            unlocked() {return hasUpgrade("arithmetic", 22)},
+            unlocked() {return hasUpgrade("arithmetic", 22) || hasMilestone("polygon", 2)},
         },
         13: {
             name: "Dimensionless Reality",
@@ -173,8 +218,9 @@ addLayer("arithmetic", {
             goalDescription: "Have 1e90 Numbers.",
             rewardDescription: "^1.05 Points, Fundamentality, Numbers, and Operation Points.",
             canComplete: function() {return player.primitive.points.gte("1e90")},
-            unlocked() {return hasUpgrade("arithmetic", 25)},
+            unlocked() {return hasUpgrade("arithmetic", 25) || hasMilestone("polygon", 2)},
         },
     },
     branches: [["addition", "#FF00FF", 5], ["subtraction", "#FF00FF", 5], ["multiplication", "#FF00FF", 5], ["polygon", "#FFFFFF", 10]],
+    tooltip() {return format(player.arithmetic.points) + " Operation Power (+" + format(getResetGain("arithmetic")) + " Operation Power on reset)"},
 })

@@ -6,7 +6,7 @@ addLayer("polygon", {
         unlocked: false,
 		points: new Decimal(0),
         resets: new Decimal(0),
-        effect: new Decimal(0)
+        effect: new Decimal(0),
     }},
     color: "#2050FF",
     requires: new Decimal("1e60"), // Can be a function that takes requirement increases into account
@@ -40,7 +40,7 @@ addLayer("polygon", {
     resetDescription: "Polygonify for ",
     onPrestige() {player.polygon.resets = player.polygon.resets.add(1)},
     effect() {
-        player.polygon.effect = player.polygon.points.log10().div(10).add(1.01)
+        player.polygon.effect = player.polygon.points.add(1).log10().div(10).add(1.01)
     },
     effectDescription() {
         return "raising Fundamental buyable 1's effect, Multiplication's effect, <br> and \"Arithmetic Combination\" to ^" + format(player.polygon.effect)
@@ -58,16 +58,41 @@ addLayer("polygon", {
     milestones: {
         1: {
             requirementDescription: "1 Polygonification",
-            effectDescription: "Start with all Primitive milestones completed.",
+            effectDescription: "Keep all Primitive milestones completed.",
             done() { return player.polygon.resets.gte("1") },
+            unlocked() {return true},
+        },
+        2: {
+            requirementDescription: "2 Polygonifications",
+            effectDescription: "Keep all Arithmetic Challenges unlocked.",
+            done() { return player.polygon.resets.gte("2") },
+            unlocked() {return true},
+        },
+        3: {
+            requirementDescription: "3 Polygonifications",
+            effectDescription: "Keep Fundamental upgrades 1-23, Primitive upgrades 1-12, and Arithmetic upgrades 1-7.",
+            done() { return player.polygon.resets.gte("3") },
+            unlocked() {return true},
+        },
+        4: {
+            requirementDescription: "4 Polygonifications",
+            effectDescription: "The Addition booster for Fundamentality is always active. Passively generate 100% of pending Operation Power per second.",
+            done() { return player.polygon.resets.gte("4") },
+            unlocked() {return true},
+        },
+        5: {
+            requirementDescription: "5 Polygonifications",
+            effectDescription: "Unlock Division. (NOT IMPLEMENTED)",
+            done() { return player.polygon.resets.gte("5") },
             unlocked() {return true},
         },
     },
     upgrades: {
         11: {
             title: "Powerful Boosts",
-            description: "x1000 Operation Power and ^1.3 Fundamentality after softcap.",
+            description: "x1000 Operation Power and ^1.3 Fundamentality after softcap. (NOT IMPLEMENTED)",
             cost: new Decimal(100),
         },
     },
+    tooltip() {return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"},
 })

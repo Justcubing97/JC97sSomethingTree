@@ -91,6 +91,7 @@ addLayer("fundamental", {
         if (hasUpgrade("primitive", 15) || hasAchievement("achievements", 24)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 26, 27)
         if (hasAchievement("achievements", 24)) keptUpgrades.push(31, 32, 33, 34, 35, 36)
         if (hasAchievement("achievements", 34)) keptUpgrades.push(37)
+        if (hasMilestone("polygon", 3)) keptUpgrades.push(41, 42)
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -300,14 +301,14 @@ addLayer("fundamental", {
             title: "PERIODIC TABLE???",
             description: "+5 to Fundamentality softcap numerator and... x3 Operation Power!",
             cost: new Decimal("1e118"),
-            unlocked() {return hasMilestone("primitive", 6)},
+            unlocked() {return hasMilestone("primitive", 6) || player.polygon.unlocked},
         },
 
         37: {
             title: "The Next Layer V2",
             description: "This is getting slow. x1e10 Unlock Points.",
             cost: new Decimal("1e156"),
-            unlocked() {return hasMilestone("primitive", 6)},
+            unlocked() {return hasMilestone("primitive", 6) || player.polygon.unlocked},
         },
 
         41: {
@@ -320,14 +321,14 @@ addLayer("fundamental", {
             effectDisplay() { return "^" + format(upgradeEffect(this.layer, this.id)) },
             description: "Oh, hi. Raise Numbers based on Fundamentality.",
             cost: new Decimal("1e321"),
-            unlocked() {return hasMilestone("addition", 1)},
+            unlocked() {return hasMilestone("addition", 1) || player.polygon.unlocked},
         },
 
         42: {
             title: "Random Number",
             description: "+100 to Subtraction base and x354.82 Numbers.",
             cost: new Decimal("4.82e354"),
-            unlocked() {return hasMilestone("addition", 1)},
+            unlocked() {return hasMilestone("addition", 1) || player.polygon.unlocked},
         },
     },
     buyables: {
@@ -390,4 +391,5 @@ addLayer("fundamental", {
         },
     },
     branches: [["primitive", "#FFFFFF", 10]],
+    tooltip() {return format(player.fundamental.points) + " Fundamentality (+" + format(getResetGain("fundamental")) + " Fundamentality on reset)"},
 })

@@ -73,6 +73,7 @@ addLayer("addition", {
         11: {
             title: "Add to Fundamental",
             effect() {
+                if (hasMilestone("polygon", 4)) setClickableState("addition", 11, "ALWAYS ACTIVE")
                 if (hasMilestone("primitive", 7)) return player.addition.points.pow(0.5).add(1).pow(1.6)
                 return player.addition.points.pow(0.4).add(1).pow(1.5)
             },
@@ -81,8 +82,8 @@ addLayer("addition", {
             onClick() {
                 setClickableState("addition", 11, "Active")
 
-                setClickableState("addition", 12, "Inactive")
-                setClickableState("addition", 13, "Inactive")
+                if (!hasMilestone("polygon", 4)) setClickableState("addition", 12, "Inactive")
+                if (!hasMilestone("polygon", 4)) setClickableState("addition", 13, "Inactive")
             },
         },
 
@@ -97,7 +98,7 @@ addLayer("addition", {
             onClick() {
                 setClickableState("addition", 12, "Active")
             
-                setClickableState("addition", 11, "Inactive")
+                if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
                 setClickableState("addition", 13, "Inactive")
             },
         },
@@ -114,7 +115,7 @@ addLayer("addition", {
             onClick() {
                 setClickableState("addition", 13, "Active")
 
-                setClickableState("addition", 11, "Inactive")
+                if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
                 setClickableState("addition", 12, "Inactive")
             },
             unlocked() {return hasMilestone("primitive", 7)},
