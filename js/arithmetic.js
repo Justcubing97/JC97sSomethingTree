@@ -78,7 +78,11 @@ addLayer("arithmetic", {
         },
         14: {
             title: "Arithmetic Combination",
-            effect() {return new Decimal(player.addition.points).add(player.subtraction.points)},
+            effect() {
+                let effect = new Decimal(player.addition.points).add(player.subtraction.points)
+                if (player.polygon.points.gte(1)) effect = effect.pow(player.polygon.effect)
+                return effect
+            },
             description: "Points are multiplied by the sum of your Addition and Subtraction.",
             cost: new Decimal(100),
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -150,9 +154,9 @@ addLayer("arithmetic", {
         11: {
             name: "Beginner's Demise",
             challengeDescription: "<i>\"Those who do not know what they are doing will fall.\"</i> Fundamental buyables are disabled. ^0.8 to Points and Numbers.",
-            goalDescription: "Have 1e118 Fundamentality.",
+            goalDescription: "Have 1e110 Fundamentality.",
             rewardDescription: "Unlock a third Fundamentality buyable.",
-            canComplete: function() {return player.fundamental.points.gte("1e118")},
+            canComplete: function() {return player.fundamental.points.gte("1e110")},
             unlocked() {return hasUpgrade("arithmetic", 17)},
         },
         12: {

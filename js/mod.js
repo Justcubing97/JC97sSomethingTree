@@ -12,11 +12,14 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.4",
+	num: "0.4.1",
 	name: "Polygon layer update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.4.1</h3><br>
+		- Fixed Arithmetic Challenge 1. <br>
+		- Endgame: 1 Shape. <br>
 	<h3>v0.4</h3><br>
 		- Polygon layer. <br>
 		- New currency: Shapes. <br>
@@ -89,7 +92,7 @@ function getPointGen() {
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
 	if (inChallenge("arithmetic", 12)) gain = gain.pow(0.5)
-	if (player.multiplication.points.gte(1)) gain = gain.pow(player.multiplication.points.pow(0.03))
+	if (player.multiplication.points.gte(1)) gain = gain.pow(player.multiplication.effect)
 	if (inChallenge("arithmetic", 13)) gain = gain.pow(0.75)
 	if (hasChallenge("arithmetic", 13)) gain = gain.pow(1.05)
 	if (hasUpgrade("arithmetic", 26)) gain = gain.pow(1.05)

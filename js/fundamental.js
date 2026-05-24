@@ -352,6 +352,7 @@ addLayer("fundamental", {
                 }
                 let effect = base.pow(x)
                 if (inChallenge("arithmetic", 13)) effect = effect.pow(0.75)
+                if (player.polygon.points.gte(1)) effect = effect.pow(player.polygon.effect)
                 return effect
             },
             unlocked() {return hasUpgrade("primitive", 13) || player.arithmetic.unlocked},

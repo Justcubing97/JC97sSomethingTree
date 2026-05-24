@@ -6,6 +6,7 @@ addLayer("multiplication", {
         unlocked: false,
 		points: new Decimal(0),
         total: new Decimal(0),
+        effect: new Decimal(0),
     }},
     color: "#FF50FF",
     requires() {
@@ -55,8 +56,12 @@ addLayer("multiplication", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
     },
-    effect() {return player.multiplication.total.pow(0.03)},
-    effectDescription() {return "raising Points ^" + format(player.multiplication.total.pow(0.03))},
+    effect() {
+        let final = player.multiplication.total.pow(0.03)
+        if (player.polygon.points.gte(1)) final = final.pow(player.polygon.effect)
+        player.multiplication.effect = final
+    },
+    effectDescription() {return "raising Points ^" + format(player.multiplication.effect)},
     canBuyMax() {return true},
     tabFormat: {
         "Main": {

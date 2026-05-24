@@ -6,6 +6,7 @@ addLayer("polygon", {
         unlocked: false,
 		points: new Decimal(0),
         resets: new Decimal(0),
+        effect: new Decimal(0)
     }},
     color: "#2050FF",
     requires: new Decimal("1e60"), // Can be a function that takes requirement increases into account
@@ -38,6 +39,12 @@ addLayer("polygon", {
     },
     resetDescription: "Polygonify for ",
     onPrestige() {player.polygon.resets = player.polygon.resets.add(1)},
+    effect() {
+        player.polygon.effect = player.polygon.points.log10().div(10).add(1.01)
+    },
+    effectDescription() {
+        return "raising Fundamental buyable 1's effect, Multiplication's effect, <br> and \"Arithmetic Combination\" to ^" + format(player.polygon.effect)
+    },
     tabFormat: [
         "main-display",
         "prestige-button",
@@ -50,9 +57,9 @@ addLayer("polygon", {
     ],
     milestones: {
         1: {
-            requirementDescription: "1 Shape",
+            requirementDescription: "1 Polygonification",
             effectDescription: "Start with all Primitive milestones completed.",
-            done() { return player.polygon.points.gte("1") },
+            done() { return player.polygon.resets.gte("1") },
             unlocked() {return true},
         },
     },
