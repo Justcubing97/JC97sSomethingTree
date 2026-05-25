@@ -339,7 +339,7 @@ addLayer("fundamental", {
                 return new Decimal(1000).pow(x).mul("1e30")
             },
             title: "Exponential Increase",
-            display() { return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
+            display() { return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/" + new Decimal(200) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -358,6 +358,7 @@ addLayer("fundamental", {
                 return effect
             },
             unlocked() {return hasUpgrade("primitive", 13) || player.arithmetic.unlocked},
+            purchaseLimit() {return new Decimal(200)},
         },
         12: {
             cost(x) {

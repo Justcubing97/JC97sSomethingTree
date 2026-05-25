@@ -29,6 +29,7 @@ addLayer("primitive", {
         if (hasUpgrade("arithmetic", 11)) mult = mult.mul(100)
         if (hasUpgrade("primitive", 23)) mult = mult.mul(5)
         if (hasUpgrade("fundamental", 42)) mult = mult.mul(354.82)
+        if (hasUpgrade("arithmetic", 23)) mult = mult.mul("1e5")
         //exp 
         if (inChallenge("arithmetic", 11)) mult = mult.pow(0.8)
         if (hasUpgrade("fundamental", 41)) mult = mult.pow(upgradeEffect("fundamental", 41))
@@ -111,7 +112,7 @@ addLayer("primitive", {
             cost: new Decimal("250e6"),
             effect() {
                 let effect = player.primitive.points
-                if (hasMilestone("dimension", 2)&& !inChallenge("arithmetic", 13)) effect = new Decimal(effect.add(1).logarithm(7)).add(1).pow(3)
+                if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13)) effect = new Decimal(effect.add(1).logarithm(7)).add(1).pow(3)
                 else if (hasMilestone("primitive", 5)) effect = new Decimal(effect.add(1).logarithm(6)).add(1).pow(3)
                 else effect = new Decimal(effect.add(1).logarithm(10)).add(1).pow(2)
 
@@ -180,7 +181,7 @@ addLayer("primitive", {
             effect() {return new Decimal(player.primitive.points.pow(0.02)).add(1)},
             effectDisplay() {return "+" + format(upgradeEffect(this.layer, this.id))},
             description: "Numbers boost Addition base.",
-            cost: new Decimal("1e125"),
+            cost: new Decimal("1e115"),
             unlocked() {return hasMilestone("primitive", 6) || player.polygon.unlocked},
         },
     },

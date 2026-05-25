@@ -10,7 +10,7 @@ addLayer("multiplication", {
     }},
     color: "#FF50FF",
     requires() {
-        return new Decimal("1e17")
+        return new Decimal("1e16")
     }, // Can be a function that takes requirement increases into account
     resource: "Multiplication", // Name of prestige currency
     baseResource: "Operation Power", // Name of resource prestige is based on

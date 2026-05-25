@@ -21,6 +21,7 @@ addLayer("arithmetic", {
         if (hasUpgrade("fundamental", 36)) mult = mult.mul(3)
         if (hasUpgrade("subtraction", 13)) mult = mult.mul(100)
         if (hasUpgrade("multiplication", 22)) mult = mult.mul(5)
+	    if (hasChallenge("arithmetic", 12)) mult = mult.mul("15")
         //exp
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         //other hypers
@@ -151,13 +152,13 @@ addLayer("arithmetic", {
         22: {
             title: "Even More Challenging",
             description: "Unlock the second Arithmetic Challenge.",
-            cost: new Decimal("1e15"),
+            cost: new Decimal("1e14"),
             unlocked(){return player.dimension.points.gte(1)},
         },
         23: {
             title: "The Final Push",
-            description: "Even more simple. x100 Addition, Fundamentality (after softcap), and x500 Points.",
-            cost: new Decimal("1e21"),
+            description: "Even more simple. x100 Addition, Fundamentality (after softcap), x500 Points, and x1e5 Numbers.",
+            cost: new Decimal("1e18"),
             unlocked(){return player.dimension.points.gte(1)},
         },
         24: {
@@ -208,7 +209,7 @@ addLayer("arithmetic", {
             name: "UNKNOWN OPERATION",
             challengeDescription: "<i>\"Wait a second. What the hell is Addition?\"</i> Addition boosters do not work. ^0.5 to Points.",
             goalDescription: "Have 1e63 Numbers.",
-            rewardDescription: "Unlock Multiplication.",
+            rewardDescription: "Unlock Multiplication, x1e15 Points, and x15 Operation Power.",
             canComplete: function() {return player.primitive.points.gte("1e63")},
             unlocked() {return hasUpgrade("arithmetic", 22) || hasMilestone("polygon", 2)},
         },
