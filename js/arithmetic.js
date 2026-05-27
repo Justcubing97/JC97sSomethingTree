@@ -22,6 +22,7 @@ addLayer("arithmetic", {
         if (hasUpgrade("subtraction", 13)) mult = mult.mul(100)
         if (hasUpgrade("multiplication", 22)) mult = mult.mul(5)
 	    if (hasChallenge("arithmetic", 12)) mult = mult.mul("15")
+        if (hasUpgrade("primitive", 26)) mult = mult.mul(100)
         //exp
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         //other hypers
@@ -40,6 +41,7 @@ addLayer("arithmetic", {
     layerShown(){return player.arithmetic.unlocked},
     directMult() {
         let dMult = new Decimal(1)
+        if (hasUpgrade("polygon", 11)) dMult = dMult.mul(1000)
         return dMult
     },
     softcap() {return new Decimal("1e75")},
@@ -199,7 +201,7 @@ addLayer("arithmetic", {
     challenges: {
         11: {
             name: "Beginner's Demise",
-            challengeDescription: "<i>\"Those who do not know what they are doing will fall.\"</i> Fundamental buyables are disabled. ^0.8 to Points and Numbers.",
+            challengeDescription: "<i>\"Those who do not know what they are doing will fall.\"</i> Fundamental buyables don't work. ^0.8 to Points and Numbers.",
             goalDescription: "Have 1e110 Fundamentality.",
             rewardDescription: "Unlock a third Fundamentality buyable.",
             canComplete: function() {return player.fundamental.points.gte("1e110")},
@@ -222,6 +224,6 @@ addLayer("arithmetic", {
             unlocked() {return hasUpgrade("arithmetic", 25) || hasMilestone("polygon", 2)},
         },
     },
-    branches: [["addition", "#FF00FF", 5], ["subtraction", "#FF00FF", 5], ["multiplication", "#FF00FF", 5], ["polygon", "#FFFFFF", 10]],
+    branches: [["addition", "#FF00FF", 5], ["subtraction", "#FF00FF", 5], ["multiplication", "#FF00FF", 5], ["division", "#FF00FF", 5], ["polygon", "#FFFFFF", 10]],
     tooltip() {return format(player.arithmetic.points) + " Operation Power (+" + format(getResetGain("arithmetic")) + " Operation Power on reset)"},
 })

@@ -22,9 +22,12 @@ addLayer("addition", {
         if (hasUpgrade("arithmetic", 21)) mult = mult.mul(upgradeEffect("arithmetic", 21))
         if (hasUpgrade("arithmetic", 23)) mult = mult.mul(100)
         if (hasUpgrade("arithmetic", 24)) mult = mult.mul(upgradeEffect("arithmetic", 24))
+        mult = mult.mul(buyableEffect("multiplication", 11))
+        if (hasUpgrade("primitive", 26)) mult = mult.mul("1e10")
+        if (hasUpgrade("division", 11)) mult = mult.mul(upgradeEffect("division", 11))
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
-        if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13)) mult = mult.pow(1.5)
+        if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.1)
         //other hypers
@@ -35,14 +38,14 @@ addLayer("addition", {
         return exp
     },
     row: 2, // Row the layer is in on the tree (0 is the first row)
-    layerShown(){return hasUpgrade("arithmetic", 13) || hasMilestone("dimension", 3)},
+    layerShown(){return hasUpgrade("arithmetic", 13) || hasMilestone("dimension", 3) },
     directMult() {
         let dMult = new Decimal(1)
         return dMult
     },
     passiveGeneration() {if (hasUpgrade("arithmetic", 13)) return 1},
     resetsNothing() {return true},
-        doReset(resettingLayer) {
+    doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
         if (layers[resettingLayer].row <= this.row) return;
 
@@ -73,9 +76,14 @@ addLayer("addition", {
         11: {
             title: "Add to Fundamental",
             effect() {
+                let base = player.addition.points
                 if (hasMilestone("polygon", 4)) setClickableState("addition", 11, "ALWAYS ACTIVE")
-                if (hasMilestone("primitive", 7)) return player.addition.points.pow(0.5).add(1).pow(1.6)
-                return player.addition.points.pow(0.4).add(1).pow(1.5)
+                if (hasMilestone("primitive", 7)) base = base.pow(0.5).add(1).pow(1.6)
+                base = base.pow(0.4).add(1).pow(1.5)
+
+                //final
+                if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
+                return base
             },
             display() {return "Addition adds to Fundamentality base: +" + format(clickableEffect("addition", 11)) + " (" + getClickableState("addition", 11) + ")"},
             canClick() {return true},
@@ -90,8 +98,13 @@ addLayer("addition", {
         12: {
             title: "Add to Primitive",
             effect() {
-                if (hasMilestone("primitive", 7)) return player.addition.points.pow(0.5).add(1).pow(1.6)
-                return player.addition.points.pow(0.4).add(1).pow(1.5)
+                let base = player.addition.points
+                if (hasMilestone("primitive", 7)) base = base.pow(0.5).add(1).pow(1.6)
+                base = base.pow(0.4).add(1).pow(1.5)
+
+                //final
+                if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
+                return base
             },
             display() {return "Addition adds to Numbers base: +" + format(clickableEffect("addition", 12)) + " (" + getClickableState("addition", 12) + ")"},
             canClick() {return true},
@@ -106,8 +119,12 @@ addLayer("addition", {
         13: {
             title: "Add to Points",
             effect() {
-                let base = player.addition.points.pow(0.4).add(1).pow(1.5)
+                let base = player.addition.points
+                base = base.pow(0.4).add(1).pow(1.5)
                 if (hasUpgrade("multiplication", 22)) base = base.mul(upgradeEffect("multiplication", 22))
+
+                //final
+                if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
                 return base
             },
             display() {return "Addition adds to Points base: +" + format(clickableEffect("addition", 13)) + " (" + getClickableState("addition", 13) + ")"},
@@ -126,6 +143,12 @@ addLayer("addition", {
             requirementDescription: "1e85 Addition",
             effectDescription: "The milestone virus is spreading... HEAVILY improve \"Primitive Boost,\" \"Insane Math,\" and unlock more Fundamental upgrades.",
             done() { return player.addition.points.gte("1e85") },
+            unlocked() {return player.dimension.points.gte(3)},
+        },
+        2: {
+            requirementDescription: "1e410 Addition",
+            effectDescription: "+5 to Fundamental buyable 1's base.",
+            done() { return player.addition.points.gte("1e410") },
             unlocked() {return player.dimension.points.gte(3)},
         },
     },

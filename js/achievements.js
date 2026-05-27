@@ -150,5 +150,29 @@ achievements: {
     tooltip:"Polygonify for the first time.",
     unlocked() {return true},
   },
+  42: {
+    name: "The Four Operations",
+    done(){return player.polygon.resets.gte(5)},
+    tooltip:"Unlock Division. You now have all four basic operations on your side.",
+    unlocked() {return true},
+  },
+  43: {
+    name: "this game needs some softcaps",
+    done(){return player.points.gte("1e5000")},
+    tooltip:"Have 1e5000 Points.",
+    unlocked() {return true},
+  },
+  44: {
+    name: "Faster Quotient Calculation",
+    done(){return player.division.points.gte("1000")},
+    tooltip:"Have 1000 Division. You've embraced integer division, <i>but what about polynomial division?</i>",
+    unlocked() {return true},
+  },
+  45: {
+    name: "Achievement Distancing",
+    done(){return player.numbercore.unlocked},
+    tooltip:"I started making these achievements more spread out. Anyway, unlock the Number Core layer.",
+    unlocked() {return true},
+  },
 },
 })

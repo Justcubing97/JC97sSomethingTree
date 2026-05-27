@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "dimension.js", "polygon.js", "tree.js"],
+	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "tree.js"],
 
 	discordName: "",
 	discordLink: "",
@@ -12,11 +12,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.4.4",
-	name: "Polygon layer update",
+	num: "0.4.6",
+	name: "Division + Number Core layer update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.4.6</h3><br>
+		- Division layer. <br>
+		- Number Core layer. <br>
+		- Endgame: 10 Number Cores. <br>
 	<h3>v0.4.4</h3><br>
 		- Adjusted progression in Arithmetic layer. <br>
 		- Endgame: 5 Polygonifications. <br>
@@ -51,7 +55,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added Unlock, Fundamental, and Primitive layers. <br>
 		- Endgame: 1e15 Numbers. <br>`
 
-let winText = `Congratulations! You have reached the end and beaten this game, but for now...`
+let winText = `Congratulations! You have reached the end of JST for now, as of version 0.4.6. `
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -77,7 +81,6 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 16)) gain = gain.add(5)
 	if (hasUpgrade("primitive", 11)) gain = gain.add(5)
 	if (getClickableState("addition", 13) == "Active" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
-	console.log(getClickableState("addition", 13))
 	//mul
 	if (hasUpgrade("fundamental", 11)) gain = gain.mul(2)
 	if (hasUpgrade("fundamental", 12)) gain = gain.mul(3)
@@ -88,7 +91,7 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
 	if (hasUpgrade("arithmetic", 27)) gain = gain.mul(upgradeEffect("arithmetic", 27))
 		
-	if (!inChallenge("arithmetic", 11)) gain = gain.mul(buyableEffect("fundamental", 11))
+	if (!inChallenge("arithmetic", 11) && getClickableState("division", 11) != "Active") gain = gain.mul(buyableEffect("fundamental", 11))
 
 	if (hasUpgrade("primitive", 14)) gain = gain.mul(upgradeEffect("primitive", 14))
 	if (hasMilestone("primitive", 4)) mult = mult.mul(100)
@@ -102,6 +105,7 @@ function getPointGen() {
 	if (hasUpgrade("multiplication", 21)) gain = gain.mul("1e15")
 	if (hasUpgrade("arithmetic", 23)) gain = gain.mul("500")
 	if (hasChallenge("arithmetic", 12)) gain = gain.mul("1e15")
+	gain = gain.mul(buyableEffect("multiplication", 11))
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
@@ -110,7 +114,11 @@ function getPointGen() {
 	if (inChallenge("arithmetic", 13)) gain = gain.pow(0.75)
 	if (hasChallenge("arithmetic", 13)) gain = gain.pow(1.05)
 	if (hasUpgrade("arithmetic", 26)) gain = gain.pow(1.05)
+	gain = gain.pow(buyableEffect("fundamental", 14))
 	//other hypers
+	//final
+	if (getClickableState("division", 11) == "Active") gain = gain.pow(0.3)
+	if (getClickableState("division", 11) == "Active" && hasMilestone("polygon", 7)) gain = gain.mul("1e10")
 	return gain
 }
 
@@ -120,12 +128,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 5 Polygonifications <br> JST by Justcubing97"
+	"Current endgame: 10 Number Cores <br> Justcubing97's Something Tree by Justcubing97"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.polygon.resets.gte(new Decimal("5")))
+	return (player.numbercore.points.gte(new Decimal("10")))
 }
 
 
@@ -146,3 +154,70 @@ function maxTickLength() {
 // you can cap their current resources with this.
 function fixOldSave(oldVersion){
 }
+
+/*
+addLayer("[LAYER HERE]", {
+    name: "[LAYER HERE]", // This is optional, only used in a few places, If absent it just uses the layer id.
+    symbol: "[SYMBOL HERE]", // This appears on the layer's node. Default is the id with the first letter capitalized
+    position: [POSITION HERE], // Horizontal position within a row. By default it uses the layer id and sorts in alphabetical order
+    startData() { return {
+        unlocked: false,
+		points: new Decimal(0),
+    }},
+    color: "[COLOR HERE]",
+    requires: new Decimal([NUMBER HERE]), // Can be a function that takes requirement increases into account
+    resource: "[CURRENCY HERE]", // Name of prestige currency
+    baseResource: "[CURRENCY HERE]", // Name of resource prestige is based on
+    baseAmount() {return player.[LAYER HERE].points}, // Get the current amount of baseResource
+    type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
+    exponent: [NUMBER HERE], // Prestige currency exponent
+    gainMult() { // Calculate the multiplier for main currency from bonuses
+        mult = new Decimal(1)
+        //add
+        //mul
+        //exp 
+        //other hypers
+        //final
+        return mult
+    },
+    gainExp() { // Calculate the exponent on main currency from bonuses
+        let exp = new Decimal(1) //DO NOT USE
+        return exp
+    },
+    directMult() {
+        let dMult = new Decimal(1)
+        return dMult
+    },
+    row: [ROW HERE], // Row the layer is in on the tree (0 is the first row)
+    hotkeys: [
+        {key: "[KEY HERE]", description: "[KEY HERE]: Reset for [CURRENCY HERE", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
+    layerShown(){return player.[LAYER HERE].unlocked},
+    passiveGeneration() {[PASSIVE GEN REQUIREMENT HERE]},
+    doReset(resettingLayer) {
+        // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        if (layers[resettingLayer].row <= this.row) return;
+
+        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
+        let keptUpgrades = []
+
+        let keptBuyables = []
+
+        // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
+        let keep = [];
+
+        // Stage 4, do the actual data reset
+        layerDataReset(this.layer, keep);
+
+        // Stage 5, add back in the specific subfeatures you saved earlier
+    }, //THANK YOU ESCAPEE FROM THE TMT SERVER
+    upgrades: {
+        11: {
+            title: "placeholder",
+            description: "???",
+            cost: new Decimal("1e234987234987234"),
+        },
+    },
+    tooltip() {return format(player.[LAYER HERE].points) + " [CURRENCY HERE] (+" + format(getResetGain([LAYER HERE])) + " [CURRENCY HERE] on reset)"},
+})
+*/

@@ -10,7 +10,7 @@ addLayer("multiplication", {
     }},
     color: "#FF50FF",
     requires() {
-        return new Decimal("1e16")
+        return new Decimal("5e16")
     }, // Can be a function that takes requirement increases into account
     resource: "Multiplication", // Name of prestige currency
     baseResource: "Operation Power", // Name of resource prestige is based on
@@ -34,9 +34,11 @@ addLayer("multiplication", {
         return exp
     },
     row: 2, // Row the layer is in on the tree (0 is the first row)
-    layerShown(){return hasChallenge("arithmetic", 12)},
+    layerShown(){return hasChallenge("arithmetic", 12) || hasMilestone("polygon", 5)},
     directMult() {
         let dMult = new Decimal(1)
+        if (hasMilestone("division", 1)) dMult = dMult.mul(2)
+        if (hasUpgrade("division", 11)) dMult = dMult.mul(upgradeEffect("division", 11))
         return dMult
     },
     doReset(resettingLayer) {
@@ -45,6 +47,7 @@ addLayer("multiplication", {
 
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
+        if (hasUpgrade("multiplication", 43)) keptUpgrades.push(43)
 
         let keptBuyables = []
 
@@ -55,13 +58,14 @@ addLayer("multiplication", {
         layerDataReset(this.layer, keep);
 
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
+        player[this.layer].upgrades.push(...keptUpgrades)
     },
     effect() {
         let final = player.multiplication.total.pow(0.03)
         if (player.polygon.points.gte(1)) final = final.pow(player.polygon.effect)
         player.multiplication.effect = final
     },
-    effectDescription() {return "raising Points ^" + format(player.multiplication.effect)},
+    effectDescription() {return "raising Points ^" + player.multiplication.effect.toFixed(6)},
     canBuyMax() {return true},
     tabFormat: {
         "Main": {
@@ -74,6 +78,8 @@ addLayer("multiplication", {
                 ["upgrades", [1]],"blank",
                 ["upgrades", [2]],"blank",
                 ["upgrades", [3]],"blank",
+                ["upgrades", [4]],"blank",
+                ["upgrades", [5]],"blank",
             ],
         },
         "Buyables": {
@@ -115,7 +121,7 @@ addLayer("multiplication", {
             branches: [[31, "#FFFFFF", 10]],
             canAfford() {
                 if (player.multiplication.points.lt(3)) return false
-                if (hasUpgrade("multiplication", 22)) return false
+                if (hasUpgrade("multiplication", 22) && !hasUpgrade("multiplication", 42)) return false
                 return hasUpgrade("multiplication", 11)
             },
             pay() {return new Decimal(0)}
@@ -134,13 +140,15 @@ addLayer("multiplication", {
             },
             pay() {return new Decimal(0)}
         },
+
         31: {
             title: "Multi-Upgrade",
             description: "+1 upgrade in the 2nd row, and ^1.2 Fundamentality after softcap.",
             cost: new Decimal(5),
+            branches: [[41, "#FFFFFF", 10]],
             canAfford() {
                 if (player.multiplication.points.lt(5)) return false
-                if (hasUpgrade("multiplication", 32)) return false
+                if (hasUpgrade("multiplication", 32) && !hasUpgrade("multiplication", 42)) return false
                 return hasUpgrade("multiplication", 21)
             },
             pay() {return new Decimal(0)}
@@ -149,12 +157,100 @@ addLayer("multiplication", {
             title: "Trade-Off",
             description: "/5 Operation Power, but ^1.05 Numbers (after softcap), ^1.1 Addition, and ^1.05 Subtraction.",
             cost: new Decimal(5),
+            branches: [[42, "#FFFFFF", 10], [43, "#FFFFFF", 10]],
             canAfford() {
                 if (player.multiplication.points.lt(5)) return false
                 if (hasUpgrade("multiplication", 31)) return false
                 return hasUpgrade("multiplication", 22)
             },
             pay() {return new Decimal(0)}
+        },
+
+        41: {
+            title: "Fundamental Help",
+            description: "x1e25 Fundamentality after softcap, and raise Fundamental buyable 2's effect to ^1.05.",
+            cost: new Decimal(10),
+            branches: [[51, "#FFFFFF", 10]],
+            canAfford() {
+                if (player.multiplication.points.lt(10)) return false
+                if (hasUpgrade("multiplication", 42)) return false
+                return hasUpgrade("multiplication", 31)
+            },
+            pay() {return new Decimal(0)}
+        },
+        42: {
+            title: "Primitive Help",
+            description: "x1e10 Numbers after softcap, and unlock more Primitive upgrades. Also, +1 upgrade in the 2nd and 3rd row.",
+            cost: new Decimal(10),
+            branches: [[51, "#FFFFFF", 10]],
+            canAfford() {
+                if (player.multiplication.points.lt(10)) return false
+                if (hasUpgrade("multiplication", 41)) return false
+                return hasUpgrade("multiplication", 32)
+            },
+            pay() {return new Decimal(0)}
+        },
+        43: {
+            title: "Division Help",
+            description: "x5 Division, and x25 Numbers in Long Division. <i>This upgrade is kept until the next reset layer and doesn't disallow other upgrades in this row. </i>",
+            cost: new Decimal(25),
+            branches: [[52, "#FFFFFF", 10]],
+            canAfford() {
+                if (player.multiplication.points.lt(25)) return false
+                if (hasUpgrade("multiplication", 41) || hasUpgrade("multiplication", 42)) return false
+                return hasUpgrade("multiplication", 32)
+            },
+            pay() {return new Decimal(0)}
+        },
+
+        51: {
+            title: "Arithmetic PERMUTATION",
+            description: "\"Arithmetic Combination\" is multiplied by Division squared and Multiplication cubed.",
+            cost: new Decimal(100),
+            canAfford() {
+                if (player.multiplication.points.lt(100)) return false
+                if (hasUpgrade("multiplication", 52)) return false
+                return hasUpgrade("multiplication", 41) && hasUpgrade("multiplication", 42)
+            },
+            pay() {return new Decimal(0)}
+        },
+        52: {
+            title: "Primitive Progression",
+            effect() {
+                let base = player.multiplication.points
+                base = base.pow(0.02)
+                if (base.eq(0)) return new Decimal(1)
+                return base
+            },
+            effectDisplay() {return "^" + format(upgradeEffect("multiplication", 52))},
+            description: "Multiplication boosts \"Primitive Boost.\"",
+            cost: new Decimal(150),
+            canAfford() {
+                if (player.multiplication.points.lt(150)) return false
+                if (hasUpgrade("multiplication", 51)) return false
+                return hasUpgrade("multiplication", 43)
+            },
+            pay() {return new Decimal(0)}
+        },
+    },
+    buyables: {
+        11: {
+            cost(x) {
+                let base = new Decimal(2).pow(x)
+                return base
+            },
+            title: "Actual Multiplying Boost",
+            display() { return "Multiplies Points and Addition by 5 per purchase. (Require: only needs x, does not subtract / Cost: does subtract currency)" + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Require: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(x) {
+                let base = new Decimal(5)
+                let effect = base.pow(x)
+                return effect
+            },
+            unlocked() {return hasMilestone("polygon", 6)},
         },
     },
     tooltip() {

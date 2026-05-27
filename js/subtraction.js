@@ -20,9 +20,10 @@ addLayer("subtraction", {
         //mul
         mult = mult.mul(player.arithmetic.points.div(10).add(1))
         if (hasUpgrade("arithmetic", 21)) mult = mult.mul(upgradeEffect("arithmetic", 21))
+        if (hasUpgrade("division", 11)) mult = mult.mul(upgradeEffect("division", 11))
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
-        if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13)) mult = mult.pow(1.5)
+        if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.05)
         //other hypers
@@ -78,6 +79,11 @@ addLayer("subtraction", {
             title: "Multiplicative Reduction",
             description: "-1 to the exponent of Multiplication's scaling.",
             cost: new Decimal("1e70"),
+        },
+        15: {
+            title: "A Better Divided Life",
+            description: "The logarithm in Division's formula is base 5 instead of base 10.",
+            cost: new Decimal("1e350"),
         },
     },
 })

@@ -20,6 +20,7 @@ addLayer("unlock", {
         if (hasUpgrade("fundamental", 24)) mult = mult.mul(100)
         if (hasUpgrade("fundamental", 34)) mult = mult.mul(500)
         if (hasUpgrade("fundamental", 37)) mult = mult.mul(1e10)
+        if (hasUpgrade("polygon", 12)) mult = mult.mul("1e30")
         //exp in gainExp
         //other hypers
         return mult
@@ -68,8 +69,23 @@ addLayer("unlock", {
             cost: new Decimal("1e250"),
             onPurchase() {return player.polygon.unlocked = true},
         },
+
+        16: {
+            title: "Number Core layer",
+            description: "Unlock the Number Core layer: a sub-reset layer related to the Primitive layer.",
+            cost: new Decimal("1e1050"),
+            onPurchase() {return player.numbercore.unlocked = true},
+        },
     },
-    branches: [["fundamental", "#FFC800", 10], ["primitive", "#00C8FF", 10], ["arithmetic", "#FF0080", 10], ["dimension", "#A0FFA0", 10], ["polygon", "#2050FF", 10]],
+    branches: [
+        ["fundamental", "#FFC800", 10], 
+        ["primitive", "#00C8FF", 10], 
+        ["arithmetic", "#FF0080", 10], 
+        ["polygon", "#2050FF", 10],
+    
+        ["dimension", "#A0FFA0", 10], 
+        ["numbercore", "#00e0c0", 10], 
+    ],
     tabFormat: {
         "Main": {
             content: [
@@ -95,6 +111,8 @@ addLayer("unlock", {
         "Lore (Chapter 2)": {
             content: [
                 ["infobox", "d7"],
+                ["infobox", "d8"],
+                ["infobox", "d9"],
             ],
         },
     },
@@ -205,6 +223,33 @@ addLayer("unlock", {
                 "Anyway, good job on unlocking the Polygon layer. It's been 3 hours and 8 minutes already, and she... hasn't ate breakfast. Darn, Ashley. "
             },
             unlocked() {return player.polygon.points.gte(1)},
+        },
+
+        d8: {
+            title: "Document 8: Her Secret Stash",
+            body() { return "I got Ashley some food and we just... ate together in the Labyrinth. Good job on unlocking Division, by the way. " +
+                "I almost feel bad for you, because I made Division a painful layer. Expect some rapid Point inflation, too. " +
+                "She told me about some collection she has built in the furthest corner of the triangle. Apparently, the triangle is isosceles. " +
+                "I actually measured the angles, and it's 36, 72, and 72 degrees. Going back to her collection, she has a portal gun. " +
+                "Not a fake clickbait portal gun, but an actual Aperture Science-level portal gun. Now, me, being a Portal and Portal 2 player myself, " +
+                "wanted to try out this portal gun. I also found a random working gaming computer, three monitors (they're all broken), " +
+                "a random pair of scissors with obsidian blades, a working printer if you find a power source, a mini statue of Hatsune Miku, " +
+                "a pizza box filled with pineapple slices, and a bunch of other weird stuff in Ashley's stash."
+            },
+            unlocked() {return player.division.unlocked},
+        },
+
+        d9: {
+            title: "Document 9: Not an Expectation",
+            body() { return "Welcome to Number Cores. Or what I like to call, buyable mania. If you're in version 0.4.6, there's only a placeholder upgrade. " +
+                "Anyway, I was playing around with Ashley's portal gun in the Labyrinth, navigating with ease using portal peeking. However... " +
+                "when she tried to play around and create the classic \"endless fall,\" she <i>might have</i> suffered a fall with <i>only a bit of speed</i>. " +
+                "(And by this... she got injured quite severely.) I had to take her to the Centroid, where underneath the Void plane (the triangle) is a hospital. " +
+                "I had quite a time carrying Ashley all the way there, as the Labyrinth was some distance away from the Centroid. I kinda liked it. " +
+                "She managed to get into a vacant treatment room, and now I'm sitting outside waiting for eternity. I also brought the Hatsune Miku statue from " +
+                "her stash. Well, have fun in buyable mania while I wait for forever for Ashley to get healed."
+            },
+            unlocked() {return player.numbercore.unlocked},
         },
     },
     resetsNothing: true,

@@ -30,12 +30,17 @@ addLayer("primitive", {
         if (hasUpgrade("primitive", 23)) mult = mult.mul(5)
         if (hasUpgrade("fundamental", 42)) mult = mult.mul(354.82)
         if (hasUpgrade("arithmetic", 23)) mult = mult.mul("1e5")
+        if (hasUpgrade("multiplication", 43)) mult = mult.mul(25)
+        if (getClickableState("division", 11) == "Active" && hasUpgrade("multiplication", 43)) mult = mult.mul(25)
         //exp 
         if (inChallenge("arithmetic", 11)) mult = mult.pow(0.8)
         if (hasUpgrade("fundamental", 41)) mult = mult.pow(upgradeEffect("fundamental", 41))
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         //other hypers
+
+        //final
+        if (getClickableState("division", 11) == "Active") mult = mult.pow(0.5)
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -46,19 +51,23 @@ addLayer("primitive", {
     directMult() {
         let dMult = new Decimal(1)
         if (hasUpgrade("subtraction", 13)) dMult = dMult.mul(100)
+        if (hasUpgrade("multiplication", 42)) dMult = dMult.mul("1e10")
+
         if (hasUpgrade("multiplication", 32)) dMult = dMult.pow(1.05)
+        if (hasUpgrade("primitive", 27)) dMult = dMult.pow(1.5)
         return dMult
     },
     softcapPower() {
         let power = new Decimal(0.5)
         if (hasUpgrade("subtraction", 12)) power = power.add(0.05)
+        if (player.primitive.points.gte("1e1000")) power = power.div(1.5)
         player.primitive.softcapExponent = power
         return power
     },
     effectDescription() {
         let text = ""
-        if (player.primitive.points.gte("1e50")) text = text + "softcapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
-        else return 
+        if (player.primitive.points.gte("1e1000")) text = text + "supercapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
+        else if (player.primitive.points.gte("1e50")) text = text + "softcapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
         return text
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
@@ -112,7 +121,7 @@ addLayer("primitive", {
             cost: new Decimal("250e6"),
             effect() {
                 let effect = player.primitive.points
-                if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13)) effect = new Decimal(effect.add(1).logarithm(7)).add(1).pow(3)
+                if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) effect = new Decimal(effect.add(1).logarithm(7)).add(1).pow(3)
                 else if (hasMilestone("primitive", 5)) effect = new Decimal(effect.add(1).logarithm(6)).add(1).pow(3)
                 else effect = new Decimal(effect.add(1).logarithm(10)).add(1).pow(2)
 
@@ -132,7 +141,7 @@ addLayer("primitive", {
             description: "Numbers boosts itself.",
             cost: new Decimal("1e20"),
             effect() {
-                if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13)) return new Decimal(player.primitive.points.pow(0.2)).add(1)
+                if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) return new Decimal(player.primitive.points.pow(0.2)).add(1)
                 return new Decimal(player.primitive.points.pow(0.1)).add(1)
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -183,6 +192,18 @@ addLayer("primitive", {
             description: "Numbers boost Addition base.",
             cost: new Decimal("1e115"),
             unlocked() {return hasMilestone("primitive", 6) || player.polygon.unlocked},
+        },
+        26: {
+            title: "The Largest Cost Gap?",
+            description: "x1e10 Addition and x100 Operation Power.",
+            cost: new Decimal("1e615"),
+            unlocked() {return hasUpgrade("multiplication", 42)},
+        },
+        27: {
+            title: "SUPERCAP OF DOOM",
+            description: "^1.5 Numbers after softcap.",
+            cost: new Decimal("1e1000"),
+            unlocked() {return hasUpgrade("multiplication", 42)},
         },
     },
     milestones: {
@@ -241,7 +262,7 @@ addLayer("primitive", {
             unlocked() {return player.arithmetic.unlocked},
         },
     },
-    branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5]],
+    branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5], ["division", "#FF50FF", 5], ["numbercore", "#00e0c0", 5]],
     tooltip() {return format(player.primitive.points) + " Numbers (+" + format(getResetGain("primitive")) + " Numbers on reset)"},
 })
 
