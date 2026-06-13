@@ -138,7 +138,7 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 4 Dimensions <br> Justcubing97's Something Tree by Justcubing97 <br> Check out the Unlock Layer every so often... there might be more documents you can read."
+	"Current endgame: 4 Dimensions <br> Justcubing97's Something Tree by Justcubing97 <br> <sup>Check out the Unlock Layer every so often... there might be more documents you can read.</sup>"
 ]
 
 // Determines when the game "ends"
