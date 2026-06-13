@@ -115,6 +115,7 @@ addLayer("unlock", {
                 ["infobox", "d9"],
                 ["infobox", "d10"],
             ],
+            unlocked() { return player.polygon.points.gte(1)}
         },
     },
     bars: {
