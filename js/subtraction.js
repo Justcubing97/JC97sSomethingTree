@@ -21,6 +21,7 @@ addLayer("subtraction", {
         mult = mult.mul(player.arithmetic.points.div(10).add(1))
         if (hasUpgrade("arithmetic", 21)) mult = mult.mul(upgradeEffect("arithmetic", 21))
         if (hasUpgrade("division", 11)) mult = mult.mul(upgradeEffect("division", 11))
+        if (hasUpgrade("division", 13)) mult = mult.mul("1e30")
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
         if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)
@@ -83,7 +84,19 @@ addLayer("subtraction", {
         15: {
             title: "A Better Divided Life",
             description: "The logarithm in Division's formula is base 5 instead of base 10.",
-            cost: new Decimal("1e350"),
+            cost: new Decimal("1e400"),
+        },
+        16: {
+            title: "Opposite Addition",
+            effect(){
+                let base = player.subtraction.points.add(1)
+                base = base.log(100).pow(0.1)
+                return base || new Decimal(1)
+            },
+            effectDisplay(){return "x" + format(upgradeEffect(this.layer, this.id))},
+            description: "Subtraction boosts Division at a really reduced rate.",
+            cost: new Decimal("1e500"),
         },
     },
+    tooltip() {return format(player.subtraction.points) + " Subtraction (+" + format(getResetGain("subtraction")) + " Subtraction/sec)"},
 })

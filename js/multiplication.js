@@ -5,7 +5,6 @@ addLayer("multiplication", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
-        total: new Decimal(0),
         effect: new Decimal(0),
     }},
     color: "#FF50FF",
@@ -17,9 +16,12 @@ addLayer("multiplication", {
     baseAmount() {return player.arithmetic.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
     exponent(){
+        let final = new Decimal(4)
         let nerf = new Decimal(0)
         if (hasUpgrade("subtraction", 14)) nerf = nerf.add(1)
-        return new Decimal(4).sub(nerf)
+        final = final.sub(nerf)
+        if (player.multiplication.points.gte("600")) final = final.add(2)
+        return final
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
@@ -48,11 +50,15 @@ addLayer("multiplication", {
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
         if (hasUpgrade("multiplication", 43)) keptUpgrades.push(43)
+        if (hasUpgrade("multiplication", 62)) keptUpgrades.push(62)
+        if (hasUpgrade("polygon", 13)) keptUpgrades.push(11, 21, 22, 31, 32)
+        if (hasUpgrade("fundamental", 43)) keptUpgrades.push(41, 42, 51, 52)
 
         let keptBuyables = []
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
+        if (hasMilestone("polygon", 9)) keep.push("points")
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -61,11 +67,19 @@ addLayer("multiplication", {
         player[this.layer].upgrades.push(...keptUpgrades)
     },
     effect() {
-        let final = player.multiplication.total.pow(0.03)
-        if (player.polygon.points.gte(1)) final = final.pow(player.polygon.effect)
-        player.multiplication.effect = final
+        let final = player.multiplication.points.add(1).pow(5)
+        if (player.polygon.points.gte(1)) final = final.mul(player.polygon.effect)
+        player.multiplication.effect = final || new Decimal(1)
     },
-    effectDescription() {return "raising Points ^" + player.multiplication.effect.toFixed(6)},
+    effectDescription() {return "multiplying Points by x" + format(player.multiplication.effect)},
+    onPrestige(){
+        let current = player.multiplication.points
+        let offset = getResetGain("multiplication")
+        if (current.add(offset).gte("600")) {
+            let difference = current.add(offset).sub("600")
+            player.multiplication.points = player.multiplication.points.sub(difference)
+        }
+    },
     canBuyMax() {return true},
     tabFormat: {
         "Main": {
@@ -80,6 +94,8 @@ addLayer("multiplication", {
                 ["upgrades", [3]],"blank",
                 ["upgrades", [4]],"blank",
                 ["upgrades", [5]],"blank",
+                ["upgrades", [6]],"blank",
+                ["upgrades", [7]],"blank",
             ],
         },
         "Buyables": {
@@ -128,9 +144,9 @@ addLayer("multiplication", {
         },
         22: {
             title: "A Split Choice",
-            effect() {return player.multiplication.total.pow(player.multiplication.total.pow(0.75)).add(1)},
+            effect() {return player.multiplication.points.pow(player.multiplication.points.pow(0.75)).add(1)},
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
-            description: "Improve the Point Addition booster by total Multiplication.",
+            description: "Improve the Point Addition booster by Multiplication.",
             cost: new Decimal(3),
             branches: [[32, "#FFFFFF", 10]],
             canAfford() {
@@ -173,7 +189,7 @@ addLayer("multiplication", {
             branches: [[51, "#FFFFFF", 10]],
             canAfford() {
                 if (player.multiplication.points.lt(10)) return false
-                if (hasUpgrade("multiplication", 42)) return false
+                if (hasUpgrade("multiplication", 42) && !hasAchievement("achievements", 46)) return false
                 return hasUpgrade("multiplication", 31)
             },
             pay() {return new Decimal(0)}
@@ -185,7 +201,7 @@ addLayer("multiplication", {
             branches: [[51, "#FFFFFF", 10]],
             canAfford() {
                 if (player.multiplication.points.lt(10)) return false
-                if (hasUpgrade("multiplication", 41)) return false
+                if (hasUpgrade("multiplication", 41) && !hasAchievement("achievements", 46)) return false
                 return hasUpgrade("multiplication", 32)
             },
             pay() {return new Decimal(0)}
@@ -205,11 +221,18 @@ addLayer("multiplication", {
 
         51: {
             title: "Arithmetic PERMUTATION",
-            description: "\"Arithmetic Combination\" is multiplied by Division squared and Multiplication cubed.",
+            effect() {
+                let base = upgradeEffect("arithmetic", 14)
+                base = base.pow(0.005).add(1)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 51))},
+            description: "\"Arithmetic Combination\" now effects Operation Power at a really reduced rate.",
             cost: new Decimal(100),
+            branches: [[61, "#FFFFFF", 10], [62, "#FFFFFF", 10]],
             canAfford() {
                 if (player.multiplication.points.lt(100)) return false
-                if (hasUpgrade("multiplication", 52)) return false
+                if (hasUpgrade("multiplication", 52) && !hasMilestone("division", 3)) return false
                 return hasUpgrade("multiplication", 41) && hasUpgrade("multiplication", 42)
             },
             pay() {return new Decimal(0)}
@@ -218,19 +241,101 @@ addLayer("multiplication", {
             title: "Primitive Progression",
             effect() {
                 let base = player.multiplication.points
-                base = base.pow(0.02)
+                base = base.pow(0.5)
                 if (base.eq(0)) return new Decimal(1)
                 return base
             },
             effectDisplay() {return "^" + format(upgradeEffect("multiplication", 52))},
             description: "Multiplication boosts \"Primitive Boost.\"",
             cost: new Decimal(150),
+            branches: [[63, "#FFFFFF", 10], [64, "#FFFFFF", 10]],
             canAfford() {
                 if (player.multiplication.points.lt(150)) return false
-                if (hasUpgrade("multiplication", 51)) return false
+                if (hasUpgrade("multiplication", 51) && !hasMilestone("division", 3)) return false
                 return hasUpgrade("multiplication", 43)
             },
             pay() {return new Decimal(0)}
+        },
+
+        61: {
+            title: "THE FUNDAMENTALITY",
+            description: "x1e50 Fundamentality after softcap, and improve the first Fundamental buyable.",
+            cost: new Decimal(300),
+            canAfford() {
+                if (player.multiplication.points.lt(300)) return false
+                if (hasUpgrade("multiplication", 63)) return false
+                if (hasUpgrade("multiplication", 64)) return false
+                return hasUpgrade("multiplication", 51)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 3)},
+        },
+        62: {
+            title: "THE DIVISION",
+            description: "x15 Division! (and x1e10 Operation Power in Long Division) <i>This upgrade is kept until the next reset layer and doesn't disallow other upgrades in this row. </i>",
+            cost: new Decimal(300),
+            canAfford() {
+                if (player.multiplication.points.lt(300)) return false
+                if (hasUpgrade("multiplication", 61)) return false
+                if (hasUpgrade("multiplication", 63)) return false
+                if (hasUpgrade("multiplication", 64)) return false
+                return hasUpgrade("multiplication", 51)
+            },
+            branches: [[71, "#FFFFFF", 10]],
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 3)},
+        },
+        63: {
+            title: "THE ADDITION",
+            description: "x1e50 Addition, and improve the Addition booster for Number Cores.",
+            cost: new Decimal(550),
+            canAfford() {
+                if (player.multiplication.points.lt(350)) return false
+                if (hasUpgrade("multiplication", 61)) return false
+                if (hasUpgrade("multiplication", 64)) return false
+                return hasUpgrade("multiplication", 51)
+            },
+            branches: [[71, "#FFFFFF", 10]],
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 3)},
+        },
+        64: {
+            title: "THE POINTS",
+            effect() {
+                let base = player.points
+                base = base.add(1).log(1.0001).pow(2)
+                if (base.lt(0)) return new Decimal(1)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 64))},
+            description: "Points boost themselves.",
+            cost: new Decimal(550),
+            canAfford() {
+                if (player.multiplication.points.lt(350)) return false
+                if (hasUpgrade("multiplication", 63)) return false
+                if (hasUpgrade("multiplication", 61)) return false
+                return hasUpgrade("multiplication", 51)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 3)},
+        },
+
+        71: {
+            title: "Straight Number Line",
+            effect() {
+                let base = getBuyableAmount("polygon", 12)
+                base = new Decimal(1250).pow(base)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 71))},
+            description: "Constructor straightedge level boosts Numbers after softcap.",
+            cost: new Decimal(600),
+            canAfford() {
+                if (player.multiplication.points.lt(600)) return false
+                return hasUpgrade("multiplication", 62) && hasUpgrade("multiplication", 63)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return player.dimension.points.gte(4)},
         },
     },
     buyables: {
@@ -240,14 +345,15 @@ addLayer("multiplication", {
                 return base
             },
             title: "Actual Multiplying Boost",
-            display() { return "Multiplies Points and Addition by 5 per purchase. (Require: only needs x, does not subtract / Cost: does subtract currency)" + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Require: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
+            display() { return "Multiplies Points and Addition by 250 per purchase. (Require: only needs x, does not subtract / Cost: does subtract currency)" + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Require: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) {
-                let base = new Decimal(5)
+                let base = new Decimal(250)
                 let effect = base.pow(x)
+                if (player.dimension.points.gte(4)) effect = effect.pow(1.2)
                 return effect
             },
             unlocked() {return hasMilestone("polygon", 6)},

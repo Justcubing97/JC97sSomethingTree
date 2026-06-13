@@ -121,15 +121,15 @@ achievements: {
     unlocked() {return true},
   },
   34: {
-    name: "Scientific Notation Recursion Level 1",
-    done(){return player.points.gte("1e1000")},
-    tooltip:"Have 1e1000 Points. Reward: Keep the 21st Fundamental upgrade, the 11th Primitive upgrade on Arithmetic reset, and Fundamental buyable 3 as well for the fun of it.",
-    unlocked() {return true},
-  },
-  35: {
     name: "Polyhedra",
     done(){return player.dimension.points.gte("3")},
     tooltip:"Have 3 Dimensions. You are now on the same level as reality.",
+    unlocked() {return true},
+  },
+  35: {
+    name: "Scientific Notation Recursion Level 1",
+    done(){return player.points.gte("1e1000")},
+    tooltip:"Have 1e1000 Points. Reward: Keep the 21st Fundamental upgrade, the 11th Primitive upgrade on Arithmetic reset, and Fundamental buyable 3 as well for the fun of it.",
     unlocked() {return true},
   },
   36: {
@@ -172,6 +172,24 @@ achievements: {
     name: "Achievement Distancing",
     done(){return player.numbercore.unlocked},
     tooltip:"I started making these achievements more spread out. Anyway, unlock the Number Core layer.",
+    unlocked() {return true},
+  },
+  46: {
+    name: "Timewalled",
+    done(){return hasChallenge("arithmetic", 21)},
+    tooltip:"Complete the 4th Arithmetic Challenge. Reward: +1 upgrade in the 4th row of TMT.",
+    unlocked() {return true},
+  },
+  47: {
+    name: "Compass & Straightedge",
+    done(){return hasMilestone("division", 3)},
+    tooltip:"Unlock the Constructor.",
+    unlocked() {return true},
+  },
+  51: {
+    name: "BEYOND REALITY.",
+    done(){return player.dimension.points.gte(4)},
+    tooltip:"HAVE FOUR DIMENSIONS. YOU HAVE BROKEN ALL MODELS OF REALITY.",
     unlocked() {return true},
   },
 },

@@ -20,7 +20,7 @@ addLayer("unlock", {
         if (hasUpgrade("fundamental", 24)) mult = mult.mul(100)
         if (hasUpgrade("fundamental", 34)) mult = mult.mul(500)
         if (hasUpgrade("fundamental", 37)) mult = mult.mul(1e10)
-        if (hasUpgrade("polygon", 12)) mult = mult.mul("1e30")
+        if (hasUpgrade("polygon", 12)) mult = mult.mul("1e40")
         //exp in gainExp
         //other hypers
         return mult
@@ -58,7 +58,7 @@ addLayer("unlock", {
 
         14: {
             title: "Dimension layer",
-            description: "Unlock the Dimension layer: a sub-reset layer.",
+            description: "Unlock the Dimension layer: a sub-layer.",
             cost: new Decimal("1e50"),
             onPurchase() {return player.dimension.unlocked = true},
         },
@@ -66,14 +66,14 @@ addLayer("unlock", {
         15: {
             title: "Polygon layer",
             description: "Unlock the Polygon layer: the third major reset layer.",
-            cost: new Decimal("1e250"),
+            cost: new Decimal("1e400"),
             onPurchase() {return player.polygon.unlocked = true},
         },
 
         16: {
             title: "Number Core layer",
-            description: "Unlock the Number Core layer: a sub-reset layer related to the Primitive layer.",
-            cost: new Decimal("1e1050"),
+            description: "Unlock the Number Core layer: a sub-layer related to the Primitive layer.",
+            cost: new Decimal("1e925"),
             onPurchase() {return player.numbercore.unlocked = true},
         },
     },
@@ -122,12 +122,14 @@ addLayer("unlock", {
             width: 400,
             height: 75,
             display() {
-                let text = "Your next major reset layer is at "
+                let text = "Your next layer is at "
                 if (!hasUpgrade("unlock", 11)) text += "1 Unlock Point, unlocking the Fundamental layer. <br> Progress: " + player.unlock.points.div(1).mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 12)) text += "1e5 Unlock Points, unlocking the Primitive layer. <br> Progress: " + player.unlock.points.log10().div("5").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 13)) text += "1e20 Unlock Points, unlocking the Arithmetic layer. <br> Progress: " + player.unlock.points.log10().div("20").mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 15)) text += "1e250 Unlock Points, unlocking the Polygon layer. <br> Progress: " + player.unlock.points.log10().div("250").mul(100).toFixed(2) + "%"
-                else text = "You have unlocked all major reset layers! Congratulations! (For now...)"
+                else if (!hasUpgrade("unlock", 14)) text += "1e50 Unlock Points, unlocking the Dimension sub-layer. <br> Progress: " + player.unlock.points.log10().div("50").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 15)) text += "1e400 Unlock Points, unlocking the Polygon layer. <br> Progress: " + player.unlock.points.log10().div("400").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 16)) text += "1e925 Unlock Points, unlocking the Number Core sub-layer. <br> Progress: " + player.unlock.points.log10().div("925").mul(100).toFixed(2) + "%"
+                else text = "You have unlocked all layers! Congratulations! (For now...)"
                 return text
             },
             progress() {
@@ -135,7 +137,9 @@ addLayer("unlock", {
                 if (!hasUpgrade("unlock", 11)) prog = player.unlock.points.div(1)
                 else if (!hasUpgrade("unlock", 12)) prog = player.unlock.points.log10().div("5")
                 else if (!hasUpgrade("unlock", 13)) prog = player.unlock.points.log10().div("20")
-                else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.log10().div("250")
+                else if (!hasUpgrade("unlock", 14)) prog = player.unlock.points.log10().div("50")
+                else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.log10().div("400")
+                else if (!hasUpgrade("unlock", 16)) prog = player.unlock.points.log10().div("925")
                 else prog = new Decimal(1)
                 return prog
             },

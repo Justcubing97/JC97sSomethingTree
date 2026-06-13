@@ -2,21 +2,25 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "tree.js"],
+	modFiles: ["achievements.js", "savebank.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "tree.js"],
 
-	discordName: "",
-	discordLink: "",
+	discordName: "Justcubing97's Server",
+	discordLink: "https://discord.gg/W7PMhx4mSs",
 	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
 }
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.4.6",
-	name: "Division + Number Core layer update",
+	num: "0.4.7",
+	name: "Constructor update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.4.7</h3><br>
+		- Construction tab in Polygon layer. <br>
+		- Adjusted progression from Arithmetic to Polygon a LOT. <br>
+		- Endgame: 4 Dimensions. <br>
 	<h3>v0.4.6</h3><br>
 		- Division layer. <br>
 		- Number Core layer. <br>
@@ -55,7 +59,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added Unlock, Fundamental, and Primitive layers. <br>
 		- Endgame: 1e15 Numbers. <br>`
 
-let winText = `Congratulations! You have reached the end of JST for now, as of version 0.4.6. `
+let winText = `Congratulations! You have reached the end of JST for now, as of v0.4.7. `
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -106,19 +110,25 @@ function getPointGen() {
 	if (hasUpgrade("arithmetic", 23)) gain = gain.mul("500")
 	if (hasChallenge("arithmetic", 12)) gain = gain.mul("1e15")
 	gain = gain.mul(buyableEffect("multiplication", 11))
+	if (hasUpgrade("division", 12)) gain = gain.mul(upgradeEffect("division", 12))
+	if (hasUpgrade("multiplication", 64)) gain = gain.mul(upgradeEffect("multiplication", 64))
+	if (player.multiplication.points.gte(1)) gain = gain.mul(player.multiplication.effect)
+	if (hasMilestone("division", 4)) gain = gain.mul(player.polygon.triEffect.add(1).pow("100"))
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
 	if (inChallenge("arithmetic", 12)) gain = gain.pow(0.5)
-	if (player.multiplication.points.gte(1)) gain = gain.pow(player.multiplication.effect)
 	if (inChallenge("arithmetic", 13)) gain = gain.pow(0.75)
 	if (hasChallenge("arithmetic", 13)) gain = gain.pow(1.05)
 	if (hasUpgrade("arithmetic", 26)) gain = gain.pow(1.05)
-	gain = gain.pow(buyableEffect("fundamental", 14))
+	if (getClickableState("division", 11) != "Active") gain = gain.pow(buyableEffect("fundamental", 21))
+	if (inChallenge("arithmetic", 21)) gain = gain.pow(0.1)
 	//other hypers
 	//final
 	if (getClickableState("division", 11) == "Active") gain = gain.pow(0.3)
 	if (getClickableState("division", 11) == "Active" && hasMilestone("polygon", 7)) gain = gain.mul("1e10")
+	if (getClickableState("division", 11) == "Active") gain = gain.mul(buyableEffect("numbercore", 13))
+
 	return gain
 }
 
@@ -128,12 +138,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 10 Number Cores <br> Justcubing97's Something Tree by Justcubing97"
+	"Current endgame: 4 Dimensions <br> Justcubing97's Something Tree by Justcubing97"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.numbercore.points.gte(new Decimal("10")))
+	return (player.dimension.points.gte(new Decimal(4)))
 }
 
 

@@ -27,6 +27,9 @@ addLayer("division", {
         if (hasMilestone("division", 1)) mult = mult.mul(2)
         if (hasUpgrade("multiplication", 43)) mult = mult.mul(5)
         if (hasMilestone("polygon", 8)) mult = mult.mul(3.5)
+        if (hasMilestone("division", 3)) mult = mult.mul(5)
+        if (hasUpgrade("multiplication", 62)) mult = mult.mul(15)
+        if (player.dimension.points.gte(4)) mult = mult.mul(5)
         //exp
         //other hypers
         player.division.currencyMulti = mult
@@ -80,6 +83,7 @@ addLayer("division", {
         return text
     },
     onPrestige() {
+        if (player.division.resets.eq(0)) player.division.points = player.division.points.sub(getResetGain("division"))
         player.division.resets = player.division.resets.add(1)
         setClickableState("division", 11, "Inactive")
     },
@@ -117,12 +121,13 @@ addLayer("division", {
                 }],
                 ["display-text", function() {
                     if (getClickableState("division", 11) != "Active") return "-"
-                    return getNextAt("division")
+                    let text = getNextAt("division") + " Numbers."
+                    return text
                 }],
                 "blank",
                 ["infobox", "longDivBox"],
                 "blank",
-                ["clickable", 11],
+                ["clickables", [1]],
                 "blank",
                 "upgrades",
             ],
@@ -135,7 +140,8 @@ addLayer("division", {
                 ["display-text", function() { return "You have " + format(player.division.points) + " Division" }],
                 ["display-text", function() {
                     if (getClickableState("division", 11) != "Active") return "-"
-                    return getNextAt("division")
+                    let text = getNextAt("division") + " Numbers."
+                    return text
                 }],
                 "blank",
                 "milestones",
@@ -150,7 +156,7 @@ addLayer("division", {
                 "Fundamental buyables do not work. Addition boosters are heavily nerfed. ^0.3 to Points. Dimension milestones do not work. ^0.5 to Numbers. " +
                 "The exponent nerfs are applied after everything else. Entering and exiting Long Division forces a Polygon reset. " +
                 "However, all four operations will stay unlocked. <i> It is recommended to start doing Long Division at 10 Polygonifications. </i>" +
-                "<b> There will be grinds and timewalls. </b>"
+                "<b> There will be grinds. Tip: whenever something can be reached within 100 resets, GO FOR IT. </b>"
             }, //1e33 numbers is perfect! draw a line from prm to /
         },
     },
@@ -167,6 +173,19 @@ addLayer("division", {
                 setClickableState("division", 11, "Active")
             },
         },
+        12: {
+            title: "Reset and Reenter",
+            display() {
+                if (getClickableState("division", 11) == "Active") return "Click this button to reenter Long Division after resetting."
+                return "This button only works in Long Division."
+            },
+            canClick() {return true},
+            onClick() {
+                if (getClickableState("division", 11) != "Active") return
+                doReset("division")
+                setClickableState("division", 11, "Active")
+            },
+        },
     },
     milestones: {
         1: {
@@ -175,9 +194,21 @@ addLayer("division", {
             done() { return player.division.points.gte(10) },
         },
         2: {
-            requirementDescription: "1000 Division",
+            requirementDescription: "1,000 Division",
             effectDescription: "x10 Shapes.",
-            done() { return player.division.points.gte(10) },
+            done() { return player.division.points.gte("1e3") },
+        },
+        3: {
+            requirementDescription: "250,000 Division",
+            effectDescription: "Time for a Polygonal focus. Unlock the Constructor.",
+            done() { return player.division.points.gte("2.5e5") },
+            onComplete() {setClickableState("polygon", 11, "Triangle")},
+        },
+        4: {
+            requirementDescription: "15,000,000 Division",
+            effectDescription: "Triangles boost Squares and Points.",
+            done() { return player.division.points.gte("15e6") },
+            unlocked() {return hasMilestone("division", 3)},
         },
     },
     upgrades: {
@@ -191,6 +222,22 @@ addLayer("division", {
             effectDisplay() {return "x" + format(upgradeEffect("division", 11))},
             description: "Division boosts Addition, Subtraction, and Multiplication.",
             cost: new Decimal(1000),
+        },
+        12: {
+            title: "Repeated Division",
+            effect(){
+                let base = player.division.points
+                base = base.pow(2.25).add(1)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("division", 12))},
+            description: "Division boosts Operation Power and Points.",
+            cost: new Decimal("25000"),
+        },
+        13: {
+            title: "Subtraction is Under-used.",
+            description: "x1e30 to Subtraction.",
+            cost: new Decimal("5e6"),
         },
     },
     tooltip() {

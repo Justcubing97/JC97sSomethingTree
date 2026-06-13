@@ -66,5 +66,12 @@ addLayer("dimension", {
             effectDescription: "Keep Addition and Subtraction unlocked on Dimensionize, and improve their formulas.",
             done() { return player.dimension.points.gte(3) },
         },
+        4: {
+            requirementDescription: "THE 4TH DIMENSION",
+            effectDescription: "Let's see here... x5 Division, improve the first Multiplication and Fundamental buyables, x100 Number Cores AND KEEP IT UNLOCKED, x4 Shapes, ^1.01 Numbers and Operation Power after softcaps, improve the Constructor compass, reduce the cost scaling of the fourth Fundamental buyable, and unlock the seventh row of TMT. That was a lot!",
+            done() { return player.dimension.points.gte(4) },
+            unlocked() { return hasMilestone("division", 3)}
+        },
     },
+    tooltip() {return format(player.dimension.points) + " Dimensions (" + format(getNextAt("dimension")) + " Numbers for next Dimension)"},
 });

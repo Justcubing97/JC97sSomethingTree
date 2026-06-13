@@ -25,11 +25,13 @@ addLayer("addition", {
         mult = mult.mul(buyableEffect("multiplication", 11))
         if (hasUpgrade("primitive", 26)) mult = mult.mul("1e10")
         if (hasUpgrade("division", 11)) mult = mult.mul(upgradeEffect("division", 11))
+        if (hasUpgrade("multiplication", 63)) mult = mult.mul("1e50")
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
         if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.1)
+        if (inChallenge("arithmetic", 21)) mult = mult.pow(0.1)
         //other hypers
         return mult
     },
@@ -61,6 +63,10 @@ addLayer("addition", {
         layerDataReset(this.layer, keep);
 
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
+        setClickableState("addition", 11, "Inactive")
+        setClickableState("addition", 12, "Inactive")
+        setClickableState("addition", 13, "Inactive")
+        setClickableState("addition", 14, "Inactive")
     },
     tabFormat: [
         "main-display",
@@ -81,6 +87,10 @@ addLayer("addition", {
                 if (hasMilestone("primitive", 7)) base = base.pow(0.5).add(1).pow(1.6)
                 base = base.pow(0.4).add(1).pow(1.5)
 
+                base = base.mul(buyableEffect("numbercore", 21))
+
+                if (hasChallenge("arithmetic", 21)) base = base.pow(1.25)
+
                 //final
                 if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
                 return base
@@ -99,8 +109,13 @@ addLayer("addition", {
             title: "Add to Primitive",
             effect() {
                 let base = player.addition.points
+                if (hasUpgrade("polygon", 13)) setClickableState("addition", 12, "ALWAYS ACTIVE")
                 if (hasMilestone("primitive", 7)) base = base.pow(0.5).add(1).pow(1.6)
                 base = base.pow(0.4).add(1).pow(1.5)
+
+                base = base.mul(buyableEffect("numbercore", 21))
+
+                if (hasChallenge("arithmetic", 21)) base = base.pow(1.25)
 
                 //final
                 if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
@@ -112,7 +127,7 @@ addLayer("addition", {
                 setClickableState("addition", 12, "Active")
             
                 if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
-                setClickableState("addition", 13, "Inactive")
+                if (!hasUpgrade("polygon", 13)) setClickableState("addition", 13, "Inactive")
             },
         },
 
@@ -122,20 +137,51 @@ addLayer("addition", {
                 let base = player.addition.points
                 base = base.pow(0.4).add(1).pow(1.5)
                 if (hasUpgrade("multiplication", 22)) base = base.mul(upgradeEffect("multiplication", 22))
+                if (hasChallenge("arithmetic", 21)) base = base.pow(1.25)
+
+                base = base.mul(buyableEffect("numbercore", 21))
 
                 //final
                 if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
+                if (base.gt("1e500")) return new Decimal("1e500")
                 return base
             },
-            display() {return "Addition adds to Points base: +" + format(clickableEffect("addition", 13)) + " (" + getClickableState("addition", 13) + ")"},
+            display() {
+                let cap = ""
+                if (clickableEffect("addition", 13).gte("1e500")) cap = ", CAPPED"
+                return "Addition adds to Points base: +" + format(clickableEffect("addition", 13)) + " (" + getClickableState("addition", 13) + cap + ")"
+            },
             canClick() {return true},
             onClick() {
                 setClickableState("addition", 13, "Active")
 
                 if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
-                setClickableState("addition", 12, "Inactive")
+                if (!hasUpgrade("polygon", 13)) setClickableState("addition", 12, "Inactive")
+                setClickableState("addition", 14, "Inactive")
             },
             unlocked() {return hasMilestone("primitive", 7)},
+        },
+
+        14: {
+            title: "Add to Number Cores",
+            effect() {
+                let base = player.addition.points
+                let exp = new Decimal(0.003)
+                if (hasUpgrade("multiplication", 63)) exp = exp.add(0.007)
+                base = base.pow(exp).add(1)
+
+                return base
+            },
+            display() {return "Addition adds to Number Cores base: +" + format(clickableEffect("addition", 14)) + " (" + getClickableState("addition", 14) + ")"},
+            canClick() {return true},
+            onClick() {
+                setClickableState("addition", 14, "Active")
+
+                if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
+                if (!hasUpgrade("polygon", 13)) setClickableState("addition", 12, "Inactive")
+                setClickableState("addition", 13, "Inactive")
+            },
+            unlocked() {return hasChallenge("arithmetic", 21)},
         },
     },
     milestones: {
@@ -152,4 +198,5 @@ addLayer("addition", {
             unlocked() {return player.dimension.points.gte(3)},
         },
     },
+    tooltip() {return format(player.addition.points) + " Addition (+" + format(getResetGain("addition")) + " Addition/sec)"},
 })
