@@ -113,6 +113,7 @@ addLayer("unlock", {
                 ["infobox", "d7"],
                 ["infobox", "d8"],
                 ["infobox", "d9"],
+                ["infobox", "d10"],
             ],
         },
     },
@@ -221,7 +222,7 @@ addLayer("unlock", {
             body() { return "So, how do I traverse such a space? Easy. I get a marker, and I mark the walls, but ONLY ON THE RIGHT SIDE. " +
                 "This is so I don't get lost like the dozens of others that had seemingly disappeared in here. I also have a flashlight, " +
                 "which on second thought, doesn't make sense because everything is pitch black. The red marker shows up unexpectedly bright though. " +
-                "-[TRANSMISSION IDLE]- Hold on. HOLD ON. Why is there a girl following me??? She's your average pretty girl, " +
+                "<i><b>[Document 7 content transmission idle.]</b></i> Hold on. HOLD ON. Why is there a girl following me??? She's your average pretty girl, " +
                 "although I'm not looking forward to any romance because I just want to get out of here. I learned her name is Ashley, though, " +
                 "and I give her my nickname. If you don't remember, it's Justcubing97. I never tell people my real name. " +
                 "Anyway, good job on unlocking the Polygon layer. It's been 3 hours and 8 minutes already, and she... hasn't ate breakfast. Darn, Ashley. "
@@ -254,6 +255,20 @@ addLayer("unlock", {
                 "her stash. Well, have fun in buyable mania while I wait for forever for Ashley to get healed."
             },
             unlocked() {return player.numbercore.unlocked},
+        },
+
+        d10: {
+            title: "Document 10: Bad Ending",
+            body() { return "OH MY GOD NO NO NO NO- <i><b>[Document 10 content temporarily removed for Justcubing97's current state of distress. Will return to normal shortly. " +
+                "Note: \"I love you (not romantically) for reaching the 4th Dimension. You also unlocked the Constructor... maybe that can help transfer Dark Matter?\" " +
+                "Emotional levels have stabilized. Document 10 content will be readded.]</b></i> Whoa. Sorry about that... I just realized that Ashley's injury cannot be fully " +
+                "restored. She has to live with an amputated arm. I can't do anything about it, but, like, she was basically the Companion Cube to me. (Yes, I am a Portal player.) " +
+                "Not in a romantic way, just... you get the idea. Anyway... I got her out of the hospital, got the portal gun from inside the labyrinth (red marker), " +
+                "and kept exploring. We did find a rope ladder in one of the dead ends, about 20 feet (6 meters) long. Now I could use it perfectly, but Ashley would have to get creative. " +
+                "Or I would have to help her. I don't know. Anyway, keep improving your compass and straightedge in the Constructor, and get more Division. Long Division will get easier " +
+                "to deal with. Have fun being a hyperdimensional being!"
+            },
+            unlocked() {return player.dimension.points.gte(4)},
         },
     },
     resetsNothing: true,
