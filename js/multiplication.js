@@ -20,7 +20,7 @@ addLayer("multiplication", {
         let nerf = new Decimal(0)
         if (hasUpgrade("subtraction", 14)) nerf = nerf.add(1)
         final = final.sub(nerf)
-        if (player.multiplication.points.gte("600")) final = final.add(2)
+        if (player.multiplication.points.gte("600")) final = final.add(3)
         return final
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -55,6 +55,7 @@ addLayer("multiplication", {
         if (hasUpgrade("fundamental", 43)) keptUpgrades.push(41, 42, 51, 52)
 
         let keptBuyables = []
+        if (hasUpgrade("polygon", 15)) keptBuyables.push(getBuyableAmount("multiplication", 11))
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -65,6 +66,7 @@ addLayer("multiplication", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
         player[this.layer].upgrades.push(...keptUpgrades)
+        setBuyableAmount("multiplication", 11, keptBuyables[0] || new Decimal(0))
     },
     effect() {
         let final = player.multiplication.points.add(1).pow(5)
@@ -105,6 +107,7 @@ addLayer("multiplication", {
                 "blank",
                 "buyables",
             ],
+            unlocked() {return hasMilestone("polygon", 6)},
         },
     },
     infoboxes: {
@@ -267,6 +270,7 @@ addLayer("multiplication", {
                 if (hasUpgrade("multiplication", 64)) return false
                 return hasUpgrade("multiplication", 51)
             },
+            branches: [[71, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("division", 3)},
         },
@@ -281,7 +285,7 @@ addLayer("multiplication", {
                 if (hasUpgrade("multiplication", 64)) return false
                 return hasUpgrade("multiplication", 51)
             },
-            branches: [[71, "#FFFFFF", 10]],
+            branches: [[72, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("division", 3)},
         },
@@ -291,11 +295,11 @@ addLayer("multiplication", {
             cost: new Decimal(550),
             canAfford() {
                 if (player.multiplication.points.lt(350)) return false
-                if (hasUpgrade("multiplication", 61)) return false
-                if (hasUpgrade("multiplication", 64)) return false
+                if (hasUpgrade("multiplication", 61) && !hasUpgrade("multiplication", 71)) return false
+                if (hasUpgrade("multiplication", 64) && !hasUpgrade("multiplication", 71)) return false
                 return hasUpgrade("multiplication", 51)
             },
-            branches: [[71, "#FFFFFF", 10]],
+            branches: [[72, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("division", 3)},
         },
@@ -303,7 +307,7 @@ addLayer("multiplication", {
             title: "THE POINTS",
             effect() {
                 let base = player.points
-                base = base.add(1).log(1.0001).pow(2)
+                base = base.add(1).log(1.01).pow(5)
                 if (base.lt(0)) return new Decimal(1)
                 return base
             },
@@ -312,27 +316,56 @@ addLayer("multiplication", {
             cost: new Decimal(550),
             canAfford() {
                 if (player.multiplication.points.lt(350)) return false
-                if (hasUpgrade("multiplication", 63)) return false
-                if (hasUpgrade("multiplication", 61)) return false
+                if (hasUpgrade("multiplication", 63) && !hasUpgrade("multiplication", 71)) return false
+                if (hasUpgrade("multiplication", 61) && !hasUpgrade("multiplication", 71)) return false
                 return hasUpgrade("multiplication", 51)
             },
+            branches: [[73, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("division", 3)},
         },
 
         71: {
+            title: "Redundancy",
+            description: "+2 Upgrades in the 6th row.",
+            cost: new Decimal(600),
+            canAfford() {
+                if (player.multiplication.points.lt(600)) return false
+                if (hasUpgrade("multiplication", 72)) return false
+                if (hasUpgrade("multiplication", 73)) return false
+                return hasUpgrade("multiplication", 61)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return player.dimension.points.gte(4)},
+        },
+        72: {
             title: "Straight Number Line",
             effect() {
                 let base = getBuyableAmount("polygon", 12)
-                base = new Decimal(1250).pow(base)
+                base = new Decimal(base).tetrate(3).log(15)
                 return base
             },
-            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 71))},
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 72))},
             description: "Constructor straightedge level boosts Numbers after softcap.",
             cost: new Decimal(600),
             canAfford() {
                 if (player.multiplication.points.lt(600)) return false
+                if (hasUpgrade("multiplication", 71)) return false
+                if (hasUpgrade("multiplication", 73)) return false
                 return hasUpgrade("multiplication", 62) && hasUpgrade("multiplication", 63)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return player.dimension.points.gte(4)},
+        },
+        73: {
+            title: "Primitive Layer Still Underrated",
+            description: "x1e100 Points and Unlock Points.",
+            cost: new Decimal(600),
+            canAfford() {
+                if (player.multiplication.points.lt(600)) return false
+                if (hasUpgrade("multiplication", 71)) return false
+                if (hasUpgrade("multiplication", 72)) return false
+                return hasUpgrade("multiplication", 64)
             },
             pay() {return new Decimal(0)},
             unlocked() {return player.dimension.points.gte(4)},

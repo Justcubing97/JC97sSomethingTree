@@ -46,6 +46,7 @@ addLayer("arithmetic", {
         let dMult = new Decimal(1)
         if (hasUpgrade("polygon", 11)) dMult = dMult.mul(1000)
         dMult = dMult.mul(player.polygon.triEffect)
+        if (hasUpgrade("multiplication", 72)) dMult = dMult.mul(upgradeEffect("multiplication", 72))
 
         if (player.dimension.points.gte(4)) dMult = dMult.pow(1.01)
         return dMult
@@ -103,6 +104,7 @@ addLayer("arithmetic", {
                 "blank",
                 "challenges",
             ],
+            unlocked() {return hasUpgrade("arithmetic", 17) || hasMilestone("polygon", 2)}
         },
     },
     upgrades: {

@@ -63,12 +63,14 @@ addLayer("primitive", {
         let power = new Decimal(0.5)
         if (hasUpgrade("subtraction", 12)) power = power.add(0.05)
         if (player.primitive.points.gte("1e1000")) power = power.div(1.45)
+        if (player.primitive.points.gte("1e1700")) power = power.div(1.2)
         player.primitive.softcapExponent = power
         return power
     },
     effectDescription() {
         let text = ""
-        if (player.primitive.points.gte("1e1000")) text = text + "supercapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
+        if (player.primitive.points.gte("1e1700")) text = text + "hypercapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
+        else if (player.primitive.points.gte("1e1000")) text = text + "supercapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
         else if (player.primitive.points.gte("1e50")) text = text + "softcapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
         return text
     },
@@ -80,6 +82,7 @@ addLayer("primitive", {
     layerDataReset() { if (hasMilestone("primitive", 2)) return ["23"]},
     passiveGeneration() {if (hasUpgrade("arithmetic", 12)) return 1},
     deactivated() {return inChallenge("arithmetic", 21)},
+    resetsNothing(){return hasUpgrade("arithmetic", 12)},
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
         if (layers[resettingLayer].row <= this.row) return;
@@ -131,6 +134,8 @@ addLayer("primitive", {
 
                 if (hasMilestone("addition", 1)) effect = effect.pow(5)
                 if (hasUpgrade("multiplication", 52)) effect = effect.pow(upgradeEffect("multiplication", 52))
+
+                if (effect.gte("1e1000")) effect = effect.log(1.0001).pow(10).mul("1e1000")
                 return effect
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -150,6 +155,8 @@ addLayer("primitive", {
                 if (hasMilestone("dimension", 2) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) base = base.pow(0.2).add(1)
                 else base = base.pow(0.1).add(1)
                 base = base.pow(buyableEffect("numbercore", 12))
+
+                if (base.gte("1e400")) base = base.log(1.01).mul("1e400")
                 return base
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -160,11 +167,12 @@ addLayer("primitive", {
             description: "Numbers boost Fundamentality after softcap.",
             cost: new Decimal("5e22"),
             effect() {
-                if (hasMilestone("primitive", 5)) {
-                    return new Decimal(player.primitive.points.pow(0.4)).add(1)
-                } else {
-                    return new Decimal(player.primitive.points.pow(0.2)).add(1)
-                }
+                let exp = new Decimal(0.2)
+                if (hasMilestone("primitive", 5)) exp = exp.add(0.2)
+
+                exp = new Decimal(player.primitive.points.pow(exp)).add(1)
+                if (exp.gte("1e650")) exp = exp.log(1.01).mul("1e650")
+                return exp
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
             unlocked() {return hasUpgrade("primitive", 14) || player.arithmetic.unlocked},
@@ -195,7 +203,11 @@ addLayer("primitive", {
         },
         25: {
             title: "Ran Out of Name Ideas",
-            effect() {return new Decimal(player.primitive.points.pow(0.07)).add(1)},
+            effect() {
+                let effect = new Decimal(player.primitive.points.pow(0.07)).add(1)
+                if (effect.gte("1e100")) effect = effect.log(1.05).mul("1e100")
+                return effect
+            },
             effectDisplay() {return "+" + format(upgradeEffect(this.layer, this.id))},
             description: "Numbers boost Addition base.",
             cost: new Decimal("1e111"),
@@ -271,6 +283,12 @@ addLayer("primitive", {
             },
             done() { return player.primitive.points.gte("1e93") },
             unlocked() {return player.arithmetic.unlocked},
+        },
+        9: {
+            requirementDescription: "9: 1e1700 Numbers",
+            effectDescription: "<i>how did you get here how did you get here-</i> (Improve \"This isn't even Polygon-Related.\")",
+            done() { return player.primitive.points.gte("1e1700") },
+            unlocked() {return player.primitive.points.gte("1e1700")},
         },
     },
     branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5], ["division", "#FF50FF", 5], ["numbercore", "#00e0c0", 5]],

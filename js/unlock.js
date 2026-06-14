@@ -15,12 +15,27 @@ addLayer("unlock", {
     exponent: 0.1, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
+        if (hasUpgrade("unlock", 11)) player.fundamental.unlocked = true
+        else player.fundamental.unlocked = false 
+        if (hasUpgrade("unlock", 12)) player.primitive.unlocked = true
+        else player.primitive.unlocked = false 
+        if (hasUpgrade("unlock", 13)) player.arithmetic.unlocked = true
+        else player.arithmetic.unlocked = false 
+        if (hasUpgrade("unlock", 14)) player.dimension.unlocked = true
+        else player.dimension.unlocked = false 
+        if (hasUpgrade("unlock", 15)) player.polygon.unlocked = true
+        else player.polygon.unlocked = false 
+        if (hasUpgrade("unlock", 16)) player.numbercore.unlocked = true
+        else player.numbercore.unlocked = false 
+        if (hasUpgrade("unlock", 17)) player.corebooster.unlocked = true
+        else player.corebooster.unlocked = false 
         //add
         //mul
         if (hasUpgrade("fundamental", 24)) mult = mult.mul(100)
         if (hasUpgrade("fundamental", 34)) mult = mult.mul(500)
         if (hasUpgrade("fundamental", 37)) mult = mult.mul(1e10)
         if (hasUpgrade("polygon", 12)) mult = mult.mul("1e40")
+        if (hasUpgrade("multiplication", 73)) mult = mult.mul("1e100")
         //exp in gainExp
         //other hypers
         return mult
@@ -39,42 +54,42 @@ addLayer("unlock", {
             title: "Fundamental layer",
             description: "Unlock the Fundamental layer: the beginning of JC97's Something Tree.",
             cost: new Decimal(1),
-            onPurchase() {return player.fundamental.unlocked = true},
         },
 
         12: {
             title: "Primitive layer",
             description: "Unlock the Primitive layer: the first major reset layer.",
             cost: new Decimal("1e5"),
-            onPurchase() {return player.primitive.unlocked = true},
         },
 
         13: {
             title: "Arithmetic layer",
             description: "Unlock the Arithmetic layer: the second major reset layer.",
             cost: new Decimal("1e20"),
-            onPurchase() {return player.arithmetic.unlocked = true},
         },
 
         14: {
             title: "Dimension layer",
             description: "Unlock the Dimension layer: a sub-layer.",
             cost: new Decimal("1e50"),
-            onPurchase() {return player.dimension.unlocked = true},
         },
 
         15: {
             title: "Polygon layer",
             description: "Unlock the Polygon layer: the third major reset layer.",
             cost: new Decimal("1e400"),
-            onPurchase() {return player.polygon.unlocked = true},
         },
 
         16: {
             title: "Number Core layer",
             description: "Unlock the Number Core layer: a sub-layer related to the Primitive layer.",
             cost: new Decimal("1e925"),
-            onPurchase() {return player.numbercore.unlocked = true},
+        },
+
+        17: {
+            title: "Core Booster layer",
+            description: "Unlock the Core Booster layer: another sub-layer related to the Primitive layer.",
+            cost: new Decimal("1e1550"),
         },
     },
     branches: [
@@ -85,6 +100,7 @@ addLayer("unlock", {
     
         ["dimension", "#A0FFA0", 10], 
         ["numbercore", "#00e0c0", 10], 
+        ["corebooster", "#80e040", 10], 
     ],
     tabFormat: {
         "Main": {
@@ -114,6 +130,7 @@ addLayer("unlock", {
                 ["infobox", "d8"],
                 ["infobox", "d9"],
                 ["infobox", "d10"],
+                ["infobox", "d11"],
             ],
             unlocked() { return player.polygon.points.gte(1)}
         },
@@ -126,11 +143,12 @@ addLayer("unlock", {
             display() {
                 let text = "Your next layer is at "
                 if (!hasUpgrade("unlock", 11)) text += "1 Unlock Point, unlocking the Fundamental layer. <br> Progress: " + player.unlock.points.div(1).mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 12)) text += "1e5 Unlock Points, unlocking the Primitive layer. <br> Progress: " + player.unlock.points.log10().div("5").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 12)) text += "100,000 Unlock Points, unlocking the Primitive layer. <br> Progress: " + player.unlock.points.log10().div("5").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 13)) text += "1e20 Unlock Points, unlocking the Arithmetic layer. <br> Progress: " + player.unlock.points.log10().div("20").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 14)) text += "1e50 Unlock Points, unlocking the Dimension sub-layer. <br> Progress: " + player.unlock.points.log10().div("50").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 15)) text += "1e400 Unlock Points, unlocking the Polygon layer. <br> Progress: " + player.unlock.points.log10().div("400").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 16)) text += "1e925 Unlock Points, unlocking the Number Core sub-layer. <br> Progress: " + player.unlock.points.log10().div("925").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 17)) text += "1e1550 Unlock Points, unlocking the Core Booster sub-layer. <br> Progress: " + player.unlock.points.log10().div("1550").mul(100).toFixed(2) + "%"
                 else text = "You have unlocked all layers! Congratulations! (For now...)"
                 return text
             },
@@ -142,6 +160,7 @@ addLayer("unlock", {
                 else if (!hasUpgrade("unlock", 14)) prog = player.unlock.points.log10().div("50")
                 else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.log10().div("400")
                 else if (!hasUpgrade("unlock", 16)) prog = player.unlock.points.log10().div("925")
+                else if (!hasUpgrade("unlock", 17)) prog = player.unlock.points.log10().div("1550")    
                 else prog = new Decimal(1)
                 return prog
             },
@@ -270,6 +289,18 @@ addLayer("unlock", {
                 "to deal with. Have fun being a hyperdimensional being!"
             },
             unlocked() {return player.dimension.points.gte(4)},
+        },
+
+        d11: {
+            title: "Document 11: The Unusual Book",
+            body() { return "I decided to take Ashley back to my little prison cell for the night. After all, I did have a bookshelf, and she enjoyed reading. " +
+                "It was normal for half an hour! I found a few dystopian novels, which I enjoy, and read away with her. It all changed when she picked up a totally black book, " +
+                "except with one word on the cover: \"GUIDE.\" It was very thin and small, not much larger than A5 paper. Inside? Weird diagrams and grids and bars and numbers and letters. " +
+                "There was one golden-yellow dot at the top, three dots below it from blue to green, then below that four pink dots, below that a singular red-pink dot, " +
+                "then a deep blue dot next to a light green one, and below all of that was a purple dot. There was an arrow pointing to the purple dot all the way at the bottom. " +
+                "\"Dark Matter\" was written next to it... no idea what it means. And by the way, your fresh Core Boosters can help you! I bet they indirectly influence your Constructor."
+            },
+            unlocked() {return player.corebooster.points.gte(1)},
         },
     },
     resetsNothing: true,

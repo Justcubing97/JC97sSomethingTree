@@ -107,7 +107,7 @@ addLayer("fundamental", {
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
         if (hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 12))
         if (hasAchievement("achievements", 34)) keptBuyables.push(getBuyableAmount("fundamental", 13))
-        if (hasMilestone("polygon", 9)) keptBuyables.push(getBuyableAmount("fundamental", 14))
+        if (hasMilestone("polygon", 9)) keptBuyables.push(getBuyableAmount("fundamental", 21))
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -121,7 +121,7 @@ addLayer("fundamental", {
         setBuyableAmount("fundamental", 11, keptBuyables[0] || new Decimal(0))
         setBuyableAmount("fundamental", 12, keptBuyables[1] || new Decimal(0))
         setBuyableAmount("fundamental", 13, keptBuyables[2] || new Decimal(0))
-        setBuyableAmount("fundamental", 14, keptBuyables[3] || new Decimal(0))
+        setBuyableAmount("fundamental", 21, keptBuyables[3] || new Decimal(0))
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     tabFormat: {
         "Main": {
@@ -157,6 +157,7 @@ addLayer("fundamental", {
                 "blank",
                 "buyables",
             ],
+            unlocked() {return hasUpgrade("primitive", 13) || player.arithmetic.unlocked}
         },
     },
     upgrades: {

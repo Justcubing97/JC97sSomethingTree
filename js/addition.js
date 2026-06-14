@@ -197,6 +197,12 @@ addLayer("addition", {
             done() { return player.addition.points.gte("1e410") },
             unlocked() {return player.dimension.points.gte(3)},
         },
+        3: {
+            requirementDescription: "1e900 Addition",
+            effectDescription: "Division boosts Number Cores very slightly.",
+            done() { return player.addition.points.gte("1e900") },
+            unlocked() {return player.dimension.points.gte(4)},
+        },
     },
     tooltip() {return format(player.addition.points) + " Addition (+" + format(getResetGain("addition")) + " Addition/sec)"},
 })

@@ -30,6 +30,7 @@ addLayer("division", {
         if (hasMilestone("division", 3)) mult = mult.mul(5)
         if (hasUpgrade("multiplication", 62)) mult = mult.mul(15)
         if (player.dimension.points.gte(4)) mult = mult.mul(5)
+        mult = mult.mul(player.corebooster.e1)
         //exp
         //other hypers
         player.division.currencyMulti = mult

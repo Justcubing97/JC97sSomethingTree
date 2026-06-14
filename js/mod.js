@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "savebank.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "tree.js"],
+	modFiles: ["achievements.js", "savebank.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "corebooster.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "tree.js"],
 
 	discordName: "Justcubing97's Server",
 	discordLink: "https://discord.gg/W7PMhx4mSs",
@@ -12,13 +12,17 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.4.7",
-	name: "Constructor update",
+	num: "0.4.8",
+	name: "Core Booster update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.4.8</h3><br>
+		- Core Booster layer. <br>
+		- Added some softcaps and QoL. <br>
+		- Endgame: 1 Core Booster. <br>
 	<h3>v0.4.7</h3><br>
-		- Construction tab in Polygon layer. <br>
+		- Constructor tab in Polygon layer. <br>
 		- Adjusted progression from Arithmetic to Polygon a LOT. <br>
 		- Endgame: 4 Dimensions. <br>
 	<h3>v0.4.6</h3><br>
@@ -59,7 +63,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added Unlock, Fundamental, and Primitive layers. <br>
 		- Endgame: 1e15 Numbers. <br>`
 
-let winText = `Congratulations! You have reached the end of JST for now, as of v0.4.7. `
+let winText = `Congratulations! You have reached the end of JST for now, as of v0.4.8. `
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
@@ -114,6 +118,7 @@ function getPointGen() {
 	if (hasUpgrade("multiplication", 64)) gain = gain.mul(upgradeEffect("multiplication", 64))
 	if (player.multiplication.points.gte(1)) gain = gain.mul(player.multiplication.effect)
 	if (hasMilestone("division", 4)) gain = gain.mul(player.polygon.triEffect.add(1).pow("100"))
+	if (hasUpgrade("multiplication", 73)) gain = gain.mul("1e100")
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
@@ -138,12 +143,12 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 4 Dimensions <br> Justcubing97's Something Tree by Justcubing97 <br> <sup>Check out the Unlock Layer every so often... there might be more documents you can read.</sup>"
+	"Current endgame: 1 Core Booster <br> Justcubing97's Something Tree by Justcubing97 <br> <sup>Check out the Unlock Layer every so often... there might be more documents you can read.</sup>"
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.dimension.points.gte(new Decimal(4)))
+	return (player.corebooster.points.gte(new Decimal(1)))
 }
 
 

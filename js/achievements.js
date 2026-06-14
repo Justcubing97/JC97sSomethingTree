@@ -192,5 +192,11 @@ achievements: {
     tooltip:"HAVE FOUR DIMENSIONS. YOU HAVE BROKEN ALL MODELS OF REALITY.",
     unlocked() {return true},
   },
+  52: {
+    name: "Number Cores Prestige Layer",
+    done(){return player.corebooster.points.gte(1)},
+    tooltip:"Have a Core Booster.",
+    unlocked() {return true},
+  },
 },
 })

@@ -217,6 +217,19 @@ addLayer("polygon", {
             description: "Unlock a 4th Arithmetic Challenge.",
             cost: new Decimal("2000"),
         },
+        15: {
+            effect(){
+                let base = getBuyableAmount("multiplication", 11)
+                base = base.add(1).pow(1.5).pow(base.add(1).log(4))
+                return base
+            },
+            effectDisplay(){
+                return "x" + format(upgradeEffect(this.layer, this.id))
+            },
+            title: "This isn't even Polygon-related.",
+            description: "The amount of the first Multiplication buyable boosts Number Cores, and keep its amount.",
+            cost: new Decimal("50000"),
+        },
     },
     bars: {
         level: {

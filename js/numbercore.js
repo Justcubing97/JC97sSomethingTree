@@ -21,6 +21,8 @@ addLayer("numbercore", {
         mult = mult.mul(buyableEffect("numbercore", 11))
         mult = mult.mul(player.polygon.squEffect)
         if (player.dimension.points.gte(4)) mult = mult.mul(100)
+        if (hasMilestone("addition", 3)) mult = mult.mul(player.division.points.add(1).pow(0.12))
+        if (hasUpgrade("polygon", 15)) mult = mult.mul(upgradeEffect("polygon", 15))
         //exp 
         //other hypers
         //final
@@ -65,6 +67,7 @@ addLayer("numbercore", {
             cost(x) {
                 let base = new Decimal("3")
                 if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
+                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
                 return base.pow(x).mul("10")
             },
             title: "Core Condensation",
@@ -80,6 +83,7 @@ addLayer("numbercore", {
             cost(x) {
                 let base = new Decimal("5")
                 if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
+                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
                 return base.pow(x).mul("10")
             },
             title: "Numerical Overflow",
@@ -95,6 +99,7 @@ addLayer("numbercore", {
             cost(x) {
                 let base = new Decimal("10")
                 if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
+                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
                 return new Decimal(base).pow(x).mul("10")
             },
             title: "Long Division Boost",
@@ -110,6 +115,7 @@ addLayer("numbercore", {
             cost(x) {
                 let base = new Decimal("35")
                 if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
+                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
                 return new Decimal(base).pow(x).mul("1e10")
             },
             title: "Addition Booster Booster",
@@ -122,6 +128,7 @@ addLayer("numbercore", {
             effect(x) { return new Decimal("100").pow(x) },
         },
     },
+    branches: [["corebooster", "#80e040", 5]],
     tooltip() {return format(player.numbercore.points) + " Number Cores (+" + format(getResetGain("numbercore")) + " Number Cores/sec)"},
 })
 
