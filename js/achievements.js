@@ -198,5 +198,23 @@ achievements: {
     tooltip:"Have a Core Booster.",
     unlocked() {return true},
   },
+  53: {
+    name: "I FEAR NO DIVISION",
+    done(){return getClickableState("division", 11) && player.points.gte("1e965")},
+    tooltip:"Have 1e965 Points in Long Division. Reward: nerf Core Booster scaling, add a third Core Booster effect, and improve the other two. (Dev note: I forgot, but ^1.2 Number Cores)",
+    unlocked() {return true},
+  },
+  54: {
+    name: "Check this out: I subtracted suffering!",
+    done(){return hasUpgrade("subtraction", 17)},
+    tooltip:"Have 1 row of Subtraction upgrades.",
+    unlocked() {return true},
+  },
+  55: {
+    name: "The Googol Core",
+    done(){return player.numbercore.points.gte("1e100")},
+    tooltip:"Have 1e100 Number Cores. Reward: weaken the Operation Power softcap.",
+    unlocked() {return true},
+  },
 },
 })

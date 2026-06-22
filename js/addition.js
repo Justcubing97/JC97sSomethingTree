@@ -26,12 +26,15 @@ addLayer("addition", {
         if (hasUpgrade("primitive", 26)) mult = mult.mul("1e10")
         if (hasUpgrade("division", 11)) mult = mult.mul(upgradeEffect("division", 11))
         if (hasUpgrade("multiplication", 63)) mult = mult.mul("1e50")
+        if (hasChallenge("arithmetic", 22)) mult = mult.mul("1e10")
+        mult = mult.mul(player.corebooster.e4)
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
         if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.1)
         if (inChallenge("arithmetic", 21)) mult = mult.pow(0.1)
+        if (player.polygon.pentagons.gte(1)) mult = mult.pow(player.polygon.penEffect)
         //other hypers
         return mult
     },
@@ -57,7 +60,7 @@ addLayer("addition", {
         let keptBuyables = []
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
-        let keep = [];
+        let keep = ["milestones"];
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -67,6 +70,7 @@ addLayer("addition", {
         setClickableState("addition", 12, "Inactive")
         setClickableState("addition", 13, "Inactive")
         setClickableState("addition", 14, "Inactive")
+        setClickableState("addition", 15, "Inactive")
     },
     tabFormat: [
         "main-display",
@@ -158,6 +162,7 @@ addLayer("addition", {
                 if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
                 if (!hasUpgrade("polygon", 13)) setClickableState("addition", 12, "Inactive")
                 setClickableState("addition", 14, "Inactive")
+                setClickableState("addition", 15, "Inactive")
             },
             unlocked() {return hasMilestone("primitive", 7)},
         },
@@ -180,6 +185,29 @@ addLayer("addition", {
                 if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
                 if (!hasUpgrade("polygon", 13)) setClickableState("addition", 12, "Inactive")
                 setClickableState("addition", 13, "Inactive")
+                setClickableState("addition", 15, "Inactive")
+            },
+            unlocked() {return hasChallenge("arithmetic", 21)},
+        },
+
+        15: {
+            title: "Add to Arithmetic",
+            effect() {
+                let base = player.addition.points
+                let exp = new Decimal(0.02)
+                base = base.pow(exp).add(1)
+
+                return base
+            },
+            display() {return "Addition adds to Operation Power base: +" + format(clickableEffect("addition", 15)) + " (" + getClickableState("addition", 15) + ")"},
+            canClick() {return true},
+            onClick() {
+                setClickableState("addition", 15, "Active")
+
+                if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
+                if (!hasUpgrade("polygon", 13)) setClickableState("addition", 12, "Inactive")
+                setClickableState("addition", 13, "Inactive")
+                setClickableState("addition", 14, "Inactive")
             },
             unlocked() {return hasChallenge("arithmetic", 21)},
         },
@@ -198,9 +226,9 @@ addLayer("addition", {
             unlocked() {return player.dimension.points.gte(3)},
         },
         3: {
-            requirementDescription: "1e900 Addition",
-            effectDescription: "Division boosts Number Cores very slightly.",
-            done() { return player.addition.points.gte("1e900") },
+            requirementDescription: "1e860 Addition",
+            effectDescription: "Division boosts Number Cores very slightly and divide all polygon construction times by 10.",
+            done() { return player.addition.points.gte("1e860") },
             unlocked() {return player.dimension.points.gte(4)},
         },
     },

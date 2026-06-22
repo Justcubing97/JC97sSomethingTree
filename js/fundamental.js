@@ -30,6 +30,7 @@ addLayer("fundamental", {
         if (hasMilestone("primitive", 4)) mult = mult.mul(100)
         if (hasUpgrade("subtraction", 13)) mult = mult.mul(100)
         if (hasUpgrade("multiplication", 41)) mult = mult.mul("1e25")
+        mult = mult.mul(player.corebooster.e4)
         //exp
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
@@ -55,10 +56,12 @@ addLayer("fundamental", {
         if (hasUpgrade("subtraction", 13)) dMult = dMult.mul(100)
         if (hasUpgrade("arithmetic", 23)) dMult = dMult.mul(100)
         if (hasUpgrade("multiplication", 61)) dMult = dMult.mul("1e50")
+        if (hasChallenge("arithmetic", 22)) dMult = dMult.mul("1e10")
 
         if (hasUpgrade("fundamental", 34)) dMult = dMult.pow(1.5)
         if (hasUpgrade("multiplication", 31)) dMult = dMult.pow(1.2)
         if (hasUpgrade("polygon", 11)) dMult = dMult.pow(1.5)
+        if (player.polygon.hexagons.gte(1)) dMult = dMult.pow(player.polygon.hexEffect)
         return dMult
     },
     softcapPower() {
@@ -74,7 +77,11 @@ addLayer("fundamental", {
             if (hasUpgrade("arithmetic", 16)) power = power.add(new Decimal(0.1))
             if (player.fundamental.points.gte("1e500")) power = power.div(1.1)
             if (player.fundamental.points.gte("1e2000")) power = power.div(1.5)
-            if (player.fundamental.points.gte("1e2700")) power = power.div(2)
+
+            let ultra = new Decimal(2)
+            if (hasUpgrade("arithmetic", 31)) ultra = ultra.sub(0.8)
+            if (hasUpgrade("polygon", 17)) ultra = ultra.sub(0.125)
+            else if (player.fundamental.points.gte("1e2700")) power = power.div(ultra)
             player.fundamental.softcapExponent = power
             return power
         }
@@ -101,7 +108,8 @@ addLayer("fundamental", {
         if (hasAchievement("achievements", 24)) keptUpgrades.push(31, 32, 33, 34, 35, 36)
         if (hasAchievement("achievements", 34)) keptUpgrades.push(37)
         if (hasMilestone("polygon", 3)) keptUpgrades.push(41, 42)
-        if (hasUpgrade("fundamental", 43)) keptUpgrades.push(43)
+        if (hasUpgrade("division", 14)) keptUpgrades.push(43)
+        if (hasMilestone("primitive", 10)) keptUpgrades.push(44)
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -212,6 +220,7 @@ addLayer("fundamental", {
                 if (hasUpgrade("fundamental", 22)) base = base.pow(0.75)
                 else base = base.pow(0.33)
 
+                if (base.pow(buyableEffect("fundamental", 12)).gte("1e6500")) return new Decimal("1e6500")
                 if (inChallenge("arithmetic", 11) || getClickableState("division", 11) == "Active") return base
                 return base.pow(buyableEffect("fundamental", 12))
             },
@@ -224,6 +233,7 @@ addLayer("fundamental", {
             cost: new Decimal(25000),
             unlocked() {return hasUpgrade("fundamental", 17) || player.primitive.unlocked},
             effect() {
+                if (player.points.add(1).pow(0.25).pow(buyableEffect("fundamental", 12)).gte("1e10000")) return new Decimal("1e10000")
                 if (inChallenge("arithmetic", 11) || getClickableState("division", 11) == "Active") return player.points.add(1).pow(0.25)
                 return player.points.add(1).pow(0.25).pow(buyableEffect("fundamental", 12))
             },
@@ -349,18 +359,40 @@ addLayer("fundamental", {
             cost: new Decimal("1e2700"),
             unlocked() {return player.fundamental.points.gte("1e2700") || hasUpgrade("fundamental", 43)},
         },
+
+        44: {
+            title: "Halfway",
+            description: "+150 to the max of Fundamental buyable 1 and +5 to the maxes of Fundamental buyables 2 and 3.",
+            cost: new Decimal("1e2800"),
+            unlocked() {return hasUpgrade("arithmetic", 31)},
+        },
+        45: {
+            title: "Progressing+",
+            effect() {
+                let effect = player.fundamental.points
+                effect = effect.add(1).pow(0.001)
+                return effect
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
+            description: "Fundamentality boosts all Constructor polygons.",
+            cost: new Decimal("1e3350"),
+            unlocked() {return hasUpgrade("fundamental", 44)},
+        },
     },
     buyables: {
         11: {
             cost(x) {
-                if (hasUpgrade("primitive", 21)) return new Decimal(600).pow(x).mul("1e30")
-                return new Decimal(1000).pow(x).mul("1e30")
+                let expbase = new Decimal("1000")
+                if (hasUpgrade("primitive", 21)) expbase = expbase.sub(400)
+                let final = expbase.pow(x).mul("1e30")
+
+                if (x.gte(250)) final = final.mul("1e2000")
+
+                return final
             },
             title: "Exponential Increase",
             display() {
-                let cap = new Decimal(200)
-                if (hasMilestone("polygon", 6)) cap = cap.add(50)
-                return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/" + cap + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect())
+                return "Multiplies Points and Fundamentality by 2 per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/" + tmp.fundamental.buyables[11].purchaseLimit + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect())
             },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
@@ -386,16 +418,24 @@ addLayer("fundamental", {
             purchaseLimit() {
                 let cap = new Decimal(200)
                 if (hasMilestone("polygon", 6)) cap = cap.add(50)
+                if (hasUpgrade("fundamental", 44)) cap = cap.add(150)
                 return cap
             },
         },
         12: {
             cost(x) {
-                if (hasUpgrade("subtraction", 11)) return new Decimal("85000").pow(x).mul("1e70")
-                return new Decimal("1e5").pow(x).mul("1e70")
+                let expbase = new Decimal("1e5")
+                if (hasUpgrade("subtraction", 11)) expbase = expbase.sub("15000")
+                let final = expbase.pow(x).mul("1e70")
+
+                if (x.gte(20)) final = final.mul("1e2600")
+
+                return final
             },
             title: "Dynamic Improvement",
-            display() { return "Improves \"Progressing\" and \"Mutual Relationship\" per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/" + new Decimal("10").add(buyableEffect("fundamental", 13)) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: ^" + format(this.effect()) },
+            display() {
+                return "Improves \"Progressing\" and \"Mutual Relationship\" per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/" + tmp.fundamental.buyables[12].purchaseLimit + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: ^" + format(this.effect())
+            },
             canAfford() { return player[this.layer].points.gte(this.cost())},
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -407,14 +447,22 @@ addLayer("fundamental", {
                 return base
             },
             unlocked() {return hasUpgrade("primitive", 22) || player.arithmetic.unlocked},
-            purchaseLimit() { return new Decimal("10").add(buyableEffect("fundamental", 13)) },
+            purchaseLimit() {
+                let cap = new Decimal("10").add(buyableEffect("fundamental", 13))
+                if (hasUpgrade("fundamental", 44)) cap = cap.add(5)
+                return cap
+            },
         },
         13: {
             cost(x) {
-                return new Decimal("1e40").pow(x).mul("1e150")
+                let base = new Decimal("1e40").pow(x).mul("1e150")
+                if (x.gte(10)) base = base.mul("1e2200")
+                return base
             },
             title: "Hardcap Delay",
-            display() { return "Adds 1 to the number of max purchases of \"Dynamic Improvement\" per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/" + new Decimal("10") + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: +" + format(this.effect()) },
+            display() {
+                return "Adds 1 to the number of max purchases of \"Dynamic Improvement\" per purchase. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/" + tmp.fundamental.buyables[13].purchaseLimit + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: +" + format(this.effect())
+            },
             canAfford() { return player[this.layer].points.gte(this.cost())},
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
@@ -422,7 +470,11 @@ addLayer("fundamental", {
             },
             effect(x) { return new Decimal(x) },
             unlocked() {return hasChallenge("arithmetic", 11) || player.polygon.unlocked},
-            purchaseLimit: new Decimal("10"),
+            purchaseLimit(){
+                let cap = new Decimal("10")
+                if (hasUpgrade("fundamental", 44)) cap = cap.add(5)
+                    return cap
+            },
         },
         21: {
             cost(x) {

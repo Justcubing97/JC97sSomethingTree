@@ -50,6 +50,7 @@ addLayer("dimension", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
+    disabled() {return inChallenge("arithmetic", 13)},
     milestones: {
         1: {
             requirementDescription: "1st Dimension",

@@ -18,7 +18,11 @@ addLayer("corebooster", {
     baseResource: "Number Cores", // Name of resource prestige is based on
     baseAmount() {return player.numbercore.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 2, // Prestige currency exponent
+    exponent() {
+        let base = new Decimal(3)
+        if (hasAchievement("achievements", 53)) base = base.sub(0.5)
+        return base
+    }, // Prestige currency exponent
     base: 50,
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
@@ -69,9 +73,17 @@ addLayer("corebooster", {
         "prestige-button",
         ["display-text", function() { return "You have " + format(player.numbercore.points) + " Number Cores"}],
         "blank",
-        ["display-text", function() { return "<b>You have " + format(player.corebooster.useful) + " useful Core Boosters, which...</b>"}],
+        ["display-text", function() { return "<h3>You have " + format(player.corebooster.useful) + " useful Core Boosters, which...</h3>"}],
         ["display-text", function() { return "x" + format(player.corebooster.e1) + " to Shapes"}],
         ["display-text", function() { return "x" + format(player.corebooster.e2) + " to Division"}],
+        ["display-text", function() {
+            if (!hasAchievement("achievements", 53)) return ""
+            return "/" + format(player.corebooster.e3) + " to Pentagon and Hexagon construction time"
+        }],
+        ["display-text", function() {
+            if (!hasMilestone("primitive", 11)) return ""
+            return "x" + format(player.corebooster.e4) + " to Points, Fundamentality, Operation Power, and Addition."
+        }],
     ],
 
     update(diff){
@@ -79,11 +91,23 @@ addLayer("corebooster", {
 
         let e1b = player.corebooster.useful
         e1b = e1b.add(1).log(20).add(1)
+        if (hasAchievement("achievements", 53)) e1b = e1b.pow(3)
         player.corebooster.e1 = e1b
 
         let e2b = player.corebooster.useful
         e2b = e2b.add(1).pow(0.5)
+        if (hasAchievement("achievements", 53)) e1b = e1b.pow(2)
         player.corebooster.e2 = e2b
+
+        let e3b = player.corebooster.useful
+        e3b = e3b.add(1).pow(0.25)
+        if (!hasAchievement("achievements", 53)) player.corebooster.e3 = new Decimal(1)
+        else player.corebooster.e3 = e3b
+
+        let e4b = player.corebooster.useful
+        e4b = e4b.add(1).pow(new Decimal(13).mul(player.corebooster.useful))
+        if (!hasMilestone("primitive", 11)) player.corebooster.e4 = new Decimal(1)
+        else player.corebooster.e4 = e4b
     },
     tooltip() {return format(player.corebooster.points) + " Core Boosters (" + format(getNextAt("corebooster")) + " Number Cores for next Core Booster) - GAINING CORE BOOSTERS WILL FORCE POLYGON RESET."},
 })

@@ -80,8 +80,6 @@ function canGenPoints(){
 
 // Calculate points/sec!
 function getPointGen() {
-	if(!canGenPoints())
-		return new Decimal(0)
 
 	let gain = new Decimal(1)
 	//add
@@ -102,7 +100,7 @@ function getPointGen() {
 	if (!inChallenge("arithmetic", 11) && getClickableState("division", 11) != "Active") gain = gain.mul(buyableEffect("fundamental", 11))
 
 	if (hasUpgrade("primitive", 14)) gain = gain.mul(upgradeEffect("primitive", 14))
-	if (hasMilestone("primitive", 4)) mult = mult.mul(100)
+	if (hasMilestone("primitive", 4)) gain = gain.mul(100)
 	if (hasUpgrade("fundamental", 33)) gain = gain.mul(1000000)
 	if (hasUpgrade("fundamental", 35)) gain = gain.mul(1000)
 	if (hasUpgrade("arithmetic", 11)) gain = gain.mul(100)
@@ -113,12 +111,14 @@ function getPointGen() {
 	if (hasUpgrade("multiplication", 21)) gain = gain.mul("1e15")
 	if (hasUpgrade("arithmetic", 23)) gain = gain.mul("500")
 	if (hasChallenge("arithmetic", 12)) gain = gain.mul("1e15")
-	gain = gain.mul(buyableEffect("multiplication", 11))
+	if (getBuyableAmount("multiplication", 11).gte(1)) gain = gain.mul(buyableEffect("multiplication", 11))
 	if (hasUpgrade("division", 12)) gain = gain.mul(upgradeEffect("division", 12))
 	if (hasUpgrade("multiplication", 64)) gain = gain.mul(upgradeEffect("multiplication", 64))
-	if (player.multiplication.points.gte(1)) gain = gain.mul(player.multiplication.effect)
-	if (hasMilestone("division", 4)) gain = gain.mul(player.polygon.triEffect.add(1).pow("100"))
+	if (player.multiplication.points.gte(1)) gain = gain.mul(player.multiplication.effect.add(1))
+	if (hasMilestone("division", 4)) gain = gain.mul(player.polygon.triEffect.add(1).pow("100").add(1))
 	if (hasUpgrade("multiplication", 73)) gain = gain.mul("1e100")
+	if (hasChallenge("arithmetic", 22)) gain = gain.mul("1e250")
+	gain = gain.mul(player.corebooster.e4)
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
@@ -128,6 +128,8 @@ function getPointGen() {
 	if (hasUpgrade("arithmetic", 26)) gain = gain.pow(1.05)
 	if (getClickableState("division", 11) != "Active") gain = gain.pow(buyableEffect("fundamental", 21))
 	if (inChallenge("arithmetic", 21)) gain = gain.pow(0.1)
+	if (player.polygon.hexagons.gte(1)) gain = gain.pow(player.polygon.hexEffect)
+	if (inChallenge("arithmetic", 22)) gain = gain.pow(0.5)
 	//other hypers
 	//final
 	if (getClickableState("division", 11) == "Active") gain = gain.pow(0.3)

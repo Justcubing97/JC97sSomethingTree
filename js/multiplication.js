@@ -52,7 +52,8 @@ addLayer("multiplication", {
         if (hasUpgrade("multiplication", 43)) keptUpgrades.push(43)
         if (hasUpgrade("multiplication", 62)) keptUpgrades.push(62)
         if (hasUpgrade("polygon", 13)) keptUpgrades.push(11, 21, 22, 31, 32)
-        if (hasUpgrade("fundamental", 43)) keptUpgrades.push(41, 42, 51, 52)
+        if (hasUpgrade("fundamental", 43) || hasUpgrade("division", 14)) keptUpgrades.push(41, 42, 51, 52)
+        if (hasUpgrade("division", 15)) keptUpgrades.push(61, 63, 64, 71, 72, 73)
 
         let keptBuyables = []
         if (hasUpgrade("polygon", 15)) keptBuyables.push(getBuyableAmount("multiplication", 11))
@@ -69,7 +70,7 @@ addLayer("multiplication", {
         setBuyableAmount("multiplication", 11, keptBuyables[0] || new Decimal(0))
     },
     effect() {
-        let final = player.multiplication.points.add(1).pow(5)
+        let final = player.multiplication.points.add(1).pow(10)
         if (player.polygon.points.gte(1)) final = final.mul(player.polygon.effect)
         player.multiplication.effect = final || new Decimal(1)
     },
@@ -80,8 +81,10 @@ addLayer("multiplication", {
         if (current.add(offset).gte("600")) {
             let difference = current.add(offset).sub("600")
             player.multiplication.points = player.multiplication.points.sub(difference)
+            if (hasMilestone("division", 5)) player.multiplication.points = player.multiplication.points.add(difference)
         }
     },
+    resetsNothing() {return true},
     canBuyMax() {return true},
     tabFormat: {
         "Main": {
@@ -98,6 +101,7 @@ addLayer("multiplication", {
                 ["upgrades", [5]],"blank",
                 ["upgrades", [6]],"blank",
                 ["upgrades", [7]],"blank",
+                ["upgrades", [8]],"blank",
             ],
         },
         "Buyables": {
@@ -308,7 +312,7 @@ addLayer("multiplication", {
             effect() {
                 let base = player.points
                 base = base.add(1).log(1.01).pow(5)
-                if (base.lt(0)) return new Decimal(1)
+                if (base.lte(0)) return new Decimal(1)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 64))},
@@ -331,29 +335,31 @@ addLayer("multiplication", {
             cost: new Decimal(600),
             canAfford() {
                 if (player.multiplication.points.lt(600)) return false
-                if (hasUpgrade("multiplication", 72)) return false
-                if (hasUpgrade("multiplication", 73)) return false
+                if (hasUpgrade("multiplication", 72) && !hasUpgrade("subtraction", 17)) return false
+                if (hasUpgrade("multiplication", 73) && !hasUpgrade("subtraction", 17)) return false
                 return hasUpgrade("multiplication", 61)
             },
+            branches: [[81, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return player.dimension.points.gte(4)},
         },
         72: {
-            title: "Straight Number Line",
+            title: "Straightforward Mathematics",
             effect() {
                 let base = getBuyableAmount("polygon", 12)
                 base = new Decimal(base).tetrate(3).log(15)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 72))},
-            description: "Constructor straightedge level boosts Numbers after softcap.",
+            description: "Constructor straightedge level boosts Operation Power after softcap.",
             cost: new Decimal(600),
             canAfford() {
                 if (player.multiplication.points.lt(600)) return false
-                if (hasUpgrade("multiplication", 71)) return false
-                if (hasUpgrade("multiplication", 73)) return false
+                if (hasUpgrade("multiplication", 71) && !hasUpgrade("subtraction", 17)) return false
+                if (hasUpgrade("multiplication", 73) && !hasUpgrade("subtraction", 17)) return false
                 return hasUpgrade("multiplication", 62) && hasUpgrade("multiplication", 63)
             },
+            branches: [[81, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return player.dimension.points.gte(4)},
         },
@@ -363,12 +369,33 @@ addLayer("multiplication", {
             cost: new Decimal(600),
             canAfford() {
                 if (player.multiplication.points.lt(600)) return false
-                if (hasUpgrade("multiplication", 71)) return false
-                if (hasUpgrade("multiplication", 72)) return false
+                if (hasUpgrade("multiplication", 71) && !hasUpgrade("subtraction", 17)) return false
+                if (hasUpgrade("multiplication", 72) && !hasUpgrade("subtraction", 17)) return false
                 return hasUpgrade("multiplication", 64)
             },
+            branches: [[81, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return player.dimension.points.gte(4)},
+        },
+        81: {
+            title: "Culmination",
+            effect() {
+                let base = player.multiplication.points
+                base = base.add(1).pow(0.2)
+                return base
+            },
+            effectDisplay() {return "Shapes: x" + format(upgradeEffect("multiplication", 81))},
+            description: "Multiplication boosts Shapes, and Hexagons boost all other Constructor polygons.",
+            cost: new Decimal("4096"),
+            canAfford() {
+                if (player.multiplication.points.lt("4096")) return false
+                if (!hasUpgrade("multiplication", 71)) return false
+                if (!hasUpgrade("multiplication", 72)) return false
+                if (!hasUpgrade("multiplication", 73)) return false
+                return true
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("primitive", 11)},
         },
     },
     buyables: {

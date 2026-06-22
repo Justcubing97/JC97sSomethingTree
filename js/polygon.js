@@ -35,6 +35,8 @@ addLayer("polygon", {
         if (hasMilestone("division", 2)) mult = mult.mul(10)
         if (hasUpgrade("polygon", 13)) mult = mult.mul(upgradeEffect("polygon", 13))
         if (player.dimension.points.gte(4)) mult = mult.mul(4)
+        if (hasUpgrade("arithmetic", 31)) mult = mult.mul(25)
+        if (hasUpgrade("multiplication", 81)) mult = mult.mul(upgradeEffect("multiplication", 81))
         //exp
         //other hypers
         //final effects
@@ -102,20 +104,24 @@ addLayer("polygon", {
                 "blank",
                 ["display-text", function() { return "<b>Unlocking the Constructor unlocks a 4th buyable for Number Cores, gives +1 upgrade in the 5th row of TMT, and unlocks the 6th row of TMT. Also, x5 Division." }],
                 "blank",
-                ["display-text", function() { return "<sup>Note: \"Polygons\" will refer to the Constructor's shapes, \"Shapes\" will refer to the main currency, \"Polygon Layer\" will refer to the layer as a whole." }],
+                ["display-text", function() { return "<sup>Note: \"Constructor polygons\" will refer to the Constructor's shapes, \"Shapes\" will refer to the main currency, \"Polygon Layer\" will refer to the layer as a whole." }],
                 "blank",
                 ["bar", "level"],
                 "blank",
                 ["clickable", 11],
                 "blank",
                 ["display-text", function() {
-                    let text = "You have constructed <b>" + format(player.polygon.triangles) + " Triangles</b>, multiplying Operation power (after softcap) by x" + player.polygon.triEffect.toFixed(6)
+                    let text = "You have constructed <b>" + format(player.polygon.triangles) + " Triangles</b>, multiplying Operation power (after softcap) by x" + format(player.polygon.triEffect)
                     if (hasMilestone("division", 4)) text += ", Squares by x" + format(player.polygon.triEffect.add(1).pow("0.5")) + ", Points by x" + format(player.polygon.triEffect.add(1).pow("100"))
                     return text
                 }],
-                ["display-text", function() { return "You have constructed <b>" + format(player.polygon.squares) + " Squares</b>, multiplying Number Cores by x" + player.polygon.squEffect.toFixed(6) }],
-                ["display-text", function() { return "You have constructed <b>" + format(player.polygon.pentagons) + " Pentagons</b>, raising Addition and Subtraction to ^" + player.polygon.penEffect.toFixed(6) }],
-                ["display-text", function() { return "You have constructed <b>" + format(player.polygon.hexagons) + " Hexagons</b>, raising Points, Fundamentality (after softcap), and Numbers (after softcap) to ^" + player.polygon.hexEffect.toFixed(6) }],
+                ["display-text", function() { return "You have constructed <b>" + format(player.polygon.squares) + " Squares</b>, multiplying Number Cores by x" + format(player.polygon.squEffect) }],
+                ["display-text", function() { return "You have constructed <b>" + format(player.polygon.pentagons) + " Pentagons</b>, raising Addition, Subtraction, and Operation Power (after softcap) to ^" +format(player.polygon.penEffect, 6)}],
+                ["display-text", function() {
+                    let text = "You have constructed <b>" + format(player.polygon.hexagons) + " Hexagons</b>, raising Points, Fundamentality (after softcap), and Numbers (after softcap) to ^" + format(player.polygon.hexEffect, 6)
+                    if (hasUpgrade("multiplication", 81)) text += " and multiplying Triangles, Squares, and Pentagons by x" + format(player.polygon.hexagons.pow(0.8))
+                    return text
+                }],
                 "blank",
                 ["buyables", [1]],
             ],
@@ -221,6 +227,7 @@ addLayer("polygon", {
             effect(){
                 let base = getBuyableAmount("multiplication", 11)
                 base = base.add(1).pow(1.5).pow(base.add(1).log(4))
+                if (hasMilestone("primitive", 9)) base = base.mul(base.pow(0.5))
                 return base
             },
             effectDisplay(){
@@ -230,6 +237,26 @@ addLayer("polygon", {
             description: "The amount of the first Multiplication buyable boosts Number Cores, and keep its amount.",
             cost: new Decimal("50000"),
         },
+        16: {
+            effect(){
+                let base = player.polygon.points
+                base = base.log(10).add(1)
+                return base
+            },
+            effectDisplay(){
+                return "x" + format(upgradeEffect(this.layer, this.id))
+            },
+            title: "Parallel Universe",
+            description: "Shapes are polygons, polygons are shapes. Shapes boost all Constructor polygons.",
+            cost: new Decimal("1000000"),
+            unlocked() {return hasMilestone("division", 3)},
+        },
+        17: {
+            title: "More Basic Boosts",
+            description: "Nerf the Fundamentality ultracap again, and ^1.3 Operation Power after softcap.",
+            cost: new Decimal("50e6"),
+            unlocked() {return hasMilestone("division", 3)},
+        },
     },
     bars: {
         level: {
@@ -238,7 +265,7 @@ addLayer("polygon", {
             height: 75,
             display() {
                 let chosen = getClickableState("polygon", 11) || "triangle"
-                let text = "Your next " + format(player.polygon.constrNextGain) + " " + chosen + "s will be constructed in " + format(player.polygon.constrCurrentTime) + "/" + format(player.polygon.constrBaseTime) + " seconds."
+                let text = "Your next " + format(player.polygon.constrNextGain) + " " + chosen + "s will be constructed in " + formatTime(player.polygon.constrCurrentTime) + "/" + formatTime(player.polygon.constrBaseTime) + "."
                 
                 return text
             },
@@ -259,10 +286,25 @@ addLayer("polygon", {
             },
             canClick() {return true},
             onClick() {
-                if (getClickableState("polygon", 11) == "Pentagon") {setClickableState("polygon", 11, "Hexagon"); player.polygon.constrBaseTime = new Decimal(10800).mul(buyableEffect("polygon", 11))}
-                else if (getClickableState("polygon", 11) == "Square") {setClickableState("polygon", 11, "Pentagon"); player.polygon.constrBaseTime = new Decimal(3600).mul(buyableEffect("polygon", 11))}
-                else if (getClickableState("polygon", 11) == "Triangle") {setClickableState("polygon", 11, "Square"); player.polygon.constrBaseTime = new Decimal(300).mul(buyableEffect("polygon", 11))}
-                else {setClickableState("polygon", 11, "Triangle"); player.polygon.constrBaseTime = new Decimal(30).mul(buyableEffect("polygon", 11))}
+                //Decide time...
+                if (getClickableState("polygon", 11) == "Pentagon") {setClickableState("polygon", 11, "Hexagon"); player.polygon.constrBaseTime = new Decimal(10800)}
+                else if (getClickableState("polygon", 11) == "Square") {setClickableState("polygon", 11, "Pentagon"); player.polygon.constrBaseTime = new Decimal(3600)}
+                else if (getClickableState("polygon", 11) == "Triangle") {setClickableState("polygon", 11, "Square"); player.polygon.constrBaseTime = new Decimal(300)}
+                else {setClickableState("polygon", 11, "Triangle"); player.polygon.constrBaseTime = new Decimal(30)}
+
+                //Global time shifts
+                player.polygon.constrBaseTime = player.polygon.constrBaseTime.mul(buyableEffect("polygon", 11))
+                if (hasMilestone("addition", 3)) player.polygon.constrBaseTime = player.polygon.constrBaseTime.div(10)
+                if (hasUpgrade("subtraction", 17)) player.polygon.constrBaseTime = player.polygon.constrBaseTime.div(3)
+
+                //Specific time shifts
+                //tri
+                //squ
+                //pen
+                if (getClickableState("polygon", 11) == "Pentagon") player.polygon.constrBaseTime = player.polygon.constrBaseTime.div(player.corebooster.e3)
+                //hex
+                if (getClickableState("polygon", 11) == "Hexagon") player.polygon.constrBaseTime = player.polygon.constrBaseTime.div(player.corebooster.e3)
+
                 player.polygon.constrCurrentTime = player.polygon.constrBaseTime
             },
         },
@@ -272,18 +314,20 @@ addLayer("polygon", {
             cost(x) {
                 let base = new Decimal("1500")
                 let scale = new Decimal("1.1").add(x.div("10"))
-                return scale.pow(x).mul(base)
+                let final = scale.pow(x).mul(base)
+                final = final.div(buyableEffect("numbercore", 22)[1])
+                return final
             },
             title: "Upgrade Compass",
-            display() { return "Upgrade your compass so you can draw shapes faster! The effects will occur upon switching construction focus." + "\n" + "Compass level: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Time multiplier (of all shapes): x" + format(this.effect()) },
+            display() { return "Upgrade your compass so you can draw shapes faster! The effects will occur upon switching construction focus." + "\n" + "Compass level: " + getBuyableAmount(this.layer, this.id) + "\n" + "Require: " + format(this.cost()) + "\n" + "Time multiplier (of all shapes): x" + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost())},
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             effect(x) {
                 let effect = new Decimal("0.95").pow(x)
-                if (player.dimension.points.gte(4)) effect.div(1.2)
+                if (player.dimension.points.gte(4)) effect = effect.div(1.2)
+                effect = effect.div(buyableEffect("numbercore", 22)[0])
                 return effect
             },
         },
@@ -291,38 +335,52 @@ addLayer("polygon", {
             cost(x) {
                 let base = new Decimal("1500")
                 let scale = new Decimal("1.125").add(x.div("8"))
-                return scale.pow(x).mul(base)
+                let final = scale.pow(x).mul(base)
+                final = final.div(buyableEffect("numbercore", 22)[1])
+                return final
             },
             title: "Upgrade Straightedge",
-            display() { return "Upgrade your straightedge so you can draw more shapes at a time!" + "\n" + "Straightedge level: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Shape multiplier: x" + format(this.effect()) },
+            display() { return "Upgrade your straightedge so you can draw more Constructor polygons at a time!" + "\n" + "Straightedge level: " + getBuyableAmount(this.layer, this.id) + "\n" + "Require: " + format(this.cost()) + "\n" + "Shape multiplier: x" + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost())},
             buy() {
-                player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            effect(x) { return new Decimal("1.25").pow(x) },
+            effect(x) {
+                let base = new Decimal("1.25").pow(x)
+                base = base.mul(buyableEffect("numbercore", 22)[0])
+                return base
+            },
         },
     },
 
     update(diff){
+        //Global gain
         let effect = new Decimal(1)
 
         effect = effect.mul(buyableEffect("polygon", 12))
+        if (hasUpgrade("polygon", 16)) effect = effect.mul(upgradeEffect("polygon", 16))
+        if (hasUpgrade("fundamental", 45)) effect = effect.mul(upgradeEffect("fundamental", 45))
 
+        //Local gains
         let triBase = effect
+        if (hasUpgrade("multiplication", 81)) triBase = triBase.mul(player.polygon.hexagons.pow(0.8))
                 
         let squBase = effect
         if (hasMilestone("division", 4)) squBase = squBase.mul(player.polygon.triEffect.add(1).pow("0.5"))
+        if (hasUpgrade("multiplication", 81)) squBase = squBase.mul(player.polygon.hexagons.pow(0.8))
 
         let penBase = effect
+        if (hasUpgrade("multiplication", 81)) penBase = penBase.mul(player.polygon.hexagons.pow(0.8))
 
         let hexBase = effect
 
+        //Deciding next shape to add to
         if (getClickableState("polygon", 11) == "Triangle") player.polygon.constrNextGain = triBase
         else if (getClickableState("polygon", 11) == "Square") player.polygon.constrNextGain = squBase
         else if (getClickableState("polygon", 11) == "Pentagon") player.polygon.constrNextGain = penBase
         else if (getClickableState("polygon", 11) == "Hexagon") player.polygon.constrNextGain = hexBase
 
+        //Timer + addition
         if (hasMilestone("division", 3)){
             player.polygon.constrCurrentTime = player.polygon.constrCurrentTime.sub(diff)
             if (player.polygon.constrCurrentTime.lte(0)) {
@@ -334,10 +392,16 @@ addLayer("polygon", {
                 else if (getClickableState("polygon", 11) == "Hexagon") player.polygon.hexagons = player.polygon.hexagons.add(hexBase)
             }
         }
+
+        //Effects
         player.polygon.triEffect = player.polygon.triangles.pow(0.5).add(1)
         player.polygon.squEffect = player.polygon.squares.pow(0.8).add(1)
-        player.polygon.penEffect = player.polygon.pentagons.pow(0.01).add(1)
-        player.polygon.hexEffect = player.polygon.hexagons.add(1).log(10).div(100).add(1)
+        player.polygon.penEffect = player.polygon.pentagons.add(1).pow(0.01)
+        player.polygon.hexEffect = player.polygon.hexagons.add(1).log(100).div(500).add(1)
+
+        //Effect softcaps
+        if (player.polygon.penEffect.gte("1.2")) player.polygon.penEffect = player.polygon.penEffect.log(100).add(1.2)
+        if (player.polygon.penEffect.gte("1.35")) player.polygon.penEffect = player.polygon.penEffect.log(500).add(1.35)
     },
 
     tooltip() {return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"},

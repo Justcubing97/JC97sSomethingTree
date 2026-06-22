@@ -131,6 +131,7 @@ addLayer("unlock", {
                 ["infobox", "d9"],
                 ["infobox", "d10"],
                 ["infobox", "d11"],
+                ["infobox", "d12"],
             ],
             unlocked() { return player.polygon.points.gte(1)}
         },
@@ -301,6 +302,18 @@ addLayer("unlock", {
                 "\"Dark Matter\" was written next to it... no idea what it means. And by the way, your fresh Core Boosters can help you! I bet they indirectly influence your Constructor."
             },
             unlocked() {return player.corebooster.points.gte(1)},
+        },
+
+        d12: {
+            title: "Document 12: What is Universal Essence?",
+            body() { return "We found out that \"Dark Matter\" requires Portals and a ton a math. It doesn't mention anything about the Constructor or Core Boosters... I guess I was wrong. " +
+                "Anyway, Portals require \"Universal Essence,\" which I have no idea how to get. Ashley looks equally perplexed. We decided to travel to the Centroid for lunch." +
+                "After getting the mini Miku statue I accidentally left in the hospital floor, I sat down in a very peculiar pentagon-based chair (I love pentagons). " +
+                "Oh, right. In the Centroid is the expansive cafeteria, which looks no different than a prison cafeteria. The concrete walls are a break from the eternal black, though. " +
+                "Ashley sat down with her friends that she made before I was mysteriously teleported here. I tried talking to people about Dark Matter and Universal Essence, " +
+                "but everyone called me crazy. As I said, the Constructor doesn't really do anything. So go sacrifice it! We don't need it!"
+            },
+            unlocked() {return hasUpgrade("arithmetic", 35)},
         },
     },
     resetsNothing: true,

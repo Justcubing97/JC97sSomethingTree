@@ -52,11 +52,13 @@ addLayer("primitive", {
         let dMult = new Decimal(1)
         if (hasUpgrade("subtraction", 13)) dMult = dMult.mul(100)
         if (hasUpgrade("multiplication", 42)) dMult = dMult.mul("1e10")
+        if (hasUpgrade("arithmetic", 34)) dMult = dMult.mul(upgradeEffect("arithmetic", 34))
 
         if (hasUpgrade("multiplication", 32)) dMult = dMult.pow(1.05)
         if (hasUpgrade("primitive", 27)) dMult = dMult.pow(1.5)
         if (player.dimension.points.gte(4)) dMult = dMult.pow(1.01)
         dMult = dMult.mul(buyableEffect("numbercore", 12))
+        if (player.polygon.hexagons.gte(1)) dMult = dMult.pow(player.polygon.hexEffect)
         return dMult
     },
     softcapPower() {
@@ -288,7 +290,19 @@ addLayer("primitive", {
             requirementDescription: "9: 1e1700 Numbers",
             effectDescription: "<i>how did you get here how did you get here-</i> (Improve \"This isn't even Polygon-Related.\")",
             done() { return player.primitive.points.gte("1e1700") },
-            unlocked() {return player.primitive.points.gte("1e1700")},
+            unlocked() {return player.primitive.points.gte("1e1700") || hasMilestone("primitive", 11)},
+        },
+        10: {
+            requirementDescription: "10: 1e1865 Numbers",
+            effectDescription: "The tenth Primitive milestone! You can passively generate Division whilst in Long Division. And keep the 25th Fundamental upgrade.",
+            done() { return player.primitive.points.gte("1e1865") },
+            unlocked() {return player.primitive.points.gte("1e1865") || hasMilestone("primitive", 11)},
+        },
+        11: {
+            requirementDescription: "11: 1e3003 Numbers",
+            effectDescription: "Not just a trigintillion, a millinillion! Here is the boosts list. x15 Division, unlock the 8th row of TMT, and add a fourth Core Booster effect.",
+            done() { return player.primitive.points.gte("1e3003") },
+            unlocked() {return player.primitive.points.gte("1e3003") || hasMilestone("primitive", 11)},
         },
     },
     branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5], ["division", "#FF50FF", 5], ["numbercore", "#00e0c0", 5]],

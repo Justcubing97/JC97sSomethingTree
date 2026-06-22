@@ -31,6 +31,8 @@ addLayer("division", {
         if (hasUpgrade("multiplication", 62)) mult = mult.mul(15)
         if (player.dimension.points.gte(4)) mult = mult.mul(5)
         mult = mult.mul(player.corebooster.e1)
+        if (hasUpgrade("subtraction", 17)) mult = mult.mul(15)
+        if (hasMilestone("primitive", 11)) mult = mult.mul(15)
         //exp
         //other hypers
         player.division.currencyMulti = mult
@@ -74,12 +76,17 @@ addLayer("division", {
         if (getClickableState("division", 11) != "Active") return false
         return true
     },
-    prestigeNotify() { return false},
+    passiveGeneration(){
+        if (hasMilestone("primitive", 10) && getClickableState("division", 11)) return 1
+        return 0
+    },
+    prestigeNotify() { return getResetGain("division").mul("100").gte(player.division.points) && getClickableState("division", 11)},
     prestigeButtonText() {
         if (getClickableState("division", 11) != "Active" && player.division.resets.eq(0)) return "You need to be in Long Division to reset. However, press this button anyway to initiate the layer."
         if (getClickableState("division", 11) != "Active") return "You need to be in Long Division to reset."
         let detect = player.primitive.points
         let text = "Reset for <b>+" + format(getResetGain("division")) + "</b> Division"
+        if (hasMilestone("primitive", 10)) text = "You are gaining <b>+" + format(getResetGain("division")) + "</b> Division per second."
         if (detect.lt("1.1e33")) return "You start gaining Division at <b>1.1e33</b> Numbers."
         return text
     },
@@ -187,6 +194,18 @@ addLayer("division", {
                 setClickableState("division", 11, "Active")
             },
         },
+        13: {
+            title: "Force Leave",
+            display() {
+                if (getClickableState("division", 11) == "Active") return "Click this button to forcefully leave Long Division (will cause a Polygon reset)."
+                return "You are not in Long Division right now."
+            },
+            canClick() {return true},
+            onClick() {
+                doReset("division", true)
+                setClickableState("division", 11, "Inactive")
+            },
+        },
     },
     milestones: {
         1: {
@@ -208,6 +227,12 @@ addLayer("division", {
         4: {
             requirementDescription: "15,000,000 Division",
             effectDescription: "Triangles boost Squares and Points.",
+            done() { return player.division.points.gte("15e6") },
+            unlocked() {return hasMilestone("division", 3)},
+        },
+        5: {
+            requirementDescription: "5e9 Division",
+            effectDescription: "REMOVE THE MULTIPLICATION HARDCAP.",
             done() { return player.division.points.gte("15e6") },
             unlocked() {return hasMilestone("division", 3)},
         },
@@ -239,6 +264,16 @@ addLayer("division", {
             title: "Subtraction is Under-used.",
             description: "x1e30 to Subtraction.",
             cost: new Decimal("5e6"),
+        },
+        14: {
+            title: "Not Challenging Enough",
+            description: "Keep the 4th Arithmetic Challenge and the 24th Fundamental Upgrade.",
+            cost: new Decimal("200e6"),
+        },
+        15: {
+            title: "Tree Preservation",
+            description: "Keep the 6th and 7th rows of TMT. (Don't say it...)",
+            cost: new Decimal("2.5e11"),
         },
     },
     tooltip() {

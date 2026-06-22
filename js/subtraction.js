@@ -27,6 +27,7 @@ addLayer("subtraction", {
         if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.05)
+        if (player.polygon.pentagons.gte(1)) mult = mult.pow(player.polygon.penEffect)
         //other hypers
         return mult
     },
@@ -85,6 +86,7 @@ addLayer("subtraction", {
             title: "A Better Divided Life",
             description: "The logarithm in Division's formula is base 5 instead of base 10.",
             cost: new Decimal("1e400"),
+            unlocked(){return player.polygon.unlocked},
         },
         16: {
             title: "Opposite Addition",
@@ -96,6 +98,13 @@ addLayer("subtraction", {
             effectDisplay(){return "x" + format(upgradeEffect(this.layer, this.id))},
             description: "Subtraction boosts Division at a really reduced rate.",
             cost: new Decimal("1e500"),
+            unlocked(){return player.polygon.unlocked},
+        },
+        17: {
+            title: "Breakthrough",
+            description: "Divide all construction times by 3, x15 Division, x1e10 Number Cores, and +2 upgrades in the 7th row of TMT.",
+            cost: new Decimal("1e650"),
+            unlocked(){return hasMilestone("division", 3)},
         },
     },
     tooltip() {return format(player.subtraction.points) + " Subtraction (+" + format(getResetGain("subtraction")) + " Subtraction/sec)"},
