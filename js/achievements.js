@@ -205,15 +205,27 @@ achievements: {
     unlocked() {return true},
   },
   54: {
-    name: "Check this out: I subtracted suffering!",
-    done(){return hasUpgrade("subtraction", 17)},
-    tooltip:"Have 1 row of Subtraction upgrades.",
-    unlocked() {return true},
-  },
-  55: {
     name: "The Googol Core",
     done(){return player.numbercore.points.gte("1e100")},
     tooltip:"Have 1e100 Number Cores. Reward: weaken the Operation Power softcap.",
+    unlocked() {return true},
+  },
+  55: {
+    name: "Sacrificed Polygons",
+    done(){return hasUpgrade("arithmetic", 35)},
+    tooltip:"Unlock the Constructor Sacrifice.",
+    unlocked() {return true},
+  },
+  56: {
+    name: "Scientific Notation Recursion Level 2",
+    done(){return player.points.gte("e1e6")},
+    tooltip:"Have e1,000,000 Points.",
+    unlocked() {return true},
+  },
+  57: {
+    name: "The Next Layer is Near",
+    done(){return maxedChallenge("polygon", 11)},
+    tooltip:"Fully sacrifice your Constructor.",
     unlocked() {return true},
   },
 },

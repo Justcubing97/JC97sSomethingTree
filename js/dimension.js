@@ -12,7 +12,11 @@ addLayer("dimension", {
     baseResource: "Numbers", // Name of resource prestige is based on
     baseAmount() {return player.primitive.points}, // Get the current amount of baseResource
     type: "static", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 7.66, // Prestige currency exponent
+    exponent() {
+        let base = new Decimal(7.66)
+        if (player.dimension.points.gte(5)) base = base.add(4.34)
+        return base
+    }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         //add
@@ -25,7 +29,7 @@ addLayer("dimension", {
         let exp = new Decimal(1)
         return exp
     },
-    row: 4, // Row the layer is in on the tree (0 is the first row)
+    row: 5, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "d", description: "D: Reset for a Dimension", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -72,6 +76,12 @@ addLayer("dimension", {
             effectDescription: "Let's see here... x5 Division, improve the first Multiplication and Fundamental buyables, x100 Number Cores AND KEEP IT UNLOCKED, x4 Shapes, ^1.01 Numbers and Operation Power after softcaps, improve the Constructor compass, reduce the cost scaling of the fourth Fundamental buyable, and unlock the seventh row of TMT. That was a lot!",
             done() { return player.dimension.points.gte(4) },
             unlocked() { return hasMilestone("division", 3)}
+        },
+        5: {
+            requirementDescription: "THE 5TH DIMENSION",
+            effectDescription: "QoL time! Passively generate Multiplication if possible, the Addition booster for Points is always active, automatically upgrade the Constructor straightedge and compass, and REMOVE the Fundamentality ultracap and hypercap!",
+            done() { return player.dimension.points.gte(5) },
+            unlocked() { return hasUpgrade("arithmetic", 35)}
         },
     },
     tooltip() {return format(player.dimension.points) + " Dimensions (" + format(getNextAt("dimension")) + " Numbers for next Dimension)"},

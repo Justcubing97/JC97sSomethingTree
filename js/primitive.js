@@ -37,6 +37,7 @@ addLayer("primitive", {
         if (hasUpgrade("fundamental", 41)) mult = mult.pow(upgradeEffect("fundamental", 41))
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
+        if (inChallenge("polygon", 12)) mult = mult.pow(0.001)
         //other hypers
 
         //final
@@ -53,12 +54,14 @@ addLayer("primitive", {
         if (hasUpgrade("subtraction", 13)) dMult = dMult.mul(100)
         if (hasUpgrade("multiplication", 42)) dMult = dMult.mul("1e10")
         if (hasUpgrade("arithmetic", 34)) dMult = dMult.mul(upgradeEffect("arithmetic", 34))
+        dMult = dMult.mul(buyableEffect("fundamental", 22))
 
         if (hasUpgrade("multiplication", 32)) dMult = dMult.pow(1.05)
         if (hasUpgrade("primitive", 27)) dMult = dMult.pow(1.5)
         if (player.dimension.points.gte(4)) dMult = dMult.pow(1.01)
         dMult = dMult.mul(buyableEffect("numbercore", 12))
         if (player.polygon.hexagons.gte(1)) dMult = dMult.pow(player.polygon.hexEffect)
+        if (hasUpgrade("division", 16)) dMult = dMult.pow(1.01)
         return dMult
     },
     softcapPower() {
@@ -66,17 +69,21 @@ addLayer("primitive", {
         if (hasUpgrade("subtraction", 12)) power = power.add(0.05)
         if (player.primitive.points.gte("1e1000")) power = power.div(1.45)
         if (player.primitive.points.gte("1e1700")) power = power.div(1.2)
+        if (player.primitive.points.gte("1e50000")) power = power.div(1.1)
+
+        if (maxedChallenge("polygon", 11)) power = new Decimal(0.35)
         player.primitive.softcapExponent = power
         return power
     },
     effectDescription() {
         let text = ""
-        if (player.primitive.points.gte("1e1700")) text = text + "hypercapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
+        if (player.primitive.points.gte("1e50000")) text = text + "ultracapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
+        else if (player.primitive.points.gte("1e1700")) text = text + "hypercapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
         else if (player.primitive.points.gte("1e1000")) text = text + "supercapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
         else if (player.primitive.points.gte("1e50")) text = text + "softcapped by ^" + player.primitive.softcapExponent.toFixed(6) + " to its gain."
         return text
     },
-    row: 1, // Row the layer is in on the tree (0 is the first row)
+    row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "p", description: "P: Reset for Numbers", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -95,6 +102,14 @@ addLayer("primitive", {
         if (hasAchievement("achievements", 34)) keptUpgrades.push(24)
         if (hasMilestone("polygon", 3)) keptUpgrades.push(25)
         if (hasMilestone("polygon", 9)) keptUpgrades.push(26, 27)
+
+        if (hasUpgrade("primitive", 31)) keptUpgrades.push(31)
+        if (hasUpgrade("primitive", 32)) keptUpgrades.push(32)
+        if (hasUpgrade("primitive", 33)) keptUpgrades.push(33)
+        if (hasUpgrade("primitive", 34)) keptUpgrades.push(34)
+        if (hasUpgrade("primitive", 35)) keptUpgrades.push(35)
+        if (hasUpgrade("primitive", 36)) keptUpgrades.push(36)
+        if (hasUpgrade("primitive", 37)) keptUpgrades.push(37)
 
         let keptBuyables = []
 
@@ -138,6 +153,7 @@ addLayer("primitive", {
                 if (hasUpgrade("multiplication", 52)) effect = effect.pow(upgradeEffect("multiplication", 52))
 
                 if (effect.gte("1e1000")) effect = effect.log(1.0001).pow(10).mul("1e1000")
+                if (hasMilestone("addition", 7)) effect = effect.pow(getBuyableAmount("polygon", 11).add(1))
                 return effect
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -227,6 +243,48 @@ addLayer("primitive", {
             cost: new Decimal("1e1000"),
             unlocked() {return hasUpgrade("multiplication", 42) || hasMilestone("polygon", 9)},
         },
+        31: {
+            title: "The Third Row",
+            description: "Remove the third Multiplication hardcap. All upgrades in this row are kept. Also, x1e200 Number Cores.",
+            cost: new Decimal("1e65200"),
+            unlocked() {return hasMilestone("primitive", 13)},
+        },
+        32: {
+            title: "Quotient Memorization",
+            description: "x30 Division, and x1e500 Addition in Long Division!",
+            cost: new Decimal("1e67800"),
+            unlocked() {return hasMilestone("primitive", 13)},
+        },
+        33: {
+            title: "SACRIFICE!",
+            description: "x1e50 Operation Power after softcaps and nerfs while sacrificing.",
+            cost: new Decimal("1e73000"),
+            unlocked() {return hasMilestone("primitive", 13)},
+        },
+        34: {
+            title: "King Sammelot",
+            description: "FIVE FIVE! Multiply Core Boosters and Division by 5.",
+            cost: new Decimal("1e74000"),
+            unlocked() {return hasMilestone("primitive", 13)},
+        },
+        35: {
+            title: "I NEED TO MULTIPLY",
+            description: "Remove the 4th Multiplication hardcap.",
+            cost: new Decimal("1e129750"),
+            unlocked() {return hasMilestone("primitive", 13)},
+        },
+        36: {
+            title: "Repetition++",
+            description: "Unlock another Fundamentality buyable, and improve \"Unhardcapped\".",
+            cost: new Decimal("1e161875"),
+            unlocked() {return hasMilestone("primitive", 13)},
+        },
+        37: {
+            title: "THE FINAL",
+            description: "-0.5 to the Core Booster Scaling Exponent.",
+            cost: new Decimal("1e179290"),
+            unlocked() {return hasMilestone("primitive", 13)},
+        },
     },
     milestones: {
         1: {
@@ -278,7 +336,6 @@ addLayer("primitive", {
                 let text = "A trigintillion! For every Fundamental buyable 3, +"
                 let base = new Decimal(0.1)
                 if (hasUpgrade("multiplication", 11)) base = base.add(0.4)
-                if (hasUpgrade("polygon", 12)) base = base.add(upgradeEffect("polygon", 12))
 
                 text = text + format(base) + " to Fundamental buyable 1's base. Currently: +" + format(getBuyableAmount("fundamental", 13).mul(base))
                 return text
@@ -303,6 +360,24 @@ addLayer("primitive", {
             effectDescription: "Not just a trigintillion, a millinillion! Here is the boosts list. x15 Division, unlock the 8th row of TMT, and add a fourth Core Booster effect.",
             done() { return player.primitive.points.gte("1e3003") },
             unlocked() {return player.primitive.points.gte("1e3003") || hasMilestone("primitive", 11)},
+        },
+        12: {
+            requirementDescription: "12: 1e8000 Numbers",
+            effectDescription: "x1e350 Points and x1.1 Multiplication!",
+            done() { return player.primitive.points.gte("1e8000") },
+            unlocked() {return player.primitive.points.gte("1e8000") || hasMilestone("primitive", 12)},
+        },
+        13: {
+            requirementDescription: "13: 1e65,000 Numbers",
+            effectDescription: "The Fundamental softcaps are fixed at ^0.25 and unlock more Primitive upgrades.",
+            done() { return player.primitive.points.gte("1e65000") },
+            unlocked() {return player.primitive.points.gte("1e65000") || hasMilestone("primitive", 13)},
+        },
+        14: {
+            requirementDescription: "14: 1e673,330 Numbers",
+            effectDescription: "^1.05 Multiplication, ^1.35 Fundamentality and Operation Power after softcap. x1,000,000 Division.",
+            done() { return player.primitive.points.gte("1e673330") },
+            unlocked() {return player.primitive.points.gte("1e673330") || hasMilestone("primitive", 14)},
         },
     },
     branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5], ["division", "#FF50FF", 5], ["numbercore", "#00e0c0", 5]],

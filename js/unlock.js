@@ -40,11 +40,28 @@ addLayer("unlock", {
         //other hypers
         return mult
     },
+    doReset(resettingLayer) {
+        // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        if (layers[resettingLayer].row <= this.row) return;
+
+        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
+        let keptUpgrades = []
+
+        let keptBuyables = []
+
+        // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
+        let keep = ["points", "upgrades"];
+
+        // Stage 4, do the actual data reset
+        layerDataReset(this.layer, keep);
+
+        // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
+    },
     gainExp() { // Calculate the exponent on main currency from bonuses
         let exp = new Decimal(1)
         return exp
     },
-    row: 5, // Row the layer is in on the tree (0 is the first row)
+    row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "u", description: "U: Reset for Unlock Points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -91,6 +108,14 @@ addLayer("unlock", {
             description: "Unlock the Core Booster layer: another sub-layer related to the Primitive layer.",
             cost: new Decimal("1e1550"),
         },
+
+
+
+        21: {
+            title: "Planetary Fragment layer",
+            description: "Unlock the Planetary Fragment layer: the fourth major reset layer.",
+            cost: new Decimal("e6000000"),
+        },
     },
     branches: [
         ["fundamental", "#FFC800", 10], 
@@ -132,6 +157,7 @@ addLayer("unlock", {
                 ["infobox", "d10"],
                 ["infobox", "d11"],
                 ["infobox", "d12"],
+                ["infobox", "d13"],
             ],
             unlocked() { return player.polygon.points.gte(1)}
         },
@@ -311,9 +337,26 @@ addLayer("unlock", {
                 "After getting the mini Miku statue I accidentally left in the hospital floor, I sat down in a very peculiar pentagon-based chair (I love pentagons). " +
                 "Oh, right. In the Centroid is the expansive cafeteria, which looks no different than a prison cafeteria. The concrete walls are a break from the eternal black, though. " +
                 "Ashley sat down with her friends that she made before I was mysteriously teleported here. I tried talking to people about Dark Matter and Universal Essence, " +
-                "but everyone called me crazy. As I said, the Constructor doesn't really do anything. So go sacrifice it! We don't need it!"
+                "but everyone called me crazy. As I said, the Constructor doesn't really do anything. So go sacrifice it! We don't need it! [INFLATION IMMINENT]"
             },
             unlocked() {return hasUpgrade("arithmetic", 35)},
+        },
+
+        d13: {
+            title: "Document 13: Polygons & Flags",
+            body() { return "After returning to my little prison cell thing with Ashley, who still had the \"GUIDE.\" with her. " +
+                "All was well before an event was called at the Centroid, flagged as RED. <i>(The Void's event flagging system goes GREEN, YELLOW, ORANGE, RED, and BLACK. " +
+                "GREEN means it's usually an achievement or milestone, YELLOW indicates a slight disadvantage or obstacle, " +
+                "ORANGE events usually warn everyone about a potentially dangerous incident, RED suggests that a definitely threatening incident has appeared, " +
+                "and BLACK... you probably don't want to be exposed in The Void. Last time that happened, some girl got mercilessly incinerated by a death beam.)</i> " +
+                "Once everyone gathered in the auditorium, Ashley sitting next to me because she \"feels safe and comfy\" with me, the Void Masters (basically rulers) " +
+                "presented the sudden surge of \"Sacrificed Polygons\" dispersed around The void, and there were a LOT of them from their photos. Triangles, Squares, Pentagons, Hexagons. " +
+                "(Man, I really hope this isn't a side effect from sacrificing your Constructor...) And Ashley clung to my arm like a scared puppy with one arm. " +
+                "Yeah, expect more rapid inflation. Anyway, if you touch one of these Sacrificed Polygons, it would become sentient and start flying toward you. " +
+                "It's possible to outrun it, but none have so far. The victims suffered burns and scars, which are nothing too fatal. " +
+                "After the whole presentation thing, Ashley suggested we just stay in the Centroid and not go anywhere because \"why should we risk injuries when we're safe here?\""
+            },
+            unlocked() {return maxedChallenge("polygon", 11)},
         },
     },
     resetsNothing: true,

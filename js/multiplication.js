@@ -21,6 +21,11 @@ addLayer("multiplication", {
         if (hasUpgrade("subtraction", 14)) nerf = nerf.add(1)
         final = final.sub(nerf)
         if (player.multiplication.points.gte("600")) final = final.add(3)
+        if (player.multiplication.points.gte("5000")) final = final.add(6)
+        if (player.multiplication.points.gte("40000")) final = final.add(10)
+        if (player.multiplication.points.gte("250000")) final = final.add(35)
+        if (player.multiplication.points.gte("1e7")) final = final.add(100)
+        if (player.multiplication.points.gte("2.15e9")) final = final.add(750)
         return final
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -35,25 +40,44 @@ addLayer("multiplication", {
         let exp = new Decimal(1)
         return exp
     },
-    row: 2, // Row the layer is in on the tree (0 is the first row)
+    row: 3, // Row the layer is in on the tree (0 is the first row)
     layerShown(){return hasChallenge("arithmetic", 12) || hasMilestone("polygon", 5)},
     directMult() {
         let dMult = new Decimal(1)
         if (hasMilestone("division", 1)) dMult = dMult.mul(2)
         if (hasUpgrade("division", 11)) dMult = dMult.mul(upgradeEffect("division", 11))
+        if (hasMilestone("primitive", 12)) dMult = dMult.mul(1.1)
+        if (hasUpgrade("subtraction", 25)) dMult = dMult.mul(1000)
+
+        if (hasMilestone("primitive", 14)) dMult = dMult.pow(1.05)
+        if (maxedChallenge("polygon", 11)) dMult = dMult.pow(1.2)
+        if (hasMilestone("corebooster", 5)) dMult = dMult.pow(1.01)
         return dMult
     },
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
         if (layers[resettingLayer].row <= this.row) return;
-
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
+        //self refs
         if (hasUpgrade("multiplication", 43)) keptUpgrades.push(43)
         if (hasUpgrade("multiplication", 62)) keptUpgrades.push(62)
+
+        //everything else
         if (hasUpgrade("polygon", 13)) keptUpgrades.push(11, 21, 22, 31, 32)
         if (hasUpgrade("fundamental", 43) || hasUpgrade("division", 14)) keptUpgrades.push(41, 42, 51, 52)
         if (hasUpgrade("division", 15)) keptUpgrades.push(61, 63, 64, 71, 72, 73)
+        if (hasUpgrade("fundamental", 46)) keptUpgrades.push(81)
+
+        if (hasUpgrade("multiplication", 91)) keptUpgrades.push(91)
+        if (hasUpgrade("multiplication", 92)) keptUpgrades.push(92)
+        if (hasUpgrade("multiplication", 93)) keptUpgrades.push(93)
+        if (hasUpgrade("multiplication", 94)) keptUpgrades.push(94)
+        if (hasUpgrade("multiplication", 95)) keptUpgrades.push(95)
+
+        if (hasUpgrade("multiplication", 101)) keptUpgrades.push(101)
+        if (hasUpgrade("multiplication", 102)) keptUpgrades.push(102)
+        
 
         let keptBuyables = []
         if (hasUpgrade("polygon", 15)) keptBuyables.push(getBuyableAmount("multiplication", 11))
@@ -72,12 +96,46 @@ addLayer("multiplication", {
     effect() {
         let final = player.multiplication.points.add(1).pow(10)
         if (player.polygon.points.gte(1)) final = final.mul(player.polygon.effect)
+        if (hasMilestone("division", 9)) final = final.pow(4.66)
         player.multiplication.effect = final || new Decimal(1)
     },
-    effectDescription() {return "multiplying Points by x" + format(player.multiplication.effect)},
+    effectDescription() {
+        if (hasMilestone("division", 9)) return "multiplying Points and Number Cores by x" + format(player.multiplication.effect)
+        return "multiplying Points by x" + format(player.multiplication.effect)
+    },
     onPrestige(){
         let current = player.multiplication.points
         let offset = getResetGain("multiplication")
+        if (current.add(offset).gte("2.15e9")) {
+            let difference = current.add(offset).sub("2.15e9")
+            player.multiplication.points = player.multiplication.points.sub(difference)
+            if (hasMilestone("division", 9)) player.multiplication.points = player.multiplication.points.add(difference)
+        }
+
+        if (current.add(offset).gte("1e7")) {
+            let difference = current.add(offset).sub("1e7")
+            player.multiplication.points = player.multiplication.points.sub(difference)
+            if (hasMilestone("corebooster", 1)) player.multiplication.points = player.multiplication.points.add(difference)
+        }
+
+        if (current.add(offset).gte("250000")) {
+            let difference = current.add(offset).sub("250000")
+            player.multiplication.points = player.multiplication.points.sub(difference)
+            if (hasUpgrade("primitive", 35)) player.multiplication.points = player.multiplication.points.add(difference)
+        }
+
+        if (current.add(offset).gte("40000")) {
+            let difference = current.add(offset).sub("40000")
+            player.multiplication.points = player.multiplication.points.sub(difference)
+            if (hasUpgrade("primitive", 31)) player.multiplication.points = player.multiplication.points.add(difference)
+        }
+
+        if (current.add(offset).gte("5000")) {
+            let difference = current.add(offset).sub("5000")
+            player.multiplication.points = player.multiplication.points.sub(difference)
+            if (hasUpgrade("arithmetic", 36)) player.multiplication.points = player.multiplication.points.add(difference)
+        }
+
         if (current.add(offset).gte("600")) {
             let difference = current.add(offset).sub("600")
             player.multiplication.points = player.multiplication.points.sub(difference)
@@ -86,6 +144,7 @@ addLayer("multiplication", {
     },
     resetsNothing() {return true},
     canBuyMax() {return true},
+    autoPrestige() {return player.dimension.points.gte(5)},
     tabFormat: {
         "Main": {
             content: [
@@ -102,6 +161,8 @@ addLayer("multiplication", {
                 ["upgrades", [6]],"blank",
                 ["upgrades", [7]],"blank",
                 ["upgrades", [8]],"blank",
+                ["upgrades", [9]],"blank",
+                ["upgrades", [10]],"blank",
             ],
         },
         "Buyables": {
@@ -394,8 +455,107 @@ addLayer("multiplication", {
                 if (!hasUpgrade("multiplication", 73)) return false
                 return true
             },
+            branches: [[91, "#FFFFFF", 10], [92, "#FFFFFF", 10], [93, "#FFFFFF", 10], [94, "#FFFFFF", 10], [95, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("primitive", 11)},
+        },
+        91: {
+            title: "Muga Millions",
+            description: "x1e6 Division.",
+            cost: new Decimal("2e6"),
+            canAfford() {
+                if (player.multiplication.points.lt("2e6")) return false
+                return hasUpgrade("multiplication", 81)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 8)},
+        },
+        92: {
+            title: "Less Defects",
+            description: "Have more effective Core Boosters.",
+            cost: new Decimal("1e7"),
+            canAfford() {
+                if (player.multiplication.points.lt("1e7")) return false
+                return hasUpgrade("multiplication", 81)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 8)},
+        },
+        93: {
+            title: "Overpowered",
+            description: "^1.25 Number Cores.",
+            cost: new Decimal("1e11"),
+            canAfford() {
+                if (player.multiplication.points.lt("1e11")) return false
+                return hasUpgrade("multiplication", 81)
+            },
+            branches: [[101, "#FFFFFF", 10], [102, "#FFFFFF", 10]],
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 8)},
+        },
+        94: {
+            title: "Numerical Ease",
+            effect() {
+                let base = player.primitive.points
+                base = base.add(1).log(1000)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 94))},
+            description: "Numbers boost Division.",
+            cost: new Decimal("135e6"),
+            canAfford() {
+                if (player.multiplication.points.lt("135e6")) return false
+                return hasUpgrade("multiplication", 81)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 8)},
+        },
+        95: {
+            title: "NO DIFFERENCE",
+            effect() {
+                let base = player.subtraction.points
+                base = base.slog().div(1.5)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 95))},
+            description: "Subtraction boosts Core Boosters.",
+            cost: new Decimal("2.15e9"),
+            canAfford() {
+                if (player.multiplication.points.lt("2.15e9")) return false
+                return hasUpgrade("multiplication", 81)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("division", 8)},
+        },
+
+        101: {
+            title: "Five. Hundred. Shapes.",
+            description: "x1,000,000 Shapes after softcap.",
+            cost: new Decimal("2e11"),
+            canAfford() {
+                if (player.multiplication.points.lt("2e11")) return false
+                return hasUpgrade("multiplication", 93)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("addition", 7)},
+        },
+        102: {
+            title: "Constructor Enhancement",
+            effect() {
+                let base = buyableEffect("polygon", 12)
+                base = base.pow(0.1)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", 102))},
+            description: "15 free levels for the compass. The straightedge effect boosts Shapes and Division at a reduced rate.",
+            cost: new Decimal("3e18"),
+            canAfford() {
+                if (player.multiplication.points.lt("3e18")) return false
+                return hasUpgrade("multiplication", 93)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("addition", 7)},
+            onPurchase() {addBuyables("polygon", 11, new Decimal(15))}
         },
     },
     buyables: {

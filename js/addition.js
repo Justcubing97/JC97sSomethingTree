@@ -28,6 +28,12 @@ addLayer("addition", {
         if (hasUpgrade("multiplication", 63)) mult = mult.mul("1e50")
         if (hasChallenge("arithmetic", 22)) mult = mult.mul("1e10")
         mult = mult.mul(player.corebooster.e4)
+        if (hasUpgrade("primitive", 32) && getClickableState("division", 11) == "Active") mult = mult.mul("1e500")
+        if (hasMilestone("addition", 5)){
+            if (player.addition.points.add(1).pow(player.addition.points.add(1).log(100).div("1e7")).gte("1e15000")) mult = mult.mul("1e15000")
+            else mult = mult.mul(player.addition.points.add(1).pow(player.addition.points.add(1).log(100).div("1e7")))
+        }
+        if (hasUpgrade("subtraction", 22)) mult = mult.mul("1e15")
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
         if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)
@@ -42,7 +48,7 @@ addLayer("addition", {
         let exp = new Decimal(1) //DO NOT USE
         return exp
     },
-    row: 2, // Row the layer is in on the tree (0 is the first row)
+    row: 3, // Row the layer is in on the tree (0 is the first row)
     layerShown(){return hasUpgrade("arithmetic", 13) || hasMilestone("dimension", 3) },
     directMult() {
         let dMult = new Decimal(1)
@@ -97,9 +103,14 @@ addLayer("addition", {
 
                 //final
                 if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
+                if (base.gt("1e80000")) return new Decimal("1e80000")
                 return base
             },
-            display() {return "Addition adds to Fundamentality base: +" + format(clickableEffect("addition", 11)) + " (" + getClickableState("addition", 11) + ")"},
+            display() {
+                let cap = ""
+                if (clickableEffect("addition", 11).gte("1e80000")) cap = ", CAPPED"
+                return "Addition adds to Fundamentality base: +" + format(clickableEffect("addition", 11)) + " (" + getClickableState("addition", 11) + cap + ")"
+            },
             canClick() {return true},
             onClick() {
                 setClickableState("addition", 11, "Active")
@@ -123,9 +134,14 @@ addLayer("addition", {
 
                 //final
                 if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
+                if (base.gt("1e80000")) return new Decimal("1e80000")
                 return base
             },
-            display() {return "Addition adds to Numbers base: +" + format(clickableEffect("addition", 12)) + " (" + getClickableState("addition", 12) + ")"},
+            display() {
+                let cap = ""
+                if (clickableEffect("addition", 12).gte("1e80000")) cap = ", CAPPED"
+                return "Addition adds to Numbers base: +" + format(clickableEffect("addition", 12)) + " (" + getClickableState("addition", 12) + cap + ")"
+            },
             canClick() {return true},
             onClick() {
                 setClickableState("addition", 12, "Active")
@@ -138,6 +154,7 @@ addLayer("addition", {
         13: {
             title: "Add to Points",
             effect() {
+                if (player.dimension.points.gte(5)) setClickableState("addition", 13, "ALWAYS ACTIVE")
                 let base = player.addition.points
                 base = base.pow(0.4).add(1).pow(1.5)
                 if (hasUpgrade("multiplication", 22)) base = base.mul(upgradeEffect("multiplication", 22))
@@ -197,9 +214,14 @@ addLayer("addition", {
                 let exp = new Decimal(0.02)
                 base = base.pow(exp).add(1)
 
+                if (base.gt("1e125")) return new Decimal("1e125")
                 return base
             },
-            display() {return "Addition adds to Operation Power base: +" + format(clickableEffect("addition", 15)) + " (" + getClickableState("addition", 15) + ")"},
+            display() {
+                let cap = ""
+                if (clickableEffect("addition", 15).gte("1e125")) cap = ", CAPPED"
+                return "Addition adds to Operation Power base: +" + format(clickableEffect("addition", 15)) + " (" + getClickableState("addition", 15) + cap + ")"
+            },
             canClick() {return true},
             onClick() {
                 setClickableState("addition", 15, "Active")
@@ -214,22 +236,64 @@ addLayer("addition", {
     },
     milestones: {
         1: {
-            requirementDescription: "1e85 Addition",
+            requirementDescription: "1: 1e85 Addition",
             effectDescription: "The milestone virus is spreading... HEAVILY improve \"Primitive Boost,\" \"Insane Math,\" and unlock more Fundamental upgrades.",
             done() { return player.addition.points.gte("1e85") },
             unlocked() {return player.dimension.points.gte(3)},
         },
         2: {
-            requirementDescription: "1e410 Addition",
+            requirementDescription: "2: 1e410 Addition",
             effectDescription: "+5 to Fundamental buyable 1's base.",
             done() { return player.addition.points.gte("1e410") },
             unlocked() {return player.dimension.points.gte(3)},
         },
         3: {
-            requirementDescription: "1e860 Addition",
-            effectDescription: "Division boosts Number Cores very slightly and divide all polygon construction times by 10.",
+            requirementDescription: "3: 1e860 Addition",
+            effectDescription: "Division boosts Number Cores very slightly and divide all polygon construction times by 10. x1e100 Number Cores.",
             done() { return player.addition.points.gte("1e860") },
             unlocked() {return player.dimension.points.gte(4)},
+        },
+        4: {
+            requirementDescription: "4: 1e2560 Addition",
+            effectDescription() {
+                let text = "Addition boosts Number Cores and Division. Currently: x"
+                text += format(player.addition.points.add(1).pow(0.006)) + " Number Cores, x"
+                text += format(player.addition.points.add(1).log(1.3)) + " Division"
+                return text
+            },
+            done() { return player.addition.points.gte("1e2560") },
+            unlocked() {return hasUpgrade("arithmetic", 35)},
+        },
+        5: {
+            requirementDescription: "5: 1e6800 Addition",
+            effectDescription() {
+                let text = "Addition boosts itself. Currently: x"
+                if (player.addition.points.add(1).pow(player.addition.points.add(1).log(100).div("1e7")).gte("1e15000")) text += "1e15,000"
+                else text += format(player.addition.points.add(1).pow(player.addition.points.add(1).log(100).div("1e7")))
+                return text
+            },
+            done() { return player.addition.points.gte("1e6800") },
+            unlocked() {return player.dimension.points.gte(5)},
+        },
+        6: {
+            requirementDescription: "6: 1e50,000 Addition",
+            effectDescription() {
+                let text = "Addition boosts the Operation Power softcap. Currently: x"
+                text += format(player.addition.points.add(1).pow(player.addition.points.log(10).div("1e6")))
+                return text
+            },
+            done() { return player.addition.points.gte("1e50000") },
+            unlocked() {return player.dimension.points.gte(5)},
+        },
+        7: {
+            requirementDescription: "7: 1e450,000 Addition",
+            effectDescription() {
+                let text = "TENTH ROW. And the Constructor compass level boosts \"Primitive Boost\". Currently: ^"
+                text += format(getBuyableAmount("polygon", 11).add(1))
+                return text
+            },
+            done() { return player.addition.points.gte("1e450000") },
+            unlocked() {return player.dimension.points.gte(5)},
         },
     },
     tooltip() {return format(player.addition.points) + " Addition (+" + format(getResetGain("addition")) + " Addition/sec)"},

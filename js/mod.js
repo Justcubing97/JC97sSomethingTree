@@ -67,7 +67,7 @@ let winText = `Congratulations! You have reached the end of JST for now, as of v
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
-var doNotCallTheseFunctionsEveryTick = ["blowUpEverything"]
+var doNotCallTheseFunctionsEveryTick = ["blowUpEverything", "buyableScalings_NUMBERCORE"]
 
 function getStartPoints(){
     return new Decimal(modInfo.initialStartPoints)
@@ -86,7 +86,7 @@ function getPointGen() {
 	if (hasUpgrade("fundamental", 13)) gain = gain.add(1)
 	if (hasUpgrade("fundamental", 16)) gain = gain.add(5)
 	if (hasUpgrade("primitive", 11)) gain = gain.add(5)
-	if (getClickableState("addition", 13) == "Active" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
+	if (getClickableState("addition", 13) != "Inactive" && !inChallenge("arithmetic", 12)) gain = gain.add(clickableEffect("addition", 13))
 	//mul
 	if (hasUpgrade("fundamental", 11)) gain = gain.mul(2)
 	if (hasUpgrade("fundamental", 12)) gain = gain.mul(3)
@@ -96,9 +96,7 @@ function getPointGen() {
 	if (hasMilestone("primitive", 1)) gain = gain.mul(50)
 	if (hasUpgrade("fundamental", 26)) gain = gain.mul(25)
 	if (hasUpgrade("arithmetic", 27)) gain = gain.mul(upgradeEffect("arithmetic", 27))
-		
 	if (!inChallenge("arithmetic", 11) && getClickableState("division", 11) != "Active") gain = gain.mul(buyableEffect("fundamental", 11))
-
 	if (hasUpgrade("primitive", 14)) gain = gain.mul(upgradeEffect("primitive", 14))
 	if (hasMilestone("primitive", 4)) gain = gain.mul(100)
 	if (hasUpgrade("fundamental", 33)) gain = gain.mul(1000000)
@@ -115,10 +113,23 @@ function getPointGen() {
 	if (hasUpgrade("division", 12)) gain = gain.mul(upgradeEffect("division", 12))
 	if (hasUpgrade("multiplication", 64)) gain = gain.mul(upgradeEffect("multiplication", 64))
 	if (player.multiplication.points.gte(1)) gain = gain.mul(player.multiplication.effect.add(1))
-	if (hasMilestone("division", 4)) gain = gain.mul(player.polygon.triEffect.add(1).pow("100").add(1))
+	if (hasMilestone("division", 4) && !inChallenge("polygon", 11)) gain = gain.mul(player.polygon.triEffect.add(1).pow("100").add(1))
 	if (hasUpgrade("multiplication", 73)) gain = gain.mul("1e100")
 	if (hasChallenge("arithmetic", 22)) gain = gain.mul("1e250")
 	gain = gain.mul(player.corebooster.e4)
+	if (hasMilestone("division", 6)) gain = gain.mul("1e250")
+	if (hasMilestone("primitive", 12)) gain = gain.mul("1e350")
+	if (challengeCompletions("polygon", 11) >= 1) gain = gain.mul(challengeEffect("polygon", 11)[0])
+	gain = gain.mul(buyableEffect("fundamental", 22))
+	if (hasMilestone("corebooster", 1)) gain = gain.mul(player.corebooster.e1.add(1).pow(100))
+	if (hasUpgrade("division", 21)) gain = gain.mul(upgradeEffect("division", 21))
+	if (hasMilestone("corebooster", 4)){
+        let base = player.division.points
+        let exp = new Decimal(25)
+        base = base.pow(exp)
+		gain = gain.mul(base)
+	}
+	if (maxedChallenge("polygon", 11)) gain = gain.mul("1e5000")
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
@@ -130,12 +141,17 @@ function getPointGen() {
 	if (inChallenge("arithmetic", 21)) gain = gain.pow(0.1)
 	if (player.polygon.hexagons.gte(1)) gain = gain.pow(player.polygon.hexEffect)
 	if (inChallenge("arithmetic", 22)) gain = gain.pow(0.5)
+	if (inChallenge("polygon", 11)) gain = gain.pow(0.1)
+	if (hasUpgrade("division", 16)) gain = gain.pow(1.01)
+	if (hasUpgrade("division", 26)) gain = gain.pow(1.001)
+	if (hasUpgrade("division", 27)) gain = gain.pow(1.2)
 	//other hypers
 	//final
 	if (getClickableState("division", 11) == "Active") gain = gain.pow(0.3)
 	if (getClickableState("division", 11) == "Active" && hasMilestone("polygon", 7)) gain = gain.mul("1e10")
 	if (getClickableState("division", 11) == "Active") gain = gain.mul(buyableEffect("numbercore", 13))
 
+	if (hasUpgrade("fundamental", 47)) gain = gain.mul("1e100")
 	return gain
 }
 

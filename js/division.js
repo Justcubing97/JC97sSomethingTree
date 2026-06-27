@@ -33,7 +33,20 @@ addLayer("division", {
         mult = mult.mul(player.corebooster.e1)
         if (hasUpgrade("subtraction", 17)) mult = mult.mul(15)
         if (hasMilestone("primitive", 11)) mult = mult.mul(15)
+        if (hasMilestone("addition", 4)) mult = mult.mul(player.addition.points.add(1).log(1.3))
+        if (hasUpgrade("arithmetic", 37)) mult = mult.mul(player.corebooster.e5)
+        if (hasUpgrade("primitive", 32)) mult = mult.mul(30)
+        if (hasUpgrade("primitive", 34)) mult = mult.mul(5)
+        if (hasUpgrade("multiplication", 91)) mult = mult.mul("1e6")
+        if (hasUpgrade("multiplication", 94)) mult = mult.mul(upgradeEffect("multiplication", 94))
+        if (hasMilestone("primitive", 14)) mult = mult.mul("1e6")
+        if (hasUpgrade("multiplication", 102)) mult = mult.mul(upgradeEffect("multiplication", 102))
+        if (hasUpgrade("subtraction", 24)) mult = mult.mul("1e10")
+        if (hasMilestone("corebooster", 5)) mult = mult.mul("500")
         //exp
+        if (hasMilestone("corebooster", 2)) mult = mult.pow("1.1")
+        if (hasMilestone("division", 10)) mult = mult.pow("1.1")
+        if (hasUpgrade("subtraction", 27)) mult = mult.pow("1.3")
         //other hypers
         player.division.currencyMulti = mult
         return new Decimal(1)
@@ -42,7 +55,7 @@ addLayer("division", {
         let exp = new Decimal(1)
         return exp
     },
-    row: 2, // Row the layer is in on the tree (0 is the first row)
+    row: 3, // Row the layer is in on the tree (0 is the first row)
     layerShown(){return hasMilestone("polygon", 5)},
     directMult() {
         let dMult = new Decimal(1)
@@ -77,7 +90,8 @@ addLayer("division", {
         return true
     },
     passiveGeneration(){
-        if (hasMilestone("primitive", 10) && getClickableState("division", 11)) return 1
+        if (hasMilestone("division", 10)) return 1
+        if (hasMilestone("primitive", 10) && getClickableState("division", 11) == "Active") return 1
         return 0
     },
     prestigeNotify() { return getResetGain("division").mul("100").gte(player.division.points) && getClickableState("division", 11)},
@@ -232,9 +246,45 @@ addLayer("division", {
         },
         5: {
             requirementDescription: "5e9 Division",
-            effectDescription: "REMOVE THE MULTIPLICATION HARDCAP.",
+            effectDescription: "REMOVE THE FIRST MULTIPLICATION HARDCAP.",
             done() { return player.division.points.gte("15e6") },
             unlocked() {return hasMilestone("division", 3)},
+        },
+        6: {
+            requirementDescription: "2e12 Division",
+            effectDescription: "x1e250 Points and ^1.1 Number Cores.",
+            done() { return player.division.points.gte("2e12") },
+            unlocked() {return hasMilestone("division", 3)},
+        },
+        7: {
+            requirementDescription: "1e21 Division",
+            effectDescription: "x10 Shapes and x1.5 Core Boosters.",
+            done() { return player.division.points.gte("1e21") },
+            unlocked() {return hasMilestone("division", 3)},
+        },
+        8: {
+            requirementDescription: "5e23 Division",
+            effectDescription: "THE NINTH ROW.",
+            done() { return player.division.points.gte("5e23") },
+            unlocked() {return player.dimension.points.gte(5)},
+        },
+        9: {
+            requirementDescription: "5e43 Division",
+            effectDescription: "Remove the 6th and final Multiplication hardcap. Drastically improve Multiplication's effect and it now affects Number Cores.",
+            done() { return player.division.points.gte("5e43") },
+            unlocked() {return player.dimension.points.gte(5)},
+        },
+        10: {
+            requirementDescription: "1e50 Division",
+            effectDescription: "You know it was coming eventually. Passively Generate Division outside of Long Division, and ^1.1 Division.",
+            done() { return player.division.points.gte("1e50") },
+            unlocked() {return player.dimension.points.gte(5)},
+        },
+        11: {
+            requirementDescription: "1e75 Division",
+            effectDescription: "Seriously, Core Boosters aren't supposed to replicate! Useful Core Boosters passively gain 0.01% of your Core Boosters.",
+            done() { return player.division.points.gte("1e75") },
+            unlocked() {return hasMilestone("division", 10)},
         },
     },
     upgrades: {
@@ -243,6 +293,7 @@ addLayer("division", {
             effect(){
                 let base = player.division.points
                 base = base.pow(0.25).add(1)
+                if (hasUpgrade("division", 23)) base = base.pow(1.2)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("division", 11))},
@@ -274,6 +325,78 @@ addLayer("division", {
             title: "Tree Preservation",
             description: "Keep the 6th and 7th rows of TMT. (Don't say it...)",
             cost: new Decimal("2.5e11"),
+        },
+        16: {
+            title: "EXPONENTS!",
+            description: "^1.01 Points, Fundamentality, Numbers, Operation Power, and Shapes (after softcaps for middle 3).",
+            cost: new Decimal("1e18"),
+        },
+        17: {
+            title: "Unhardcapped",
+            effect(){
+                let base = player.division.points
+                base = base.pow(1.35).add(1)
+                if (hasUpgrade("primitive", 36)) base = base.pow(player.division.points.pow(0.03))
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("division", 17))},
+            description: "Division delays the Operation Power hardcap.",
+            cost: new Decimal("1e24"),
+        },
+
+        21: {
+            title: "Not Completely Useless",
+            effect(){
+                let base = player.corebooster.points.sub(player.corebooster.trueUseful)
+                base = base.pow(50).pow(base.pow(0.1))
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("division", 21))},
+            description: "Useless Core Boosters boost the Operation Power hardcap and Points.",
+            cost: new Decimal("1e30"),
+            unlocked() {return hasUpgrade("division", 17)},
+        },
+        22: {
+            title: "WHAT?!",
+            description: "Useful Core Boosters are x1.2 your total Core Booster amount.",
+            cost: new Decimal("1e36"),
+            unlocked() {return hasUpgrade("division", 17)},
+        },
+        23: {
+            title: "King Sammelot Final Form",
+            description: "REAL FIVE FIVE! Improve \"Embrace the Quotients\".",
+            cost: new Decimal("5.55e55"),
+            unlocked() {return hasUpgrade("division", 17)},
+        },
+        24: {
+            title: "Subtraction is Under-used+",
+            effect(){
+                let base = player.subtraction.points
+                base = base.log(1.1).pow(1.25)
+                return base
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("division", 24))},
+            description: "Subtraction boosts Shapes after softcap.",
+            cost: new Decimal("1e61"),
+            unlocked() {return hasUpgrade("division", 17)},
+        },
+        25: {
+            title: "I know you want the next layer",
+            description: "x1e500 Subtraction.",
+            cost: new Decimal("1e64"),
+            unlocked() {return hasUpgrade("division", 17)},
+        },
+        26: {
+            title: "Just a few more upgrades",
+            description: "^1.001 Points.",
+            cost: new Decimal("1e80"),
+            unlocked() {return hasUpgrade("division", 25)},
+        },
+        27: {
+            title: "NEXT LAYER IMMINENT",
+            description: "^1.2 Points.",
+            cost: new Decimal("1e100"),
+            unlocked() {return hasUpgrade("division", 26)},
         },
     },
     tooltip() {

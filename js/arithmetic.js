@@ -26,8 +26,10 @@ addLayer("arithmetic", {
         if (hasUpgrade("primitive", 26)) mult = mult.mul(100)
         if (hasUpgrade("division", 12)) mult = mult.mul(upgradeEffect("division", 12))
         if (hasUpgrade("arithmetic", 14) && hasUpgrade("multiplication", 51)) mult = mult.mul(upgradeEffect("multiplication", 51))
+        if (challengeCompletions("polygon", 11) >= 1) mult = mult.mul(challengeEffect("polygon", 11)[1])
         //exp
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
+        if (inChallenge("polygon", 11)) mult = mult.pow(0.1)
         //other hypers
         //final effects
         if (hasUpgrade("multiplication", 32)) mult = mult.div(5)
@@ -38,7 +40,7 @@ addLayer("arithmetic", {
         let exp = new Decimal(1) //DO NOT USE
         return exp
     },
-    row: 3, // Row the layer is in on the tree (0 is the first row)
+    row: 4, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "a", description: "A: Reset for Operation Power", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -49,11 +51,13 @@ addLayer("arithmetic", {
         dMult = dMult.mul(player.polygon.triEffect)
         if (hasUpgrade("multiplication", 72)) dMult = dMult.mul(upgradeEffect("multiplication", 72))
         if (hasChallenge("arithmetic", 22)) dMult = dMult.mul("1e10")
-        mult = mult.mul(player.corebooster.e4)
+        if (inChallenge("polygon", 11) && hasUpgrade("primitive", 33)) dMult = dMult.mul("1e50")
 
         if (player.dimension.points.gte(4)) dMult = dMult.pow(1.01)
         if (player.polygon.pentagons.gte(1)) dMult = dMult.pow(player.polygon.penEffect)
         if (hasUpgrade("polygon", 17)) dMult = dMult.pow(1.3)
+        if (hasUpgrade("division", 16)) dMult = dMult.pow(1.01)
+        if (hasMilestone("primitive", 14)) dMult = dMult.pow(1.35)
         
         return dMult
     },
@@ -62,12 +66,21 @@ addLayer("arithmetic", {
         let power = new Decimal(0.25)
         if (hasAchievement("achievements", 55)) power = new Decimal(0.1)
         else if (player.arithmetic.points.gte("1e100")) power = new Decimal(1).div(player.arithmetic.points.div("1e90").pow(0.1))
+
+        let HARD = new Decimal("1e2500")
+        if (hasUpgrade("division", 17)) HARD = HARD.mul(upgradeEffect("division", 17))
+        if (hasUpgrade("multiplication", 94)) HARD = HARD.mul("1e100")
+        if (hasUpgrade("division", 21)) HARD = HARD.mul(upgradeEffect("division", 21))
+        if (hasMilestone("addition", 6)) HARD = HARD.mul(player.addition.points.add(1).pow(player.addition.points.log(10).div("1e6")))
+
+        if (player.arithmetic.points.gte(HARD)){power = new Decimal(0.05); player.arithmetic.points = new Decimal(HARD)}
         player.arithmetic.softcapExponent = power
         return power
     },
     effectDescription() {
         let text = ""
-        if (player.arithmetic.points.gte("1e100")) text = text + "softcapped by ^" + player.arithmetic.softcapExponent.toFixed(6) + " to its gain (warning: totally not accurate)."
+        if (player.arithmetic.points.gte("1e2500")) text = text + "supercapped by ^" + player.arithmetic.softcapExponent.toFixed(6) + " to its gain (warning: totally not accurate)."
+        else if (player.arithmetic.points.gte("1e100")) text = text + "softcapped by ^" + player.arithmetic.softcapExponent.toFixed(6) + " to its gain (warning: totally not accurate)."
         else return 
         return text
     },
@@ -85,10 +98,13 @@ addLayer("arithmetic", {
         if (hasUpgrade("arithmetic", 33)) keptUpgrades.push(33)
         if (hasUpgrade("arithmetic", 34)) keptUpgrades.push(34)
         if (hasUpgrade("arithmetic", 35)) keptUpgrades.push(35)
+        if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(36)
+        if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(37)
 
         let keptChallenges = []
         if (hasMilestone("polygon", 8)) keptChallenges.push(11, 12, 13)
         if (hasUpgrade("division", 14)) keptChallenges.push(21)
+        if (hasUpgrade("fundamental", 46)) keptChallenges.push(22)
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -98,10 +114,8 @@ addLayer("arithmetic", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier
         player[this.layer].upgrades.push(...keptUpgrades)
-        if (keptChallenges.includes(11)) player[this.layer].challenges[11] = 1
-        if (keptChallenges.includes(12)) player[this.layer].challenges[12] = 1
-        if (keptChallenges.includes(13)) player[this.layer].challenges[13] = 2
-        if (keptChallenges.includes(21)) player[this.layer].challenges[21] = 1
+
+        keptChallenges.forEach(element => player[this.layer].challenges[element] = 1)
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     tabFormat: {
         "Main": {
@@ -145,6 +159,7 @@ addLayer("arithmetic", {
             effect() {
                 let effect = new Decimal(player.addition.points).add(player.subtraction.points).add(1)
                 if (player.polygon.points.gte(1)) effect = effect.mul(player.polygon.effect)
+                if (effect.gte("1e15000")) effect = new Decimal("1e15000")
 
                 return effect
             },
@@ -172,6 +187,7 @@ addLayer("arithmetic", {
             effect() {
                 let effect = new Decimal(player.arithmetic.points).pow(1.2).add(1)
                 if (hasMilestone("addition", 1)) effect = effect.mul(player.arithmetic.points.pow(0.1).add(1))
+                if (effect.gte("e1500000")) return new Decimal("e1500000")
                 return effect
             },
             description: "Operation Power boosts Points, Addition, and Subtraction.",
@@ -218,6 +234,7 @@ addLayer("arithmetic", {
             title: "No Longer Useless",
             effect() {
                 let effect = player.subtraction.points.pow(0.33).add(1)
+                if (effect.gte("1e3000")) return new Decimal("1e3000")
                 return effect
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id))},
@@ -260,6 +277,18 @@ addLayer("arithmetic", {
             cost: new Decimal("1e285"),
             unlocked(){return player.corebooster.unlocked},
         },
+        36: {
+            title: "Multiplicative Savior",
+            description: "Remove the second Multiplication hardcap.",
+            cost: new Decimal("1e330"),
+            unlocked(){return player.corebooster.unlocked},
+        },
+        37: {
+            title: "Core Booster Booster",
+            description: "Add a 5th Core Booster effect.",
+            cost: new Decimal("1e360"),
+            unlocked(){return player.corebooster.unlocked},
+        },
     },
     challenges: {
         11: {
@@ -296,7 +325,7 @@ addLayer("arithmetic", {
         },
         22: {
             name: "Arithmetic Distortion",
-            challengeDescription: "<i>\"The tempest of reality hits you harder than anything before.\"</i> You are in \"Beginner's Demise\", \"UNKNOWN OPERATION\", and \"Dimensionless Reality.\". Also, ^0.5 Points. <i>This challenge resets Operation Power</i>",
+            challengeDescription: "<i>\"The tempest of reality hits you harder than anything before.\"</i> You are in \"Beginner's Demise\", \"UNKNOWN OPERATION\", and \"Dimensionless Reality\". Also, ^0.5 Points. <i>This challenge resets Operation Power.</i>",
             goalDescription: "Have 1e620 Points.",
             rewardDescription: "x1e10 Number Cores, Addition, Operation Power, Fundamentality (both after softcap), and x1e250 Points!",
             countsAs: [11, 12, 13,],

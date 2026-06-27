@@ -6,6 +6,7 @@ addLayer("corebooster", {
         unlocked: false,
 		points: new Decimal(0),
         useful: new Decimal(0),
+        trueUseful: new Decimal(0),
         e1: new Decimal(1),
         e2: new Decimal(1),
         e3: new Decimal(1),
@@ -21,9 +22,13 @@ addLayer("corebooster", {
     exponent() {
         let base = new Decimal(3)
         if (hasAchievement("achievements", 53)) base = base.sub(0.5)
+        if (hasUpgrade("primitive", 37)) base = base.sub(0.5)
         return base
     }, // Prestige currency exponent
-    base: 50,
+    base() {
+        let initial = new Decimal(50)
+        return initial
+    },
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         //add
@@ -39,9 +44,15 @@ addLayer("corebooster", {
     },
     directMult() {
         let dMult = new Decimal(1)
+
+        if (hasMilestone("division", 7)) dMult = dMult.mul(1.5)
+        if (hasUpgrade("primitive", 34)) dMult = dMult.mul(5)
+        if (hasUpgrade("multiplication", 95)) dMult = dMult.mul(upgradeEffect("multiplication", 95))
+        if (maxedChallenge("polygon", 11)) dMult = dMult.mul(2.5)
+
         return dMult
     },
-    row: 1, // Row the layer is in on the tree (0 is the first row)
+    row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "B", description: "B: Reset for Core Boosters", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -49,45 +60,28 @@ addLayer("corebooster", {
     passiveGeneration() {return false},
     onPrestige() {
         player.corebooster.points = player.corebooster.points.add(getResetGain("corebooster"))
-        doReset("polygon", true)
-    },
-    doReset(resettingLayer) {
-        // Stage 1, almost always needed, makes resetting this layer not delete your progress
-        if (layers[resettingLayer].row <= this.row) return;
+        if (!hasMilestone("corebooster", 3)) doReset("polygon", true)
 
-        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
-        let keptUpgrades = []
+        if (hasMilestone("division", 11)) player.corebooster.useful = player.corebooster.useful.add(player.corebooster.points.mul(0.0001))
+        else {
+            player.corebooster.useful = player.corebooster.points
+            if (player.corebooster.useful.gte(12)){
+                let remainder = player.corebooster.points.sub(12)
+                let divid = new Decimal(3)
+                if (hasUpgrade("multiplication", 92)) divid = divid.sub(1)
+                if (hasMilestone("corebooster", 2)) divid = divid.sub(0.5)
 
-        let keptBuyables = []
+                remainder = remainder.div(divid).floor()
 
-        // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
-        let keep = ["points"];
+                player.corebooster.useful = new Decimal(12).add(remainder)
+                player.corebooster.trueUseful = player.corebooster.useful
 
-        // Stage 4, do the actual data reset
-        layerDataReset(this.layer, keep);
-
-        // Stage 5, add back in the specific subfeatures you saved earlier
-    }, //THANK YOU ESCAPEE FROM THE TMT SERVER
-    tabFormat: [
-        "main-display",
-        "prestige-button",
-        ["display-text", function() { return "You have " + format(player.numbercore.points) + " Number Cores"}],
-        "blank",
-        ["display-text", function() { return "<h3>You have " + format(player.corebooster.useful) + " useful Core Boosters, which...</h3>"}],
-        ["display-text", function() { return "x" + format(player.corebooster.e1) + " to Shapes"}],
-        ["display-text", function() { return "x" + format(player.corebooster.e2) + " to Division"}],
-        ["display-text", function() {
-            if (!hasAchievement("achievements", 53)) return ""
-            return "/" + format(player.corebooster.e3) + " to Pentagon and Hexagon construction time"
-        }],
-        ["display-text", function() {
-            if (!hasMilestone("primitive", 11)) return ""
-            return "x" + format(player.corebooster.e4) + " to Points, Fundamentality, Operation Power, and Addition."
-        }],
-    ],
-
-    update(diff){
-        player.corebooster.useful = player.corebooster.points
+                let buff = player.corebooster.points
+                let multi = new Decimal(1.2)
+                if (hasMilestone("corebooster", 3)) multi = multi.add(0.3)
+                if (hasUpgrade("division", 22)) player.corebooster.useful = buff.mul(multi)
+            }
+        }
 
         let e1b = player.corebooster.useful
         e1b = e1b.add(1).log(20).add(1)
@@ -108,6 +102,153 @@ addLayer("corebooster", {
         e4b = e4b.add(1).pow(new Decimal(13).mul(player.corebooster.useful))
         if (!hasMilestone("primitive", 11)) player.corebooster.e4 = new Decimal(1)
         else player.corebooster.e4 = e4b
+
+        let e5b = player.corebooster.useful
+        e5b = e5b.add(1).pow(1.5)
+        if (!hasMilestone("primitive", 11)) player.corebooster.e5 = new Decimal(1)
+        else player.corebooster.e5 = e5b
+    },
+    autoPrestige() {return hasMilestone("corebooster", 3)},
+    resetsNothing() {return hasMilestone("corebooster", 3)},
+    canBuyMax() {return true},
+    doReset(resettingLayer) {
+        // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        if (layers[resettingLayer].row <= this.row) return;
+
+        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
+        let keptUpgrades = []
+        let keptUseful = player.corebooster.useful
+
+        let keptBuyables = []
+
+        // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
+        let keep = ["points", "milestones"];
+
+        // Stage 4, do the actual data reset
+        layerDataReset(this.layer, keep);
+
+        // Stage 5, add back in the specific subfeatures you saved earlier
+        if (hasMilestone("division", 11)) player.corebooster.useful = keptUseful
+    }, //THANK YOU ESCAPEE FROM THE TMT SERVER
+    tabFormat: [
+        "main-display",
+        "prestige-button",
+        ["display-text", function() { return "You have " + format(player.numbercore.points) + " Number Cores"}],
+        "blank",
+        ["display-text", function() { return "<h2>You have " + format(player.corebooster.useful) + " useful Core Boosters, which..."}],
+        "blank",
+        ["display-text", function() {
+            let text = "<h3>x" + format(player.corebooster.e1) + " to Shapes"
+            if (hasMilestone("corebooster", 1)) text += ", x" + format(player.corebooster.e1.add(1).pow(100)) + " to Points"
+            return text
+        }],
+        "blank",
+        ["display-text", function() { return "<h3>x" + format(player.corebooster.e2) + " to Division"}],
+        "blank",
+        ["display-text", function() {
+            if (!hasAchievement("achievements", 53)) return ""
+            return "<h3>/" + format(player.corebooster.e3) + " to Pentagon and Hexagon construction time"
+        }],
+        "blank",
+        ["display-text", function() {
+            if (!hasMilestone("primitive", 11)) return ""
+            return "<h3>x" + format(player.corebooster.e4) + " to Points, Fundamentality, and Addition"
+        }],
+        "blank",
+        ["display-text", function() {
+            if (!hasUpgrade("arithmetic", 37)) return ""
+            return "<h3>x" + format(player.corebooster.e5) + " to Shapes and Division"
+        }],
+        "blank",
+        "milestones",
+    ],
+    milestones: {
+        1: {
+            requirementDescription: "180 useful Core Boosters",
+            effectDescription: "The first Core Booster effect now affects Points at an increased rate. Remove the 5th Multiplication hardcap.",
+            done() { return player.corebooster.useful.gte(180) },
+            unlocked() {return hasMilestone("division", 8)}
+        },
+        2: {
+            requirementDescription: "530 useful Core Boosters",
+            effectDescription: "Have more useful Core Boosters, and keep the 5th Fundamental buyable. ^1.1 Division.",
+            done() { return player.corebooster.useful.gte(530) },
+            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+        },
+        3: {
+            requirementDescription: "1,480 useful Core Boosters",
+            effectDescription: "Autobuy Core Boosters. Useful Core Boosters are x1.5 your total Core Boosters.",
+            done() { return player.corebooster.useful.gte(1480) },
+            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+        },
+        4: {
+            requirementDescription: "7,777 useful Core Boosters",
+            effectDescription() {
+                let text = "Division boosts Points."
+                let base = player.division.points
+                let exp = new Decimal(25)
+                base = base.pow(exp)
+
+                text += " Currently: x" + format(base)
+                return text
+            },
+            done() { return player.corebooster.useful.gte(7777) },
+            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+        },
+        5: {
+            requirementDescription: "13,500 useful Core Boosters",
+            effectDescription: "x500 Division and ^1.01 Multiplication.",
+            done() { return player.corebooster.useful.gte(11500) },
+            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+        },
+    },
+
+    update(diff){
+        if (hasMilestone("division", 11)) player.corebooster.useful = player.corebooster.useful.add(player.corebooster.points.mul(0.0001))
+        else {
+            player.corebooster.useful = player.corebooster.points
+            if (player.corebooster.useful.gte(12)){
+                let remainder = player.corebooster.points.sub(12)
+                let divid = new Decimal(3)
+                if (hasUpgrade("multiplication", 92)) divid = divid.sub(1)
+                if (hasMilestone("corebooster", 2)) divid = divid.sub(0.5)
+
+                remainder = remainder.div(divid).floor()
+
+                player.corebooster.useful = new Decimal(12).add(remainder)
+                player.corebooster.trueUseful = player.corebooster.useful
+
+                let buff = player.corebooster.points
+                let multi = new Decimal(1.2)
+                if (hasMilestone("corebooster", 3)) multi = multi.add(0.3)
+                if (hasUpgrade("division", 22)) player.corebooster.useful = buff.mul(multi)
+            }
+        }
+
+        let e1b = player.corebooster.useful
+        e1b = e1b.add(1).log(20).add(1)
+        if (hasAchievement("achievements", 53)) e1b = e1b.pow(3)
+        player.corebooster.e1 = e1b
+
+        let e2b = player.corebooster.useful
+        e2b = e2b.add(1).pow(0.5)
+        if (hasAchievement("achievements", 53)) e1b = e1b.pow(2)
+        player.corebooster.e2 = e2b
+
+        let e3b = player.corebooster.useful
+        e3b = e3b.add(1).pow(0.25)
+        if (!hasAchievement("achievements", 53)) player.corebooster.e3 = new Decimal(1)
+        else player.corebooster.e3 = e3b
+
+        let e4b = player.corebooster.useful
+        e4b = e4b.add(1).pow(new Decimal(13).mul(player.corebooster.useful))
+        if (!hasMilestone("primitive", 11)) player.corebooster.e4 = new Decimal(1)
+        else player.corebooster.e4 = e4b
+
+        let e5b = player.corebooster.useful
+        e5b = e5b.add(1).pow(1.5)
+        if (!hasMilestone("primitive", 11)) player.corebooster.e5 = new Decimal(1)
+        else player.corebooster.e5 = e5b
     },
     tooltip() {return format(player.corebooster.points) + " Core Boosters (" + format(getNextAt("corebooster")) + " Number Cores for next Core Booster) - GAINING CORE BOOSTERS WILL FORCE POLYGON RESET."},
 })

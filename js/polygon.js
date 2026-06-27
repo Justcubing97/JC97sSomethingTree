@@ -7,6 +7,7 @@ addLayer("polygon", {
 		points: new Decimal(0),
         resets: new Decimal(0),
         effect: new Decimal(0),
+        softcap: new Decimal(1),
         constrBaseTime: new Decimal(30),
         constrCurrentTime: new Decimal(30),
 
@@ -37,6 +38,11 @@ addLayer("polygon", {
         if (player.dimension.points.gte(4)) mult = mult.mul(4)
         if (hasUpgrade("arithmetic", 31)) mult = mult.mul(25)
         if (hasUpgrade("multiplication", 81)) mult = mult.mul(upgradeEffect("multiplication", 81))
+        if (hasUpgrade("division", 16)) mult = mult.pow(1.01)
+        if (hasUpgrade("arithmetic", 37)) mult = mult.mul(player.corebooster.e5)
+        if (hasMilestone("division", 7)) mult = mult.mul(10)
+        if (hasUpgrade("multiplication", 102)) mult = mult.mul(upgradeEffect("multiplication", 102))
+        if (hasUpgrade("subtraction", 24)) mult = mult.mul("1e10")
         //exp
         //other hypers
         //final effects
@@ -46,19 +52,35 @@ addLayer("polygon", {
         let exp = new Decimal(1) //DO NOT USE
         return exp
     },
-    row: 4, // Row the layer is in on the tree (0 is the first row)
+    row: 5, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "s", description: "S: Reset for Shapes", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.polygon.unlocked},
+    softcap() {return new Decimal("1e50")},
     directMult() {
         let dMult = new Decimal(1)
+        if (hasUpgrade("multiplication", 101)) dMult = dMult.mul("1e6")
+        if (hasUpgrade("division", 24)) dMult = dMult.mul(upgradeEffect("division", 24))
+
+        if (hasUpgrade("subtraction", 26)) dMult = dMult.pow(1.01)
         return dMult
     },
+    softcapPower() {
+        let power = new Decimal(0.05)
+        player.polygon.softcap = power
+        return power
+    },
     resetDescription: "Polygonify for ",
-    onPrestige() {player.polygon.resets = player.polygon.resets.add(1)},
+    onPrestige() {
+        player.polygon.resets = player.polygon.resets.add(1)
+        player.polygon.softcap = new Decimal(1)
+
+        if (player.polygon.points.gte("1e1000")) player.polygon.points = new Decimal("1e1000")
+    },
     effect() {
         let base = player.polygon.points.add(1).pow(3.33)
+        if (base.gte("1e200")) base = base.pow(0.02).mul("1e200")
         player.polygon.effect = base
     },
     effectDescription() {
@@ -89,6 +111,11 @@ addLayer("polygon", {
                 ["display-text", function() { return "You have " + format(player.arithmetic.points) + " Operation Power" }],
                 ["display-text", function() { return "You have Polygonified " + format(player.polygon.resets) + " time(s)" }],
                 "blank",
+                ["display-text", function() {
+                    if (getResetGain("polygon").lt("1e50")) return ""
+                    return "Polygon gain is softcapped by ^" + format(player.polygon.softcap) + "!"
+                }],
+                "blank",
                 "milestones",
                 "blank",
                 "upgrades",
@@ -102,6 +129,11 @@ addLayer("polygon", {
                 ["display-text", function() { return "You have " + format(player.arithmetic.points) + " Operation Power" }],
                 ["display-text", function() { return "You have Polygonified " + format(player.polygon.resets) + " time(s)" }],
                 "blank",
+                ["display-text", function() {
+                    if (getResetGain("polygon").lt("1e50")) return ""
+                    return "Polygon gain is softcapped by ^" + format(player.polygon.softcap) + "!"
+                }],
+                "blank",
                 ["display-text", function() { return "<b>Unlocking the Constructor unlocks a 4th buyable for Number Cores, gives +1 upgrade in the 5th row of TMT, and unlocks the 6th row of TMT. Also, x5 Division." }],
                 "blank",
                 ["display-text", function() { return "<sup>Note: \"Constructor polygons\" will refer to the Constructor's shapes, \"Shapes\" will refer to the main currency, \"Polygon Layer\" will refer to the layer as a whole." }],
@@ -111,6 +143,7 @@ addLayer("polygon", {
                 ["clickable", 11],
                 "blank",
                 ["display-text", function() {
+                    if (inChallenge("polygon", 11)) return "You have constructed <b>" + format(player.polygon.triangles) + " Triangles</b>, but you are currently sacrificing Triangles, so they do not do anything."
                     let text = "You have constructed <b>" + format(player.polygon.triangles) + " Triangles</b>, multiplying Operation power (after softcap) by x" + format(player.polygon.triEffect)
                     if (hasMilestone("division", 4)) text += ", Squares by x" + format(player.polygon.triEffect.add(1).pow("0.5")) + ", Points by x" + format(player.polygon.triEffect.add(1).pow("100"))
                     return text
@@ -124,6 +157,15 @@ addLayer("polygon", {
                 }],
                 "blank",
                 ["buyables", [1]],
+                "blank",
+                "challenges",
+                "blank",
+                ["display-text", function() {
+                    if (!maxedChallenge("polygon", 11)) return ""
+                    let text = "<b>Complete Constructor Sacrifice bonus:</b> x2.5 Core Boosters, x1e5000 Points, ^1.01 Fundamentality (after softcap) and Number Cores, ^1.2 Multiplication, and the Numbers softcap is fixed at ^0.35. ^1.1 all Constructor polygons."
+                    return text
+                }],
+                "blank",
             ],
         },
     },
@@ -191,17 +233,7 @@ addLayer("polygon", {
         },
         12: {
             title: "Not Much to do Here...",
-            effect(){
-                let base = player.polygon.points
-                base = base.pow(0.1)
-                if (base.eq(0)) base = new Decimal(1)
-                base = base.sub(0.8)
-                return base
-            },
-            effectDisplay(){
-                return "+" + format(upgradeEffect(this.layer, this.id)) + " to milestone's base effect."
-            },
-            description: "Shapes boost the 8th Primitive Milestone. And x1e40 Unlock Points.",
+            description: "x1e40 Unlock Points.",
             cost: new Decimal(250),
         },
         13: {
@@ -314,8 +346,10 @@ addLayer("polygon", {
             cost(x) {
                 let base = new Decimal("1500")
                 let scale = new Decimal("1.1").add(x.div("10"))
+                
                 let final = scale.pow(x).mul(base)
                 final = final.div(buyableEffect("numbercore", 22)[1])
+                if (hasUpgrade("subtraction", 23)) final = final.div("1e25")
                 return final
             },
             title: "Upgrade Compass",
@@ -335,8 +369,10 @@ addLayer("polygon", {
             cost(x) {
                 let base = new Decimal("1500")
                 let scale = new Decimal("1.125").add(x.div("8"))
+
                 let final = scale.pow(x).mul(base)
                 final = final.div(buyableEffect("numbercore", 22)[1])
+                if (hasUpgrade("subtraction", 23)) final = final.div("1e25")
                 return final
             },
             title: "Upgrade Straightedge",
@@ -352,6 +388,43 @@ addLayer("polygon", {
             },
         },
     },
+    challenges: {
+        11: {
+            name: "Constructor Sacrifice",
+            challengeDescription: "All Triangle boosts don't work. Operation Power and Points are raised to ^0.1. You are also in Long Division.",
+            goalDescription: function() {
+                if (inChallenge(this.layer, this.id)) setClickableState("division", 11, "Active")
+                if (challengeCompletions("polygon", 11) >= 10) return "<b>Your Constructor has been sacrificed."
+                return `Have <b>${tmp[this.layer].challenges[this.id].goal}</b> Points.`
+            },
+            rewardDescription: function() {return "x1e500 Points and x1e10 Operation Power per completion. At 10 completions, the Constructor polygons will always be constructed passively. Uncap but softcap the Triangle effects. <br><b>Sacrifice progress: " + challengeCompletions(this.layer, this.id) + "0%</b>" },
+            rewardEffect() {return [new Decimal("1e500").pow(challengeCompletions(this.layer, this.id)), new Decimal("1e10").pow(challengeCompletions(this.layer, this.id))]},
+            rewardDisplay() {return "x" + format(challengeEffect(this.layer, this.id)[0]) + " Points, x" + format(challengeEffect(this.layer, this.id)[1]) + " Operation Power"},
+            completionLimit: 10,
+            canComplete: function() {return player.points.gte(tmp[this.layer].challenges[this.id].goal)},
+            goal() {
+                let list = [
+                    new Decimal("1e960"),
+                    new Decimal("1e1035"),
+                    new Decimal("1e1200"),
+                    new Decimal("1e1350"),
+                    new Decimal("1e2920"),
+                    new Decimal("1e3650"),
+                    new Decimal("1e4145"),
+                    new Decimal("1e14615"),
+                    new Decimal("1e24485"),
+                    new Decimal("1e30450"),
+                ]
+                return list[challengeCompletions(this.layer, this.id)]
+            },
+            unlocked() {return hasUpgrade("arithmetic", 35)},
+            style() {return {
+                    "width": "405px",
+                    "height": "320px",
+                }
+            }
+        },
+    },
 
     update(diff){
         //Global gain
@@ -364,15 +437,35 @@ addLayer("polygon", {
         //Local gains
         let triBase = effect
         if (hasUpgrade("multiplication", 81)) triBase = triBase.mul(player.polygon.hexagons.pow(0.8))
+
+        if (player.polygon.triangles.gte("1e50")) triBase = triBase.div(player.polygon.triangles.pow(0.1))
                 
         let squBase = effect
-        if (hasMilestone("division", 4)) squBase = squBase.mul(player.polygon.triEffect.add(1).pow("0.5"))
+        if (hasMilestone("division", 4) && !inChallenge("polygon", 11)) squBase = squBase.mul(player.polygon.triEffect.add(1).pow("0.5"))
         if (hasUpgrade("multiplication", 81)) squBase = squBase.mul(player.polygon.hexagons.pow(0.8))
+
+        if (player.polygon.squares.gte("1e50")) squBase = squBase.div(player.polygon.squares.pow(0.125))
 
         let penBase = effect
         if (hasUpgrade("multiplication", 81)) penBase = penBase.mul(player.polygon.hexagons.pow(0.8))
 
+        if (player.polygon.pentagons.gte("1e50")) penBase = penBase.div(player.polygon.pentagons.pow(0.1))
+
         let hexBase = effect
+
+        if (player.polygon.hexagons.gte("1e50")) hexBase = hexBase.div(player.polygon.hexagons.pow(0.1))
+
+        //Sacrifices
+        if (maxedChallenge("polygon", 11)){
+            triBase = triBase.pow(1.1)
+            squBase = squBase.pow(1.1)
+            penBase = penBase.pow(1.1)
+            hexBase = hexBase.pow(1.1)
+            player.polygon.triangles = player.polygon.triangles.add(triBase)
+            player.polygon.squares = player.polygon.squares.add(squBase)
+            player.polygon.pentagons = player.polygon.pentagons.add(penBase)
+            player.polygon.hexagons = player.polygon.hexagons.add(hexBase)
+        }
 
         //Deciding next shape to add to
         if (getClickableState("polygon", 11) == "Triangle") player.polygon.constrNextGain = triBase
@@ -402,6 +495,22 @@ addLayer("polygon", {
         //Effect softcaps
         if (player.polygon.penEffect.gte("1.2")) player.polygon.penEffect = player.polygon.penEffect.log(100).add(1.2)
         if (player.polygon.penEffect.gte("1.35")) player.polygon.penEffect = player.polygon.penEffect.log(500).add(1.35)
+        if (player.polygon.hexEffect.gte("1.04")) player.polygon.hexEffect = player.polygon.hexEffect.pow(0.5).add(1.04)
+        if (player.polygon.hexEffect.gte("2.9")) player.polygon.hexEffect = player.polygon.hexEffect.pow(0.1).add(2.9)
+
+        if (player.polygon.triEffect.gte("1e20")){
+            if (maxedChallenge("polygon", 11)) player.polygon.triEffect = new Decimal("1e20").mul(player.polygon.triEffect.log(10))
+            else player.polygon.triEffect = new Decimal("1e20")
+        }
+
+        //Sacrifices
+        if (inChallenge("polygon", 11)) player.polygon.triEffect = new Decimal(1)
+
+        //Autobuy buyables
+        if (player.dimension.points.gte(5)){
+            if (tmp.polygon.buyables[11].cost.lte(player.polygon.points)) setBuyableAmount("polygon", 11, getBuyableAmount("polygon", 11).add(1))
+            if (tmp.polygon.buyables[12].cost.lte(player.polygon.points)) setBuyableAmount("polygon", 12, getBuyableAmount("polygon", 12).add(1))
+        }
     },
 
     tooltip() {return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"},

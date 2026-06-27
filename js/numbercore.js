@@ -12,7 +12,11 @@ addLayer("numbercore", {
     baseResource: "Numbers", // Name of resource prestige is based on
     baseAmount() {return player.primitive.points}, // Get the current amount of baseResource
     type: "normal", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
-    exponent: 0.01, // Prestige currency exponent
+    exponent() {
+        let base = new Decimal(0.01)
+        if (hasUpgrade("subtraction", 21)) base = base.add(0.01)
+        return base
+    }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
         //add
@@ -25,8 +29,15 @@ addLayer("numbercore", {
         if (hasUpgrade("polygon", 15)) mult = mult.mul(upgradeEffect("polygon", 15))
         if (hasUpgrade("subtraction", 17)) mult = mult.mul("1e10")
         if (hasChallenge("arithmetic", 22)) mult = mult.mul("1e10")
+        if (hasMilestone("addition", 4)) mult = mult.mul(player.addition.points.add(1).pow(0.006))
+        if (hasMilestone("addition", 3)) mult = mult.mul("1e100")
+        if (hasUpgrade("primitive", 31)) mult = mult.mul("1e200")
+    	if (hasMilestone("division", 9)) mult = mult.mul(player.multiplication.effect.add(1))
         //exp
         if (hasAchievement("achievements", 53)) mult = mult.pow(1.2)
+        if (hasMilestone("division", 6)) mult = mult.pow(1.1)
+        if (hasUpgrade("multiplication", 93)) mult = mult.pow(1.25)
+        if (maxedChallenge("polygon", 11)) mult = mult.pow(1.01)
         //other hypers
         //final
         return mult
@@ -39,7 +50,7 @@ addLayer("numbercore", {
         let dMult = new Decimal(1)
         return dMult
     },
-    row: 1, // Row the layer is in on the tree (0 is the first row)
+    row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
         {key: "c", description: "C: Reset for Number Cores", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
@@ -48,6 +59,10 @@ addLayer("numbercore", {
     onPrestige() {player.numbercore.points = player.numbercore.points.sub(getResetGain("numbercore"))},
     resetsNothing() {return true},
     prestigeButtonText() {return "This button does absolutely nothing. Number Cores are gained passively, okay?"},
+
+    softcap() {return new Decimal("1e10000")},
+    softcapPower() {return new Decimal(0.5)},
+
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
         if (layers[resettingLayer].row <= this.row) return;
@@ -70,13 +85,8 @@ addLayer("numbercore", {
             cost(x) {
                 let base = new Decimal("3")
                 let expscal = new Decimal("0")
-                if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
-                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
-                if (getBuyableAmount(this.layer, this.id).gte(30)) base = base.add("14")
-                if (getBuyableAmount(this.layer, this.id).gte(40)) base = base.add("16"); expscal = expscal.add(2.5)
-                if (getBuyableAmount(this.layer, this.id).gte(50)) base = base.add("20"); expscal = expscal.add(5)
-                if (getBuyableAmount(this.layer, this.id).gte(60)) base = base.mul("2"); expscal = expscal.add(5)
-                return base.pow(x.add(expscal)).mul("10")
+                let final = tmp.numbercore.buyableScalings_NUMBERCORE(base, expscal, x, 1)
+                return final[0].pow(x.add(final[1])).mul("10")
             },
             title: "Core Condensation",
             display() { return "x2 Number Cores per purchase." + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
@@ -85,19 +95,17 @@ addLayer("numbercore", {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            effect(x) { return new Decimal("2").pow(x) },
+            effect(x) {
+                if (inChallenge("polygon", 12)) return new Decimal(1)
+                return new Decimal("2").pow(x)
+            },
         },
         12: {
             cost(x) {
                 let base = new Decimal("5")
                 let expscal = new Decimal("0")
-                if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
-                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
-                if (getBuyableAmount(this.layer, this.id).gte(30)) base = base.add("14")
-                if (getBuyableAmount(this.layer, this.id).gte(40)) base = base.add("16"); expscal = expscal.add(2.5)
-                if (getBuyableAmount(this.layer, this.id).gte(50)) base = base.add("20"); expscal = expscal.add(5)
-                if (getBuyableAmount(this.layer, this.id).gte(60)) base = base.mul("2"); expscal = expscal.add(5)
-                return base.pow(x.add(expscal)).mul("10")
+                let final = tmp.numbercore.buyableScalings_NUMBERCORE(base, expscal, x, 1)
+                return final[0].pow(x.add(final[1])).mul("10")
             },
             title: "Numerical Overflow",
             display() { return "^1.01 to \"Recursion\"'s effect and Numbers after softcap per purchase." + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: ^" + format(this.effect()) },
@@ -106,19 +114,17 @@ addLayer("numbercore", {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            effect(x) { return new Decimal("1.01").pow(x) },
+            effect(x) {
+                if (inChallenge("polygon", 12)) return new Decimal(1)
+                return new Decimal("1.01").pow(x)
+            },
         },
         13: {
             cost(x) {
                 let base = new Decimal("10")
                 let expscal = new Decimal("0")
-                if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
-                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
-                if (getBuyableAmount(this.layer, this.id).gte(30)) base = base.add("14")
-                if (getBuyableAmount(this.layer, this.id).gte(40)) base = base.add("16"); expscal = expscal.add(2.5)
-                if (getBuyableAmount(this.layer, this.id).gte(50)) base = base.add("20"); expscal = expscal.add(5)
-                if (getBuyableAmount(this.layer, this.id).gte(60)) base = base.mul("2"); expscal = expscal.add(5)
-                return base.pow(x.add(expscal)).mul("10")
+                let final = tmp.numbercore.buyableScalings_NUMBERCORE(base, expscal, x, 1)
+                return final[0].pow(x.add(final[1])).mul("10")
             },
             title: "Long Division Boost",
             display() { return "x1e10 Points per purchase. <i>This buyable only has effect in Long Division.</i>" + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
@@ -127,19 +133,17 @@ addLayer("numbercore", {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            effect(x) { return new Decimal("1e10").pow(x) },
+            effect(x) {
+                if (inChallenge("polygon", 12)) return new Decimal(1)
+                return new Decimal("1e10").pow(x)
+            },
         },
         21: {
             cost(x) {
                 let base = new Decimal("35")
                 let expscal = new Decimal("0")
-                if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("10")
-                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("12")
-                if (getBuyableAmount(this.layer, this.id).gte(30)) base = base.add("14")
-                if (getBuyableAmount(this.layer, this.id).gte(40)) base = base.add("16"); expscal = expscal.add(2.5)
-                if (getBuyableAmount(this.layer, this.id).gte(50)) base = base.add("20"); expscal = expscal.add(5)
-                if (getBuyableAmount(this.layer, this.id).gte(60)) base = base.mul("2"); expscal = expscal.add(5)
-                return base.pow(x.add(expscal)).mul("1e10")
+                let final = tmp.numbercore.buyableScalings_NUMBERCORE(base, expscal, x, 1)
+                return final[0].pow(x.add(final[1])).mul("1e10")
             },
             title: "Addition Booster Booster",
             display() { return "x100 to the effect of the first three Addition boosters per purchase." + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
@@ -149,18 +153,17 @@ addLayer("numbercore", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             unlocked() {return hasMilestone("division", 3)},
-            effect(x) { return new Decimal("100").pow(x) },
+            effect(x) {
+                if (inChallenge("polygon", 12)) return new Decimal(1)
+                return new Decimal("100").pow(x)
+            },
         },
         22: {
             cost(x) {
                 let base = new Decimal("50")
-                if (getBuyableAmount(this.layer, this.id).gte(10)) base = base.add("25")
-                if (getBuyableAmount(this.layer, this.id).gte(20)) base = base.add("50")
-                if (getBuyableAmount(this.layer, this.id).gte(30)) base = base.add("75")
-                if (getBuyableAmount(this.layer, this.id).gte(40)) base = base.add("150")
-                if (getBuyableAmount(this.layer, this.id).gte(50)) base = base.add("200")
-                if (getBuyableAmount(this.layer, this.id).gte(60)) base = base.mul("500")
-                return new Decimal(base).pow(x).mul("1e42")
+                let expscal = new Decimal("0")
+                let final = tmp.numbercore.buyableScalings_NUMBERCORE(base, expscal, x, 2)
+                return final[0].pow(x.add(final[1])).mul("1e42")
             },
             title: "Improved Tools",
             display() { return "x1.5 to the effects of the straightedge and compass, and /1.2 to their costs per purchase." + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()[0]) + ", /" + format(this.effect()[1]) },
@@ -170,10 +173,59 @@ addLayer("numbercore", {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
             unlocked() {return hasUpgrade("arithmetic", 31)},
-            effect(x) { return [new Decimal("1.5").pow(x), new Decimal("1.2").pow(x)] },
+            effect(x) {
+                if (inChallenge("polygon", 12)) return [new Decimal(1), new Decimal(1)]
+                return [new Decimal("1.5").pow(x), new Decimal("1.2").pow(x)]
+            },
         },
     },
     branches: [["corebooster", "#80e040", 5]],
     tooltip() {return format(player.numbercore.points) + " Number Cores (+" + format(getResetGain("numbercore")) + " Number Cores/sec)"},
+
+    buyableScalings_NUMBERCORE(in1, in2, amt, type) {
+        let b = in1
+        let e = in2
+        let a = amt
+        switch(type){
+            case 1:
+                if (a.gte(10)) b = b.add("10")
+                if (a.gte(20)) b = b.add("12")
+                if (a.gte(30)) b = b.add("14")
+                if (a.gte(40)) {b = b.add("16"); e = e.add(2.5)}
+                if (a.gte(50)) {b = b.add("20"); e = e.add(5)}
+                if (a.gte(60)) {b = b.mul("2"); e = e.add(5)}
+                if (a.gte(70)) {b = b.mul("3"); e = e.add(10)}
+                if (a.gte(80)) {b = b.mul("5"); e = e.add(25)}
+                if (a.gte(90)) {b = b.mul("10"); e = e.add(50)}
+                if (a.gte(100)) {b = b.pow("1.15"); e = e.mul(1.5)}
+
+                if (a.gte(125)) {b = b.pow("1.1"); e = e.mul(1.55)}
+                if (a.gte(150)) {b = b.pow("1.05"); e = e.mul(1.04)}
+                if (a.gte(175)) {b = b.pow("1.2"); e = e.mul(2)}
+                if (a.gte(200)) {b = b.pow("1.35"); e = e.mul(4)}
+                if (a.gte(225)) {b = b.pow("1.6"); e = e.mul(1.5)}
+                if (a.gte(250)) {b = b.pow("2"); e = e.mul(5)}
+                break;
+            case 2:
+                if (a.gte(10)) b = b.add("25")
+                if (a.gte(20)) b = b.add("50")
+                if (a.gte(30)) b = b.add("75")
+                if (a.gte(40)) b = b.add("150")
+                if (a.gte(50)) b = b.add("200")
+                if (a.gte(60)) b = b.mul("2")
+                if (a.gte(70)) b = b.mul("3")
+                if (a.gte(80)) b = b.mul("5")
+                if (a.gte(90)) b = b.mul("100")
+                if (a.gte(100)) {b = b.pow("1.5"); e = e.add(25)}
+
+                if (a.gte(125)) {b = b.pow("1.7"); e = e.add(50)}
+                if (a.gte(150)) {b = b.pow("2"); e = e.add(100)}
+                if (a.gte(175)) {b = b.pow("1.43"); e = e.mul(1.01)}
+                if (a.gte(200)) {b = b.pow("2"); e = e.mul(7.5)}
+                if (a.gte(225)) {b = b.pow("10"); e = e.mul(25)}
+                break;
+        }
+        return [b, e, a]
+    },
 })
 
