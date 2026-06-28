@@ -5,6 +5,7 @@ addLayer("unlock", {
     startData() { return {
         unlocked: true,
 		points: new Decimal(0),
+        nextLayerProgress: new Decimal(0)
     }},
     color: "#8000FF",
     requires: new Decimal(1), // Can be a function that takes requirement increases into account
@@ -15,20 +16,6 @@ addLayer("unlock", {
     exponent: 0.1, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
         mult = new Decimal(1)
-        if (hasUpgrade("unlock", 11)) player.fundamental.unlocked = true
-        else player.fundamental.unlocked = false 
-        if (hasUpgrade("unlock", 12)) player.primitive.unlocked = true
-        else player.primitive.unlocked = false 
-        if (hasUpgrade("unlock", 13)) player.arithmetic.unlocked = true
-        else player.arithmetic.unlocked = false 
-        if (hasUpgrade("unlock", 14)) player.dimension.unlocked = true
-        else player.dimension.unlocked = false 
-        if (hasUpgrade("unlock", 15)) player.polygon.unlocked = true
-        else player.polygon.unlocked = false 
-        if (hasUpgrade("unlock", 16)) player.numbercore.unlocked = true
-        else player.numbercore.unlocked = false 
-        if (hasUpgrade("unlock", 17)) player.corebooster.unlocked = true
-        else player.corebooster.unlocked = false 
         //add
         //mul
         if (hasUpgrade("fundamental", 24)) mult = mult.mul(100)
@@ -115,6 +102,7 @@ addLayer("unlock", {
             title: "Planetary Fragment layer",
             description: "Unlock the Planetary Fragment layer: the fourth major reset layer.",
             cost: new Decimal("e6000000"),
+            unlocked() {return player.unlock.points.gte("e6e6")}
         },
     },
     branches: [
@@ -122,6 +110,7 @@ addLayer("unlock", {
         ["primitive", "#00C8FF", 10], 
         ["arithmetic", "#FF0080", 10], 
         ["polygon", "#2050FF", 10],
+        ["planetary", "#80E0FF", 10],
     
         ["dimension", "#A0FFA0", 10], 
         ["numbercore", "#00e0c0", 10], 
@@ -141,6 +130,10 @@ addLayer("unlock", {
         },
         "Lore (Chapter 1)": {
             content: [
+                ["display-text", function() {
+                    return "<h1>Chapter 1: The Void</h1>"
+                }],
+                "blank",
                 ["infobox", "d1"],
                 ["infobox", "d2"],
                 ["infobox", "d3"],
@@ -151,6 +144,10 @@ addLayer("unlock", {
         },
         "Lore (Chapter 2)": {
             content: [
+                ["display-text", function() {
+                    return "<h1>Chapter 2: The Discoveries</h1>"
+                }],
+                "blank",
                 ["infobox", "d7"],
                 ["infobox", "d8"],
                 ["infobox", "d9"],
@@ -159,7 +156,17 @@ addLayer("unlock", {
                 ["infobox", "d12"],
                 ["infobox", "d13"],
             ],
-            unlocked() { return player.polygon.points.gte(1)}
+            unlocked() { return player.polygon.points.gte(1) || player.planetary.unlocked}
+        },
+        "Lore (Chapter 3)": {
+            content: [
+                ["display-text", function() {
+                    return "<h1>Chapter 3: The Test</h1>"
+                }],
+                "blank",
+                ["infobox", "d14"],
+            ],
+            unlocked() { return player.planetary.points.gte(1)}
         },
     },
     bars: {
@@ -176,6 +183,10 @@ addLayer("unlock", {
                 else if (!hasUpgrade("unlock", 15)) text += "1e400 Unlock Points, unlocking the Polygon layer. <br> Progress: " + player.unlock.points.log10().div("400").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 16)) text += "1e925 Unlock Points, unlocking the Number Core sub-layer. <br> Progress: " + player.unlock.points.log10().div("925").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 17)) text += "1e1550 Unlock Points, unlocking the Core Booster sub-layer. <br> Progress: " + player.unlock.points.log10().div("1550").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 21)) {
+                    if (player.unlock.points.gte("e6e6")) text += "e6,000,000 Unlock Points, unlocking the Planetary Fragment layer. <br> Progress: " + player.unlock.points.log10().div("6e6").mul(100).toFixed(2) + "%"
+                    else text += "e6,000,000 Unlock Points, unlocking the ??? layer. <br> Progress: " + player.unlock.points.log10().div("6e6").mul(100).toFixed(2) + "%"
+                }
                 else text = "You have unlocked all layers! Congratulations! (For now...)"
                 return text
             },
@@ -187,8 +198,11 @@ addLayer("unlock", {
                 else if (!hasUpgrade("unlock", 14)) prog = player.unlock.points.log10().div("50")
                 else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.log10().div("400")
                 else if (!hasUpgrade("unlock", 16)) prog = player.unlock.points.log10().div("925")
-                else if (!hasUpgrade("unlock", 17)) prog = player.unlock.points.log10().div("1550")    
+                else if (!hasUpgrade("unlock", 17)) prog = player.unlock.points.log10().div("1550")  
+                else if (!hasUpgrade("unlock", 21)) prog = player.unlock.points.log10().div("6e6")    
                 else prog = new Decimal(1)
+
+                player.unlock.nextLayerProgress = prog
                 return prog
             },
             baseStyle() { return {"background-color": "#200050",} },
@@ -261,7 +275,7 @@ addLayer("unlock", {
                 "I guess I'll try my luck in the Labryinth. And I'm bringing a flashlight. See you in a few hours. " +
                 "Nice job getting 1e137 Numbers and reached the 3rd Dimension in JST. Proud of you."
             },
-            unlocked() {return player.dimension.points.gte(3)},
+            unlocked() {return player.dimension.points.gte(3) || player.polygon.unlocked},
         },
 
         d7: {
@@ -274,7 +288,7 @@ addLayer("unlock", {
                 "and I give her my nickname. If you don't remember, it's Justcubing97. I never tell people my real name. " +
                 "Anyway, good job on unlocking the Polygon layer. It's been 3 hours and 8 minutes already, and she... hasn't ate breakfast. Darn, Ashley. "
             },
-            unlocked() {return player.polygon.points.gte(1)},
+            unlocked() {return player.polygon.points.gte(1) || player.planetary.unlocked},
         },
 
         d8: {
@@ -288,7 +302,7 @@ addLayer("unlock", {
                 "a random pair of scissors with obsidian blades, a working printer if you find a power source, a mini statue of Hatsune Miku, " +
                 "a pizza box filled with pineapple slices, and a bunch of other weird stuff in Ashley's stash."
             },
-            unlocked() {return player.division.unlocked},
+            unlocked() {return player.division.unlocked || player.planetary.unlocked},
         },
 
         d9: {
@@ -296,12 +310,12 @@ addLayer("unlock", {
             body() { return "Welcome to Number Cores. Or what I like to call, buyable mania. If you're in version 0.4.6, there's only a placeholder upgrade. " +
                 "Anyway, I was playing around with Ashley's portal gun in the Labyrinth, navigating with ease using portal peeking. However... " +
                 "when she tried to play around and create the classic \"endless fall,\" she <i>might have</i> suffered a fall with <i>only a bit of speed</i>. " +
-                "(And by this... she got injured quite severely.) I had to take her to the Centroid, where underneath the Void plane (the triangle) is a hospital. " +
+                "(And by this... she got injured quite severely.) I had to take her to the Centroid, where underneath The Void (the triangle) is a hospital. " +
                 "I had quite a time carrying Ashley all the way there, as the Labyrinth was some distance away from the Centroid. I kinda liked it. " +
                 "She managed to get into a vacant treatment room, and now I'm sitting outside waiting for eternity. I also brought the Hatsune Miku statue from " +
                 "her stash. Well, have fun in buyable mania while I wait for forever for Ashley to get healed."
             },
-            unlocked() {return player.numbercore.unlocked},
+            unlocked() {return player.numbercore.unlocked || player.planetary.unlocked},
         },
 
         d10: {
@@ -315,7 +329,7 @@ addLayer("unlock", {
                 "Or I would have to help her. I don't know. Anyway, keep improving your compass and straightedge in the Constructor, and get more Division. Long Division will get easier " +
                 "to deal with. Have fun being a hyperdimensional being!"
             },
-            unlocked() {return player.dimension.points.gte(4)},
+            unlocked() {return player.dimension.points.gte(4) || player.planetary.unlocked},
         },
 
         d11: {
@@ -327,7 +341,7 @@ addLayer("unlock", {
                 "then a deep blue dot next to a light green one, and below all of that was a purple dot. There was an arrow pointing to the purple dot all the way at the bottom. " +
                 "\"Dark Matter\" was written next to it... no idea what it means. And by the way, your fresh Core Boosters can help you! I bet they indirectly influence your Constructor."
             },
-            unlocked() {return player.corebooster.points.gte(1)},
+            unlocked() {return player.corebooster.points.gte(1) || player.planetary.unlocked},
         },
 
         d12: {
@@ -339,7 +353,7 @@ addLayer("unlock", {
                 "Ashley sat down with her friends that she made before I was mysteriously teleported here. I tried talking to people about Dark Matter and Universal Essence, " +
                 "but everyone called me crazy. As I said, the Constructor doesn't really do anything. So go sacrifice it! We don't need it! [INFLATION IMMINENT]"
             },
-            unlocked() {return hasUpgrade("arithmetic", 35)},
+            unlocked() {return hasUpgrade("arithmetic", 35) || player.planetary.unlocked},
         },
 
         d13: {
@@ -356,8 +370,43 @@ addLayer("unlock", {
                 "It's possible to outrun it, but none have so far. The victims suffered burns and scars, which are nothing too fatal. " +
                 "After the whole presentation thing, Ashley suggested we just stay in the Centroid and not go anywhere because \"why should we risk injuries when we're safe here?\""
             },
-            unlocked() {return maxedChallenge("polygon", 11)},
+            unlocked() {return maxedChallenge("polygon", 11) || player.planetary.unlocked},
         },
+
+        d14: {
+            title: "Document 14: Brief Nothingness",
+            body() { return "We would stay in the Centroid cafeteria for who knows how long. A few other irrationally scared humans also remained here. " +
+                "Ashley didn't move a lot, leaning into my side like she was my girlfriend (for the record, we are NOT dating). Also, really proud of you for " +
+                "having a Planetary Fragment in JST. Those can be used on the 8 Planetary Generators. Anyway... after about an hour, we received an announcement " +
+                "from the Void Masters, which TL;DR means it is now safe to venture outside as the Sacrificed Polygons have been contained in the \"Nullzone\". " +
+                "My best guess is that the Nullzone is the real prison or containment center of The Void, where all the anomalies go. " +
+                "Ashley and I decided to return to the Labyrinth to keep exploring it, and this time, I did NOT give the portal gun to her. " +
+                "Anyway, as an avid Portal (and Portal 2) player and enjoyer, I used a technique called \"portal peeking\" to traverse the Labyrinth. " +
+                "(Portal peeking: 1, set up portals. 2, enter one portal and shoot the portal you exit from elsewhere. 3, quickly move back through the exit portal " +
+                "as the shot portal from 2 takes some time to land. 4, repeat.)"
+            },
+            unlocked() {return player.planetary.points.gte(1)},
+        }
+    },
+    update(diff){
+        if (hasUpgrade("unlock", 11)) player.fundamental.unlocked = true
+        else player.fundamental.unlocked = false 
+        if (hasUpgrade("unlock", 12)) player.primitive.unlocked = true
+        else player.primitive.unlocked = false 
+        if (hasUpgrade("unlock", 13)) player.arithmetic.unlocked = true
+        else player.arithmetic.unlocked = false 
+        if (hasUpgrade("unlock", 14)) player.dimension.unlocked = true
+        else player.dimension.unlocked = false 
+        if (hasUpgrade("unlock", 15)) player.polygon.unlocked = true
+        else player.polygon.unlocked = false 
+        if (hasUpgrade("unlock", 16)) player.numbercore.unlocked = true
+        else player.numbercore.unlocked = false 
+        if (hasUpgrade("unlock", 17)) player.corebooster.unlocked = true
+        else player.corebooster.unlocked = false 
+
+        if (hasUpgrade("unlock", 21)) player.planetary.unlocked = true
+        else player.planetary.unlocked = false 
     },
     resetsNothing: true,
+    tooltip() {return format(player.unlock.points) + " Unlock Points (" + format(player.unlock.nextLayerProgress.mul(100)) + "% to next reset layer)"},
 });

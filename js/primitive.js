@@ -110,12 +110,14 @@ addLayer("primitive", {
         if (hasUpgrade("primitive", 35)) keptUpgrades.push(35)
         if (hasUpgrade("primitive", 36)) keptUpgrades.push(36)
         if (hasUpgrade("primitive", 37)) keptUpgrades.push(37)
+        if (layers[resettingLayer].name == "planetary") keptUpgrades = []
 
         let keptBuyables = []
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
         if (hasMilestone("polygon", 1)) keep.push("milestones");
+        if (layers[resettingLayer].name == "planetary") keep = []
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -235,55 +237,55 @@ addLayer("primitive", {
             title: "The Largest Cost Gap?",
             description: "x1e10 Addition and x100 Operation Power.",
             cost: new Decimal("1e615"),
-            unlocked() {return hasUpgrade("multiplication", 42) || hasMilestone("polygon", 9)},
+            unlocked() {return hasUpgrade("multiplication", 42) || hasMilestone("polygon", 9) || player.planetary.unlocked},
         },
         27: {
             title: "SUPERCAP OF DOOM",
             description: "^1.5 Numbers after softcap.",
             cost: new Decimal("1e1000"),
-            unlocked() {return hasUpgrade("multiplication", 42) || hasMilestone("polygon", 9)},
+            unlocked() {return hasUpgrade("multiplication", 42) || hasMilestone("polygon", 9) || player.planetary.unlocked},
         },
         31: {
             title: "The Third Row",
             description: "Remove the third Multiplication hardcap. All upgrades in this row are kept. Also, x1e200 Number Cores.",
             cost: new Decimal("1e65200"),
-            unlocked() {return hasMilestone("primitive", 13)},
+            unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         32: {
             title: "Quotient Memorization",
             description: "x30 Division, and x1e500 Addition in Long Division!",
             cost: new Decimal("1e67800"),
-            unlocked() {return hasMilestone("primitive", 13)},
+            unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         33: {
             title: "SACRIFICE!",
             description: "x1e50 Operation Power after softcaps and nerfs while sacrificing.",
             cost: new Decimal("1e73000"),
-            unlocked() {return hasMilestone("primitive", 13)},
+            unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         34: {
             title: "King Sammelot",
             description: "FIVE FIVE! Multiply Core Boosters and Division by 5.",
             cost: new Decimal("1e74000"),
-            unlocked() {return hasMilestone("primitive", 13)},
+            unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         35: {
             title: "I NEED TO MULTIPLY",
             description: "Remove the 4th Multiplication hardcap.",
             cost: new Decimal("1e129750"),
-            unlocked() {return hasMilestone("primitive", 13)},
+            unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         36: {
             title: "Repetition++",
             description: "Unlock another Fundamentality buyable, and improve \"Unhardcapped\".",
             cost: new Decimal("1e161875"),
-            unlocked() {return hasMilestone("primitive", 13)},
+            unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         37: {
             title: "THE FINAL",
             description: "-0.5 to the Core Booster Scaling Exponent.",
             cost: new Decimal("1e179290"),
-            unlocked() {return hasMilestone("primitive", 13)},
+            unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
     },
     milestones: {
@@ -347,37 +349,37 @@ addLayer("primitive", {
             requirementDescription: "9: 1e1700 Numbers",
             effectDescription: "<i>how did you get here how did you get here-</i> (Improve \"This isn't even Polygon-Related.\")",
             done() { return player.primitive.points.gte("1e1700") },
-            unlocked() {return player.primitive.points.gte("1e1700") || hasMilestone("primitive", 11)},
+            unlocked() {return player.primitive.points.gte("1e1700") || hasMilestone("primitive", 11) || player.planetary.unlocked},
         },
         10: {
             requirementDescription: "10: 1e1865 Numbers",
             effectDescription: "The tenth Primitive milestone! You can passively generate Division whilst in Long Division. And keep the 25th Fundamental upgrade.",
             done() { return player.primitive.points.gte("1e1865") },
-            unlocked() {return player.primitive.points.gte("1e1865") || hasMilestone("primitive", 11)},
+            unlocked() {return player.primitive.points.gte("1e1865") || hasMilestone("primitive", 11) || player.planetary.unlocked},
         },
         11: {
             requirementDescription: "11: 1e3003 Numbers",
             effectDescription: "Not just a trigintillion, a millinillion! Here is the boosts list. x15 Division, unlock the 8th row of TMT, and add a fourth Core Booster effect.",
             done() { return player.primitive.points.gte("1e3003") },
-            unlocked() {return player.primitive.points.gte("1e3003") || hasMilestone("primitive", 11)},
+            unlocked() {return player.primitive.points.gte("1e3003") || hasMilestone("primitive", 11) || player.planetary.unlocked},
         },
         12: {
             requirementDescription: "12: 1e8000 Numbers",
             effectDescription: "x1e350 Points and x1.1 Multiplication!",
             done() { return player.primitive.points.gte("1e8000") },
-            unlocked() {return player.primitive.points.gte("1e8000") || hasMilestone("primitive", 12)},
+            unlocked() {return player.primitive.points.gte("1e8000") || hasMilestone("primitive", 12) || player.planetary.unlocked},
         },
         13: {
             requirementDescription: "13: 1e65,000 Numbers",
             effectDescription: "The Fundamental softcaps are fixed at ^0.25 and unlock more Primitive upgrades.",
             done() { return player.primitive.points.gte("1e65000") },
-            unlocked() {return player.primitive.points.gte("1e65000") || hasMilestone("primitive", 13)},
+            unlocked() {return player.primitive.points.gte("1e65000") || hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         14: {
             requirementDescription: "14: 1e673,330 Numbers",
             effectDescription: "^1.05 Multiplication, ^1.35 Fundamentality and Operation Power after softcap. x1,000,000 Division.",
             done() { return player.primitive.points.gte("1e673330") },
-            unlocked() {return player.primitive.points.gte("1e673330") || hasMilestone("primitive", 14)},
+            unlocked() {return player.primitive.points.gte("1e673330") || hasMilestone("primitive", 14) || player.planetary.unlocked},
         },
     },
     branches: [["arithmetic", "#FFFFFF", 10], ["dimension", "#C0FFC0", 5], ["division", "#FF50FF", 5], ["numbercore", "#00e0c0", 5]],

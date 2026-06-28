@@ -41,7 +41,7 @@ addLayer("multiplication", {
         return exp
     },
     row: 3, // Row the layer is in on the tree (0 is the first row)
-    layerShown(){return hasChallenge("arithmetic", 12) || hasMilestone("polygon", 5)},
+    layerShown(){return hasChallenge("arithmetic", 12) || hasMilestone("polygon", 5) || player.planetary.unlocked},
     directMult() {
         let dMult = new Decimal(1)
         if (hasMilestone("division", 1)) dMult = dMult.mul(2)
@@ -77,6 +77,7 @@ addLayer("multiplication", {
 
         if (hasUpgrade("multiplication", 101)) keptUpgrades.push(101)
         if (hasUpgrade("multiplication", 102)) keptUpgrades.push(102)
+        if (layers[resettingLayer].name == "planetary") keptUpgrades = []
         
 
         let keptBuyables = []
@@ -408,7 +409,7 @@ addLayer("multiplication", {
             title: "Straightforward Mathematics",
             effect() {
                 let base = getBuyableAmount("polygon", 12)
-                base = new Decimal(base).tetrate(3).log(15)
+                base = new Decimal(base).tetrate(3).add(1).log(15)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 72))},

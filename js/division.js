@@ -122,13 +122,13 @@ addLayer("division", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = ["points", "upgrades", "milestones", "total"];
+        if (layers[resettingLayer].name == "planetary") keep = []
 
         // Stage 4, do the actual data reset
         if (resettingLayer == "division") doReset("polygon", true)
         layerDataReset(this.layer, keep);
 
         // Stage 5, add back in the specific subfeatures you saved earlier
-        player[this.layer].upgrades.push(...keptUpgrades)
         player.division.resets = keptResetAmount
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     tabFormat: {
@@ -372,7 +372,7 @@ addLayer("division", {
             title: "Subtraction is Under-used+",
             effect(){
                 let base = player.subtraction.points
-                base = base.log(1.1).pow(1.25)
+                base = base.add(1.1).log(1.1).pow(1.25)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("division", 24))},
@@ -394,7 +394,7 @@ addLayer("division", {
         },
         27: {
             title: "NEXT LAYER IMMINENT",
-            description: "^1.2 Points.",
+            description: "^1.2 Points and x1e10 Shapes after softcap.",
             cost: new Decimal("1e100"),
             unlocked() {return hasUpgrade("division", 26)},
         },

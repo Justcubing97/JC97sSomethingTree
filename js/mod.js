@@ -2,7 +2,7 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "savebank.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "corebooster.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "tree.js"],
+	modFiles: ["achievements.js", "savebank.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "corebooster.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "planetary.js", "tree.js"],
 
 	discordName: "Justcubing97's Server",
 	discordLink: "https://discord.gg/W7PMhx4mSs",
@@ -12,11 +12,18 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.4.8",
-	name: "Core Booster update",
+	num: "0.5",
+	name: "Planetary Fragment update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5</h3><br>
+		- Planetary Fragment layer. <br>
+		- Added the Constructor Sacrifice. <br>
+		- Point softcap at e60M. <br>
+		- More visual themes. <br>
+		- Changed tree layout. <br>
+		- Endgame: 1 Planetary Fragment. <br>
 	<h3>v0.4.8</h3><br>
 		- Core Booster layer. <br>
 		- Added some softcaps and QoL. <br>
@@ -152,6 +159,15 @@ function getPointGen() {
 	if (getClickableState("division", 11) == "Active") gain = gain.mul(buyableEffect("numbercore", 13))
 
 	if (hasUpgrade("fundamental", 47)) gain = gain.mul("1e100")
+
+
+	//SOFTCAP
+	if (gain.gt("e60e6")){
+		let remainder = gain.div("e60e6")
+		remainder = remainder.pow(0.01)
+		gain = remainder.mul("e60e6")
+	}
+
 	return gain
 }
 
@@ -161,12 +177,18 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 1 Core Booster <br> Justcubing97's Something Tree by Justcubing97 <br> <sup>Check out the Unlock Layer every so often... there might be more documents you can read.</sup>"
+	"Current endgame: 1 Planetary Fragment",
+	"Justcubing97's Something Tree by Justcubing97",
+	"<i>Check out the Unlock Layer every so often... there might be more documents you can read.</i>",
+	function() {
+		if (player.points.gte("e6e7")) return "<br><b>Point gain is softcapped by ^0.01 after e60,000,000!</b>"
+		else return ""
+	}
 ]
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.corebooster.points.gte(new Decimal(1)))
+	return (player.planetary.points.gte(new Decimal(1)))
 }
 
 

@@ -74,6 +74,7 @@ addLayer("numbercore", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = ["buyables"];
+        if (layers[resettingLayer].name == "planetary") keep = []
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -152,7 +153,7 @@ addLayer("numbercore", {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            unlocked() {return hasMilestone("division", 3)},
+            unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
             effect(x) {
                 if (inChallenge("polygon", 12)) return new Decimal(1)
                 return new Decimal("100").pow(x)
@@ -172,7 +173,7 @@ addLayer("numbercore", {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            unlocked() {return hasUpgrade("arithmetic", 31)},
+            unlocked() {return hasUpgrade("arithmetic", 31) || player.planetary.unlocked},
             effect(x) {
                 if (inChallenge("polygon", 12)) return [new Decimal(1), new Decimal(1)]
                 return [new Decimal("1.5").pow(x), new Decimal("1.2").pow(x)]

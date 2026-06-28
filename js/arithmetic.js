@@ -49,7 +49,7 @@ addLayer("arithmetic", {
         let dMult = new Decimal(1)
         if (hasUpgrade("polygon", 11)) dMult = dMult.mul(1000)
         dMult = dMult.mul(player.polygon.triEffect)
-        if (hasUpgrade("multiplication", 72)) dMult = dMult.mul(upgradeEffect("multiplication", 72))
+        //if (hasUpgrade("multiplication", 72)) dMult = dMult.mul(upgradeEffect("multiplication", 72))
         if (hasChallenge("arithmetic", 22)) dMult = dMult.mul("1e10")
         if (inChallenge("polygon", 11) && hasUpgrade("primitive", 33)) dMult = dMult.mul("1e50")
 
@@ -100,11 +100,13 @@ addLayer("arithmetic", {
         if (hasUpgrade("arithmetic", 35)) keptUpgrades.push(35)
         if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(36)
         if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(37)
+        if (layers[resettingLayer].name == "planetary") keptUpgrades = []
 
         let keptChallenges = []
         if (hasMilestone("polygon", 8)) keptChallenges.push(11, 12, 13)
         if (hasUpgrade("division", 14)) keptChallenges.push(21)
         if (hasUpgrade("fundamental", 46)) keptChallenges.push(22)
+        if (layers[resettingLayer].name == "planetary") keptChallenges = []
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -135,7 +137,7 @@ addLayer("arithmetic", {
                 "blank",
                 "challenges",
             ],
-            unlocked() {return hasUpgrade("arithmetic", 17) || hasMilestone("polygon", 2)}
+            unlocked() {return hasUpgrade("arithmetic", 17) || hasMilestone("polygon", 2) || player.planetary.unlocked}
         },
     },
     upgrades: {
@@ -193,19 +195,19 @@ addLayer("arithmetic", {
             description: "Operation Power boosts Points, Addition, and Subtraction.",
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
             cost: new Decimal("1e9"),
-            unlocked(){return player.dimension.points.gte(1)},
+            unlocked(){return player.dimension.points.gte(1) || player.planetary.unlocked},
         },
         22: {
             title: "Even More Challenging",
             description: "Unlock the second Arithmetic Challenge.",
             cost: new Decimal("1e14"),
-            unlocked(){return player.dimension.points.gte(1)},
+            unlocked(){return player.dimension.points.gte(1) || player.planetary.unlocked},
         },
         23: {
             title: "The Final Push",
             description: "Even more simple. x100 Addition, Fundamentality (after softcap), x500 Points, and x1e5 Numbers.",
             cost: new Decimal("2.5e17"),
-            unlocked(){return player.dimension.points.gte(1)},
+            unlocked(){return player.dimension.points.gte(1) || player.planetary.unlocked},
         },
         24: {
             title: "Distributive Property",
@@ -216,19 +218,19 @@ addLayer("arithmetic", {
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id))},
             description: "Multiplication boosts Addition gain.",
             cost: new Decimal("1e30"),
-            unlocked(){return player.dimension.points.gte(3)},
+            unlocked(){return player.dimension.points.gte(3) || player.planetary.unlocked},
         },
         25: {
             title: "Arithmetic Difficulty Rise",
             description: "Unlock the third Arithmetic Challenge.",
             cost: new Decimal("1e42"),
-            unlocked(){return player.dimension.points.gte(3)},
+            unlocked(){return player.dimension.points.gte(3) || player.planetary.unlocked},
         },
         26: {
             title: "Purely Point-Based",
             description: "^1.05 Points.",
             cost: new Decimal("1e57"),
-            unlocked(){return player.dimension.points.gte(3)},
+            unlocked(){return player.dimension.points.gte(3) || player.planetary.unlocked},
         },
         27: {
             title: "No Longer Useless",
@@ -297,7 +299,7 @@ addLayer("arithmetic", {
             goalDescription: "Have 1e130 Fundamentality.",
             rewardDescription: "Unlock a third Fundamentality buyable.",
             canComplete: function() {return player.fundamental.points.gte("1e130")},
-            unlocked() {return hasUpgrade("arithmetic", 17) || hasMilestone("polygon", 2)},
+            unlocked() {return hasUpgrade("arithmetic", 17) || hasMilestone("polygon", 2) || player.planetary.unlocked},
         },
         12: {
             name: "UNKNOWN OPERATION",
@@ -305,7 +307,7 @@ addLayer("arithmetic", {
             goalDescription: "Have 1e66 Numbers.",
             rewardDescription: "Unlock Multiplication, x1e15 Points, and x15 Operation Power.",
             canComplete: function() {return player.primitive.points.gte("1e66")},
-            unlocked() {return hasUpgrade("arithmetic", 22) || hasMilestone("polygon", 2)},
+            unlocked() {return hasUpgrade("arithmetic", 22) || hasMilestone("polygon", 2) || player.planetary.unlocked},
         },
         13: {
             name: "Dimensionless Reality",
@@ -313,7 +315,7 @@ addLayer("arithmetic", {
             goalDescription: "Have 1e108 Numbers.",
             rewardDescription: "^1.05 Points, Fundamentality, Numbers, and Operation Points.",
             canComplete: function() {return player.primitive.points.gte("1e108")},
-            unlocked() {return hasUpgrade("arithmetic", 25) || hasMilestone("polygon", 2)},
+            unlocked() {return hasUpgrade("arithmetic", 25) || hasMilestone("polygon", 2) || player.planetary.unlocked},
         },
         21: {
             name: "Useless Fundamentals",
@@ -321,7 +323,7 @@ addLayer("arithmetic", {
             goalDescription: "Have 1e120 Points.",
             rewardDescription: "Improve the Addition boosters, and unlock another Addition booster for Number Cores (but this one is heavily nerfed, however, it is NOT affected by Long Division).",
             canComplete: function() {return player.points.gte("1e120")},
-            unlocked() {return hasUpgrade("polygon", 14)},
+            unlocked() {return hasUpgrade("polygon", 14) || player.planetary.unlocked},
         },
         22: {
             name: "Arithmetic Distortion",
@@ -330,7 +332,7 @@ addLayer("arithmetic", {
             rewardDescription: "x1e10 Number Cores, Addition, Operation Power, Fundamentality (both after softcap), and x1e250 Points!",
             countsAs: [11, 12, 13,],
             canComplete: function() {return player.points.gte("1e620")},
-            unlocked() {return hasUpgrade("arithmetic", 32)},
+            unlocked() {return hasUpgrade("arithmetic", 32) || player.planetary.unlocked},
             onEnter() {player.arithmetic.points = new Decimal(0)},
             onExit() {player.arithmetic.points = new Decimal(0)},
         },

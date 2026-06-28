@@ -37,7 +37,7 @@ addLayer("subtraction", {
         return exp
     },
     row: 3, // Row the layer is in on the tree (0 is the first row)
-    layerShown(){return hasUpgrade("arithmetic", 13) || hasMilestone("dimension", 3)},
+    layerShown(){return hasUpgrade("arithmetic", 13) || hasMilestone("dimension", 3) || player.planetary.unlocked},
     directMult() {
         let dMult = new Decimal(1)
         return dMult
@@ -56,6 +56,7 @@ addLayer("subtraction", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = ["upgrades"];
+        if (layers[resettingLayer].name == "planetary") keep = []
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);

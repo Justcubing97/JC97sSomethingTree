@@ -123,6 +123,7 @@ addLayer("corebooster", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = ["points", "milestones"];
+        if (layers[resettingLayer].name == "planetary") keep = []
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -135,6 +136,8 @@ addLayer("corebooster", {
         "prestige-button",
         ["display-text", function() { return "You have " + format(player.numbercore.points) + " Number Cores"}],
         "blank",
+        ["display-text", function() { return "<h3>GAINING CORE BOOSTERS WILL FORCE POLYGON RESET.</h3>"}],
+        "blank",
         ["display-text", function() { return "<h2>You have " + format(player.corebooster.useful) + " useful Core Boosters, which..."}],
         "blank",
         ["display-text", function() {
@@ -146,17 +149,17 @@ addLayer("corebooster", {
         ["display-text", function() { return "<h3>x" + format(player.corebooster.e2) + " to Division"}],
         "blank",
         ["display-text", function() {
-            if (!hasAchievement("achievements", 53)) return ""
+            if (!hasAchievement("achievements", 53) && !player.planetary.unlocked) return ""
             return "<h3>/" + format(player.corebooster.e3) + " to Pentagon and Hexagon construction time"
         }],
         "blank",
         ["display-text", function() {
-            if (!hasMilestone("primitive", 11)) return ""
+            if (!hasMilestone("primitive", 11) && !player.planetary.unlocked) return ""
             return "<h3>x" + format(player.corebooster.e4) + " to Points, Fundamentality, and Addition"
         }],
         "blank",
         ["display-text", function() {
-            if (!hasUpgrade("arithmetic", 37)) return ""
+            if (!hasUpgrade("arithmetic", 37) && !player.planetary.unlocked) return ""
             return "<h3>x" + format(player.corebooster.e5) + " to Shapes and Division"
         }],
         "blank",
@@ -167,19 +170,19 @@ addLayer("corebooster", {
             requirementDescription: "180 useful Core Boosters",
             effectDescription: "The first Core Booster effect now affects Points at an increased rate. Remove the 5th Multiplication hardcap.",
             done() { return player.corebooster.useful.gte(180) },
-            unlocked() {return hasMilestone("division", 8)}
+            unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked}
         },
         2: {
             requirementDescription: "530 useful Core Boosters",
             effectDescription: "Have more useful Core Boosters, and keep the 5th Fundamental buyable. ^1.1 Division.",
             done() { return player.corebooster.useful.gte(530) },
-            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+            unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         3: {
             requirementDescription: "1,480 useful Core Boosters",
             effectDescription: "Autobuy Core Boosters. Useful Core Boosters are x1.5 your total Core Boosters.",
             done() { return player.corebooster.useful.gte(1480) },
-            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+            unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         4: {
             requirementDescription: "7,777 useful Core Boosters",
@@ -193,13 +196,13 @@ addLayer("corebooster", {
                 return text
             },
             done() { return player.corebooster.useful.gte(7777) },
-            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+            unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         5: {
-            requirementDescription: "13,500 useful Core Boosters",
+            requirementDescription: "12,500 useful Core Boosters",
             effectDescription: "x500 Division and ^1.01 Multiplication.",
-            done() { return player.corebooster.useful.gte(11500) },
-            unlocked() {return hasMilestone("corebooster", this.id - 1)}
+            done() { return player.corebooster.useful.gte(12500) },
+            unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
     },
 
@@ -250,5 +253,5 @@ addLayer("corebooster", {
         if (!hasMilestone("primitive", 11)) player.corebooster.e5 = new Decimal(1)
         else player.corebooster.e5 = e5b
     },
-    tooltip() {return format(player.corebooster.points) + " Core Boosters (" + format(getNextAt("corebooster")) + " Number Cores for next Core Booster) - GAINING CORE BOOSTERS WILL FORCE POLYGON RESET."},
+    tooltip() {return format(player.corebooster.points) + " (" + format(player.corebooster.useful) + " Useful) Core Boosters (" + format(getNextAt("corebooster")) + " Number Cores for next Core Booster)"},
 })

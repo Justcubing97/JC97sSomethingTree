@@ -228,5 +228,11 @@ achievements: {
     tooltip:"Fully sacrifice your Constructor.",
     unlocked() {return true},
   },
+  61: {
+    name: "Astronomical Achievement",
+    done(){return player.planetary.points.gte(1)},
+    tooltip:"Planetary reset for the first time.",
+    unlocked() {return true},
+  },
 },
 })

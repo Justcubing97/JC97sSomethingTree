@@ -62,6 +62,7 @@ addLayer("polygon", {
         let dMult = new Decimal(1)
         if (hasUpgrade("multiplication", 101)) dMult = dMult.mul("1e6")
         if (hasUpgrade("division", 24)) dMult = dMult.mul(upgradeEffect("division", 24))
+        if (hasUpgrade("division", 27)) dMult = dMult.mul("1e10")
 
         if (hasUpgrade("subtraction", 26)) dMult = dMult.pow(1.01)
         return dMult
@@ -162,7 +163,7 @@ addLayer("polygon", {
                 "blank",
                 ["display-text", function() {
                     if (!maxedChallenge("polygon", 11)) return ""
-                    let text = "<b>Complete Constructor Sacrifice bonus:</b> x2.5 Core Boosters, x1e5000 Points, ^1.01 Fundamentality (after softcap) and Number Cores, ^1.2 Multiplication, and the Numbers softcap is fixed at ^0.35. ^1.1 all Constructor polygons."
+                    let text = "<b>Complete Constructor Sacrifice bonus:</b> x2.5 Core Boosters, x1e5000 Points, ^1.01 Fundamentality (after softcap) and Number Cores, ^1.2 Multiplication, and the Numbers softcap is fixed at ^0.35. ^1.27 all Constructor polygons."
                     return text
                 }],
                 "blank",
@@ -457,10 +458,10 @@ addLayer("polygon", {
 
         //Sacrifices
         if (maxedChallenge("polygon", 11)){
-            triBase = triBase.pow(1.1)
-            squBase = squBase.pow(1.1)
-            penBase = penBase.pow(1.1)
-            hexBase = hexBase.pow(1.1)
+            triBase = triBase.pow(1.27)
+            squBase = squBase.pow(1.27)
+            penBase = penBase.pow(1.27)
+            hexBase = hexBase.pow(1.27)
             player.polygon.triangles = player.polygon.triangles.add(triBase)
             player.polygon.squares = player.polygon.squares.add(squBase)
             player.polygon.pentagons = player.polygon.pentagons.add(penBase)
@@ -513,5 +514,6 @@ addLayer("polygon", {
         }
     },
 
+    branches: [["planetary", "#FFFFFF", 10]],
     tooltip() {return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"},
 })

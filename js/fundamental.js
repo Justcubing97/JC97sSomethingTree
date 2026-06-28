@@ -121,6 +121,7 @@ addLayer("fundamental", {
         if (hasMilestone("primitive", 10)) keptUpgrades.push(44)
         if (hasUpgrade("fundamental", 46)) keptUpgrades.push(45, 46)
         if (hasUpgrade("fundamental", 47)) keptUpgrades.push(47)
+        if (layers[resettingLayer].name == "planetary") keptUpgrades = []
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -128,6 +129,7 @@ addLayer("fundamental", {
         if (hasAchievement("achievements", 34)) keptBuyables.push(getBuyableAmount("fundamental", 13))
         if (hasMilestone("polygon", 9)) keptBuyables.push(getBuyableAmount("fundamental", 21))
         if (hasMilestone("corebooster", 2)) keptBuyables.push(getBuyableAmount("fundamental", 22))
+        if (layers[resettingLayer].name == "planetary") keptBuyables = []
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -371,14 +373,14 @@ addLayer("fundamental", {
             title: "oh hi there",
             description: "Welcome to the Fundamentality ultracap. Keep the fourth and fifth row of TMT and x1.5 Division.",
             cost: new Decimal("1e2700"),
-            unlocked() {return player.fundamental.points.gte("1e2700") || hasUpgrade("fundamental", 43)},
+            unlocked() {return player.fundamental.points.gte("1e2700") || hasUpgrade("fundamental", 43) || player.planetary.unlocked},
         },
 
         44: {
             title: "Halfway",
             description: "+150 to the max of Fundamental buyable 1 and +5 to the maxes of Fundamental buyables 2 and 3.",
             cost: new Decimal("1e2800"),
-            unlocked() {return hasUpgrade("arithmetic", 31)},
+            unlocked() {return hasUpgrade("arithmetic", 31) || player.planetary.unlocked},
         },
         45: {
             title: "Progressing+",
@@ -390,19 +392,19 @@ addLayer("fundamental", {
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
             description: "Fundamentality boosts all Constructor polygons.",
             cost: new Decimal("1e3350"),
-            unlocked() {return hasUpgrade("fundamental", 44)},
+            unlocked() {return hasUpgrade("fundamental", 44) || player.planetary.unlocked},
         },
         46: {
             title: "Kept, kept!",
             description: "Keep the 26th and 27th Fundamental Upgrade, the 8th row of TMT, and Arithmetic Challenge 5.",
             cost: new Decimal("1e3500"),
-            unlocked() {return hasUpgrade("fundamental", 45)},
+            unlocked() {return hasUpgrade("fundamental", 45) || player.planetary.unlocked},
         },
         47: {
             title: "Finality of Fourth Row",
             description: "After all operations, x1e100 Points.",
             cost: new Decimal("1e20600"),
-            unlocked() {return hasUpgrade("fundamental", 46)},
+            unlocked() {return hasUpgrade("fundamental", 46) || player.planetary.unlocked},
         },
     },
     buyables: {
