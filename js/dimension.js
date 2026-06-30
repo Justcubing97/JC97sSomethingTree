@@ -75,13 +75,13 @@ addLayer("dimension", {
             requirementDescription: "THE 4TH DIMENSION",
             effectDescription: "Let's see here... x5 Division, improve the first Multiplication and Fundamental buyables, x100 Number Cores AND KEEP IT UNLOCKED, x4 Shapes, ^1.01 Numbers and Operation Power after softcaps, improve the Constructor compass, reduce the cost scaling of the fourth Fundamental buyable, and unlock the seventh row of TMT. That was a lot!",
             done() { return player.dimension.points.gte(4) },
-            unlocked() { return hasMilestone("division", 3)}
+            unlocked() { return hasMilestone("division", 3) || player.planetary.unlocked}
         },
         5: {
             requirementDescription: "THE 5TH DIMENSION",
             effectDescription: "QoL time! Passively generate Multiplication if possible, the Addition booster for Points is always active, automatically upgrade the Constructor straightedge and compass, and REMOVE the Fundamentality ultracap and hypercap!",
             done() { return player.dimension.points.gte(5) },
-            unlocked() { return hasUpgrade("arithmetic", 35)}
+            unlocked() { return hasUpgrade("arithmetic", 35) || player.planetary.unlocked}
         },
     },
     tooltip() {return format(player.dimension.points) + " Dimensions (" + format(getNextAt("dimension")) + " Numbers for next Dimension)"},

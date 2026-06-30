@@ -166,7 +166,7 @@ addLayer("unlock", {
                 "blank",
                 ["infobox", "d14"],
             ],
-            unlocked() { return player.planetary.points.gte(1)}
+            unlocked() { return player.planetary.points.gte(1) || getBuyableAmount("planetary", 11).gte(1)}
         },
     },
     bars: {
@@ -273,7 +273,7 @@ addLayer("unlock", {
                 "I tried communicating with them, negotiating, bribing, even physical force, but nothing worked. " +
                 "The only way, they said, to leave is to have Dark Matter in your possession. I don't even know how to get that? " +
                 "I guess I'll try my luck in the Labryinth. And I'm bringing a flashlight. See you in a few hours. " +
-                "Nice job getting 1e137 Numbers and reached the 3rd Dimension in JST. Proud of you."
+                "Nice job getting 1e120 Numbers and reached the 3rd Dimension in JST. Proud of you."
             },
             unlocked() {return player.dimension.points.gte(3) || player.polygon.unlocked},
         },
@@ -383,9 +383,10 @@ addLayer("unlock", {
                 "Ashley and I decided to return to the Labyrinth to keep exploring it, and this time, I did NOT give the portal gun to her. " +
                 "Anyway, as an avid Portal (and Portal 2) player and enjoyer, I used a technique called \"portal peeking\" to traverse the Labyrinth. " +
                 "(Portal peeking: 1, set up portals. 2, enter one portal and shoot the portal you exit from elsewhere. 3, quickly move back through the exit portal " +
-                "as the shot portal from 2 takes some time to land. 4, repeat.)"
+                "as the shot portal from 2 takes some time to land. 4, repeat.) <i>Side note: I did code it so that you lose all of your progress upon Planetary reset, " +
+                "but the Planetary Generators will provide a massive jumpstart!"
             },
-            unlocked() {return player.planetary.points.gte(1)},
+            unlocked() {return player.planetary.points.gte(1) || getBuyableAmount("planetary", 11).gte(1)},
         }
     },
     update(diff){

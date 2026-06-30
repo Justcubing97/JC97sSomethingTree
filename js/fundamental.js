@@ -115,13 +115,13 @@ addLayer("fundamental", {
         if (hasMilestone("primitive", 2)) keptUpgrades.push(23)
         if (hasUpgrade("primitive", 15) || hasAchievement("achievements", 24)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 26, 27)
         if (hasAchievement("achievements", 24)) keptUpgrades.push(31, 32, 33, 34, 35, 36)
-        if (hasAchievement("achievements", 34)) keptUpgrades.push(37)
+        if (hasAchievement("achievements", 35)) keptUpgrades.push(37)
         if (hasMilestone("polygon", 3)) keptUpgrades.push(41, 42)
         if (hasUpgrade("division", 14)) keptUpgrades.push(43)
         if (hasMilestone("primitive", 10)) keptUpgrades.push(44)
         if (hasUpgrade("fundamental", 46)) keptUpgrades.push(45, 46)
         if (hasUpgrade("fundamental", 47)) keptUpgrades.push(47)
-        if (layers[resettingLayer].name == "planetary") keptUpgrades = []
+        if (layers[resettingLayer].name == "planetary") keptUpgrades = [23]
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -529,7 +529,7 @@ addLayer("fundamental", {
                 let effect = base.pow(x)
                 return effect
             },
-            unlocked() {return hasMilestone("polygon", 6)},
+            unlocked() {return hasMilestone("polygon", 6) || player.planetary.unlocked},
             purchaseLimit(){
                 let cap = new Decimal("50")
                 cap = cap.add(getBuyableAmount("fundamental", 22).mul(3))
@@ -567,7 +567,7 @@ addLayer("fundamental", {
                 let effect = base.pow(x)
                 return effect
             },
-            unlocked() {return hasUpgrade("primitive", 36)},
+            unlocked() {return hasUpgrade("primitive", 36) || player.planetary.unlocked},
             purchaseLimit: new Decimal(100)
         },
     },

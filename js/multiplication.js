@@ -173,7 +173,7 @@ addLayer("multiplication", {
                 "blank",
                 "buyables",
             ],
-            unlocked() {return hasMilestone("polygon", 6)},
+            unlocked() {return hasMilestone("polygon", 6) || player.planetary.unlocked},
         },
     },
     infoboxes: {
@@ -338,7 +338,7 @@ addLayer("multiplication", {
             },
             branches: [[71, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 3)},
+            unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
         },
         62: {
             title: "THE DIVISION",
@@ -353,7 +353,7 @@ addLayer("multiplication", {
             },
             branches: [[72, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 3)},
+            unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
         },
         63: {
             title: "THE ADDITION",
@@ -367,7 +367,7 @@ addLayer("multiplication", {
             },
             branches: [[72, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 3)},
+            unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
         },
         64: {
             title: "THE POINTS",
@@ -388,7 +388,7 @@ addLayer("multiplication", {
             },
             branches: [[73, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 3)},
+            unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
         },
 
         71: {
@@ -403,7 +403,7 @@ addLayer("multiplication", {
             },
             branches: [[81, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return player.dimension.points.gte(4)},
+            unlocked() {return player.dimension.points.gte(4) || player.planetary.unlocked},
         },
         72: {
             title: "Straightforward Mathematics",
@@ -423,7 +423,7 @@ addLayer("multiplication", {
             },
             branches: [[81, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return player.dimension.points.gte(4)},
+            unlocked() {return player.dimension.points.gte(4) || player.planetary.unlocked},
         },
         73: {
             title: "Primitive Layer Still Underrated",
@@ -437,7 +437,7 @@ addLayer("multiplication", {
             },
             branches: [[81, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return player.dimension.points.gte(4)},
+            unlocked() {return player.dimension.points.gte(4) || player.planetary.unlocked},
         },
         81: {
             title: "Culmination",
@@ -458,7 +458,7 @@ addLayer("multiplication", {
             },
             branches: [[91, "#FFFFFF", 10], [92, "#FFFFFF", 10], [93, "#FFFFFF", 10], [94, "#FFFFFF", 10], [95, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("primitive", 11)},
+            unlocked() {return hasMilestone("primitive", 11) || player.planetary.unlocked},
         },
         91: {
             title: "Muga Millions",
@@ -469,7 +469,7 @@ addLayer("multiplication", {
                 return hasUpgrade("multiplication", 81)
             },
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 8)},
+            unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked},
         },
         92: {
             title: "Less Defects",
@@ -480,7 +480,7 @@ addLayer("multiplication", {
                 return hasUpgrade("multiplication", 81)
             },
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 8)},
+            unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked},
         },
         93: {
             title: "Overpowered",
@@ -492,7 +492,7 @@ addLayer("multiplication", {
             },
             branches: [[101, "#FFFFFF", 10], [102, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 8)},
+            unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked},
         },
         94: {
             title: "Numerical Ease",
@@ -509,7 +509,7 @@ addLayer("multiplication", {
                 return hasUpgrade("multiplication", 81)
             },
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 8)},
+            unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked},
         },
         95: {
             title: "NO DIFFERENCE",
@@ -526,7 +526,7 @@ addLayer("multiplication", {
                 return hasUpgrade("multiplication", 81)
             },
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("division", 8)},
+            unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked},
         },
 
         101: {
@@ -538,7 +538,7 @@ addLayer("multiplication", {
                 return hasUpgrade("multiplication", 93)
             },
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("addition", 7)},
+            unlocked() {return hasMilestone("addition", 7) || player.planetary.unlocked},
         },
         102: {
             title: "Constructor Enhancement",
@@ -555,7 +555,7 @@ addLayer("multiplication", {
                 return hasUpgrade("multiplication", 93)
             },
             pay() {return new Decimal(0)},
-            unlocked() {return hasMilestone("addition", 7)},
+            unlocked() {return hasMilestone("addition", 7) || player.planetary.unlocked},
             onPurchase() {addBuyables("polygon", 11, new Decimal(15))}
         },
     },
@@ -577,12 +577,12 @@ addLayer("multiplication", {
                 if (player.dimension.points.gte(4)) effect = effect.pow(1.2)
                 return effect
             },
-            unlocked() {return hasMilestone("polygon", 6)},
+            unlocked() {return hasMilestone("polygon", 6) || player.planetary.unlocked},
         },
     },
     tooltip() {
         let able = canReset("multiplication")
-        if (!able) return format(player.multiplication.points) + " Multiplication (Unable to reset)"
+        if (!able) return format(player.multiplication.points) + " Multiplication (Unable to gain)"
         return format(player.multiplication.points) + " Multiplication (+" + format(getResetGain("multiplication")) + " Multiplication on reset)"
     },
 })

@@ -167,25 +167,25 @@ addLayer("corebooster", {
     ],
     milestones: {
         1: {
-            requirementDescription: "180 useful Core Boosters",
+            requirementDescription: "1: 180 useful Core Boosters",
             effectDescription: "The first Core Booster effect now affects Points at an increased rate. Remove the 5th Multiplication hardcap.",
             done() { return player.corebooster.useful.gte(180) },
             unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked}
         },
         2: {
-            requirementDescription: "530 useful Core Boosters",
+            requirementDescription: "2: 530 useful Core Boosters",
             effectDescription: "Have more useful Core Boosters, and keep the 5th Fundamental buyable. ^1.1 Division.",
             done() { return player.corebooster.useful.gte(530) },
             unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         3: {
-            requirementDescription: "1,480 useful Core Boosters",
+            requirementDescription: "3: 1,480 useful Core Boosters",
             effectDescription: "Autobuy Core Boosters. Useful Core Boosters are x1.5 your total Core Boosters.",
             done() { return player.corebooster.useful.gte(1480) },
             unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         4: {
-            requirementDescription: "7,777 useful Core Boosters",
+            requirementDescription: "4: 7,777 useful Core Boosters",
             effectDescription() {
                 let text = "Division boosts Points."
                 let base = player.division.points
@@ -199,7 +199,7 @@ addLayer("corebooster", {
             unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         5: {
-            requirementDescription: "12,500 useful Core Boosters",
+            requirementDescription: "5: 12,500 useful Core Boosters",
             effectDescription: "x500 Division and ^1.01 Multiplication.",
             done() { return player.corebooster.useful.gte(12500) },
             unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}

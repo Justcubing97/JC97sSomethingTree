@@ -179,8 +179,8 @@ addLayer("addition", {
 
                 if (!hasMilestone("polygon", 4)) setClickableState("addition", 11, "Inactive")
                 if (!hasUpgrade("polygon", 13)) setClickableState("addition", 12, "Inactive")
-                setClickableState("addition", 14, "Inactive")
-                setClickableState("addition", 15, "Inactive")
+                if (!player.dimension.points.gte(5)) setClickableState("addition", 14, "Inactive")
+                if (!player.dimension.points.gte(5)) setClickableState("addition", 15, "Inactive")
             },
             unlocked() {return hasMilestone("primitive", 7)},
         },
@@ -240,19 +240,19 @@ addLayer("addition", {
             requirementDescription: "1: 1e85 Addition",
             effectDescription: "The milestone virus is spreading... HEAVILY improve \"Primitive Boost,\" \"Insane Math,\" and unlock more Fundamental upgrades.",
             done() { return player.addition.points.gte("1e85") },
-            unlocked() {return player.dimension.points.gte(3)},
+            unlocked() {return player.dimension.points.gte(3) || player.planetary.unlocked},
         },
         2: {
             requirementDescription: "2: 1e410 Addition",
             effectDescription: "+5 to Fundamental buyable 1's base.",
             done() { return player.addition.points.gte("1e410") },
-            unlocked() {return player.dimension.points.gte(3)},
+            unlocked() {return player.dimension.points.gte(3) || player.planetary.unlocked},
         },
         3: {
             requirementDescription: "3: 1e860 Addition",
             effectDescription: "Division boosts Number Cores very slightly and divide all polygon construction times by 10. x1e100 Number Cores.",
             done() { return player.addition.points.gte("1e860") },
-            unlocked() {return player.dimension.points.gte(4)},
+            unlocked() {return player.dimension.points.gte(4) || player.planetary.unlocked},
         },
         4: {
             requirementDescription: "4: 1e2560 Addition",
@@ -263,7 +263,7 @@ addLayer("addition", {
                 return text
             },
             done() { return player.addition.points.gte("1e2560") },
-            unlocked() {return hasUpgrade("arithmetic", 35)},
+            unlocked() {return hasUpgrade("arithmetic", 35) || player.planetary.unlocked},
         },
         5: {
             requirementDescription: "5: 1e6800 Addition",
@@ -274,7 +274,7 @@ addLayer("addition", {
                 return text
             },
             done() { return player.addition.points.gte("1e6800") },
-            unlocked() {return player.dimension.points.gte(5)},
+            unlocked() {return player.dimension.points.gte(5) || player.planetary.unlocked},
         },
         6: {
             requirementDescription: "6: 1e50,000 Addition",
@@ -284,7 +284,7 @@ addLayer("addition", {
                 return text
             },
             done() { return player.addition.points.gte("1e50000") },
-            unlocked() {return player.dimension.points.gte(5)},
+            unlocked() {return player.dimension.points.gte(5) || player.planetary.unlocked},
         },
         7: {
             requirementDescription: "7: 1e450,000 Addition",
@@ -294,7 +294,7 @@ addLayer("addition", {
                 return text
             },
             done() { return player.addition.points.gte("1e450000") },
-            unlocked() {return player.dimension.points.gte(5)},
+            unlocked() {return player.dimension.points.gte(5) || player.planetary.unlocked},
         },
     },
     tooltip() {return format(player.addition.points) + " Addition (+" + format(getResetGain("addition")) + " Addition/sec)"},

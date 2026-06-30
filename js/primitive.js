@@ -99,7 +99,7 @@ addLayer("primitive", {
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
         if (hasAchievement("achievements", 24)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23)
-        if (hasAchievement("achievements", 34)) keptUpgrades.push(24)
+        if (hasAchievement("achievements", 35)) keptUpgrades.push(24)
         if (hasMilestone("polygon", 3)) keptUpgrades.push(25)
         if (hasMilestone("polygon", 9)) keptUpgrades.push(26, 27)
 

@@ -84,7 +84,7 @@ addLayer("arithmetic", {
         else return 
         return text
     },
-    passiveGeneration() {if (hasMilestone("polygon", 4)) return 1},
+    passiveGeneration() {if (hasMilestone("polygon", 4) || hasMilestone("planetary", 1)) return 1},
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
         if (layers[resettingLayer].row <= this.row) return;
@@ -101,6 +101,7 @@ addLayer("arithmetic", {
         if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(36)
         if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(37)
         if (layers[resettingLayer].name == "planetary") keptUpgrades = []
+        if (hasMilestone("planetary", 1)) keptUpgrades.push(12)
 
         let keptChallenges = []
         if (hasMilestone("polygon", 8)) keptChallenges.push(11, 12, 13)
@@ -297,7 +298,7 @@ addLayer("arithmetic", {
             name: "Beginner's Demise",
             challengeDescription: "<i>\"Those who do not know what they are doing will fall.\"</i> Fundamental buyables don't work. ^0.8 to Points and Numbers.",
             goalDescription: "Have 1e130 Fundamentality.",
-            rewardDescription: "Unlock a third Fundamentality buyable.",
+            rewardDescription: "Unlock a third Fundamental buyable.",
             canComplete: function() {return player.fundamental.points.gte("1e130")},
             unlocked() {return hasUpgrade("arithmetic", 17) || hasMilestone("polygon", 2) || player.planetary.unlocked},
         },
@@ -313,7 +314,7 @@ addLayer("arithmetic", {
             name: "Dimensionless Reality",
             challengeDescription: "<i>\"The concept of spatial dimensions is nothing but a silly mistake.\"</i> Dimension milestones do not work. ^0.75 to Addition, Subtraction, Points, Fundamentality, Fundamental buyable 1's boost, and Numbers.",
             goalDescription: "Have 1e108 Numbers.",
-            rewardDescription: "^1.05 Points, Fundamentality, Numbers, and Operation Points.",
+            rewardDescription: "^1.05 Points, Fundamentality, Numbers, and Operation Power.",
             canComplete: function() {return player.primitive.points.gte("1e108")},
             unlocked() {return hasUpgrade("arithmetic", 25) || hasMilestone("polygon", 2) || player.planetary.unlocked},
         },

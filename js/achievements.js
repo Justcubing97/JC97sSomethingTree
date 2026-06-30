@@ -11,12 +11,40 @@ addLayer("achievements", {
   resource: "achievements", // Name of prestige currency
   type: "none", // normal: cost to gain currency depends on amount gained. static: cost depends on how much you already have
   row: "side", // Row the layer is in on the tree (0 is the first row)
-tabFormat: [
-  ["display-text", () => `You have ${player.achievements.achievements.length}/n achievements`],
-  "blank",
-  "achievements"
-],
+  tabFormat: [
+    ["display-text", () => `You have ${player.achievements.achievements.length}/n achievements`],
+    "blank",
+    "achievements"
+  ],
   layerShown(){return true},
+    doReset(resettingLayer) {
+        // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        if (layers[resettingLayer].row <= this.row) return;
+
+        // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
+        let keptUpgrades = []
+
+        let keptBuyables = []
+
+        // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
+        let keep = ["achievements"];
+        //if (someOtherCondition) keep.push("milestones");
+
+        // Stage 4, do the actual data reset
+        layerDataReset(this.layer, keep);
+
+        //IF AN ACHIEVEMENT HAS A REWARD, ADD IT TO A LIST LIKE "rewardList[INTERNAL LAYER NAME HERE]"
+        let rewardListPlanetary = ["24","35","46","53","54"]
+        if (resettingLayer == "planetary"){
+          for (var i = 0; i < rewardListPlanetary.length; i++){
+            let index = player.achievements.achievements.indexOf(rewardListPlanetary[i])
+            if (index > -1) player.achievements.achievements.splice(index, 1)
+          }
+        }
+
+        // Stage 5, add back in the specific subfeatures you saved earlier
+        player[this.layer].upgrades.push(...keptUpgrades)
+    }, //THANK YOU ESCAPEE FROM THE TMT SERVER
 achievements: {
   11: {
     name: "The Beginning.",

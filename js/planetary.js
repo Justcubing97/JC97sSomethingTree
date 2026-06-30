@@ -5,6 +5,7 @@ addLayer("planetary", {
     startData() { return {
         unlocked: false,
 		points: new Decimal(0),
+        total: new Decimal(0),
 
         mercuryGenAmt: new Decimal(0),
         venusGenAmt: new Decimal(0),
@@ -15,6 +16,7 @@ addLayer("planetary", {
         uranusGenAmt: new Decimal(0),
         neptuneGenAmt: new Decimal(0),
         planetPower: new Decimal(0),
+        planetPowerEffect: new Decimal(0),
     }},
     color: "#80E0FF",
     requires: new Decimal("1e150"), // Can be a function that takes requirement increases into account
@@ -76,6 +78,13 @@ addLayer("planetary", {
                 "main-display",
                 "prestige-button",
                 ["display-text", function() { return "You have " + format(player.polygon.points) + " Shapes" }],
+                ["display-text", function() { return "You have " + format(player.planetary.total) + " total Planetary Fragments" }],
+                "blank",
+                ["display-text", function() { return "<b>Planetary reset will fully reset EVERYTHING!</b>" }],
+                "blank",
+                ["display-text", function() { return "<sup>Certain achievements will also be reset.</sup>" }],
+                "blank",
+                "milestones",
                 "blank",
                 "upgrades",
             ],
@@ -85,11 +94,15 @@ addLayer("planetary", {
                 "main-display",
                 "prestige-button",
                 ["display-text", function() { return "You have " + format(player.polygon.points) + " Shapes" }],
+                ["display-text", function() { return "You have " + format(player.planetary.total) + " total Planetary Fragments" }],
+                "blank",
+                ["display-text", function() { return "<h2>You have " + format(player.planetary.planetPower) + " Planet Power, multiplying Points by x" + format(player.planetary.planetPowerEffect)}],
                 "blank",
                 "buyables",
             ],
         },
     },
+
     upgrades: {
         11: {
             title: "placeholder",
@@ -97,6 +110,15 @@ addLayer("planetary", {
             cost: new Decimal("10"),
         },
     },
+
+    milestones: {
+        1: {
+            requirementDescription: "1: 1 total Planetary Fragment",
+            effectDescription: "Keep generation for Fundamentality, Numbers, and Operation Power.",
+            done() { return player.planetary.total.gte(1) },
+        },
+    },
+
     buyables: {
         11: {
             cost(x) {
@@ -104,24 +126,61 @@ addLayer("planetary", {
                 return base
             },
             title: "Mercury Generator",
-            display() { return "Generates Planet Power based on its amount." + "\n" + "Amount: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
+            display() {
+                let text = "Generates Planet Power based on its amount." + "\n" + "Amount: " + player.planetary.mercuryGenAmt + " (" + getBuyableAmount(this.layer, this.id) + ")" + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: "
+                if (getBuyableAmount("planetary", 11).eq(0)) text += "Buy a generator to start generating!"
+                else text += "+" + format(this.effect()) + " Planet Power/s"
+                return text
+            },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                player.planetary.mercuryGenAmt = player.planetary.mercuryGenAmt.add(1)
             },
             effect(x) {
-                let base = new Decimal(250)
+                let base = new Decimal(1.1)
                 let effect = base.pow(x)
-                if (player.dimension.points.gte(4)) effect = effect.pow(1.2)
+                effect = effect.div(1.1)
                 return effect
             },
             unlocked() {return true},
         },
+        12: {
+            cost(x) {
+                let base = new Decimal(2).pow(x).mul("50")
+                return base
+            },
+            title: "Venus Generator",
+            display() {
+                let text = "Generates Mercury Generators based on its amount." + "\n" + "Amount: " + player.planetary.venusGenAmt + " (" + getBuyableAmount(this.layer, this.id) + ")" + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: "
+                if (getBuyableAmount("planetary", 11).eq(0)) text += "Buy a generator to start generating!"
+                else text += "+" + format(this.effect()) + " Planet Power/s"
+                return text
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                player.planetary.venusGenAmt = player.planetary.venusGenAmt.add(1)
+            },
+            effect(x) {
+                let base = new Decimal(1.2)
+                let effect = base.pow(x)
+                effect = effect.div(1.2)
+                return effect
+            },
+            unlocked() {return getBuyableAmount("planetary", 11).gte(1)},
+        },
     },
 
     update(diff){
+        let mult = new Decimal(0)
+        if (getBuyableAmount("planetary", 11).gte(1)) mult = mult.add(player.planetary.mercuryGenAmt)
 
+        //FINAL!!!
+        player.planetary.planetPower = player.planetary.planetPower.add(mult.mul(diff))
+        player.planetary.planetPowerEffect = player.planetary.planetPower.add(1).pow(player.planetary.planetPower.add(1).log(2).mul(player.planetary.planetPower.add(1).log(10)))
     },
     tooltip() {return format(player.planetary.points) + " Planetary Fragments (+" + format(getResetGain("planetary")) + " Planetary Fragments on reset)"},
 })

@@ -27,6 +27,7 @@ let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.4.8</h3><br>
 		- Core Booster layer. <br>
 		- Added some softcaps and QoL. <br>
+		- Savebanks implemented. <br>
 		- Endgame: 1 Core Booster. <br>
 	<h3>v0.4.7</h3><br>
 		- Constructor tab in Polygon layer. <br>
@@ -137,6 +138,9 @@ function getPointGen() {
 		gain = gain.mul(base)
 	}
 	if (maxedChallenge("polygon", 11)) gain = gain.mul("1e5000")
+
+	//Planetary+ multiplications!
+	if (player.planetary.planetPower.gt(0)) gain = gain.mul(player.planetary.planetPowerEffect)
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
@@ -152,6 +156,9 @@ function getPointGen() {
 	if (hasUpgrade("division", 16)) gain = gain.pow(1.01)
 	if (hasUpgrade("division", 26)) gain = gain.pow(1.001)
 	if (hasUpgrade("division", 27)) gain = gain.pow(1.2)
+
+	//Planetary+ exponents!
+
 	//other hypers
 	//final
 	if (getClickableState("division", 11) == "Active") gain = gain.pow(0.3)
