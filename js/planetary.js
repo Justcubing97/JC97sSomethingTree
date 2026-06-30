@@ -154,7 +154,7 @@ addLayer("planetary", {
             title: "Venus Generator",
             display() {
                 let text = "Generates Mercury Generators based on its amount." + "\n" + "Amount: " + player.planetary.venusGenAmt + " (" + getBuyableAmount(this.layer, this.id) + ")" + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: "
-                if (getBuyableAmount("planetary", 11).eq(0)) text += "Buy a generator to start generating!"
+                if (getBuyableAmount(this.layer, this.id).eq(0)) text += "Buy a generator to start generating!"
                 else text += "+" + format(this.effect()) + " Planet Power/s"
                 return text
             },

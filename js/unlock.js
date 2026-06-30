@@ -337,8 +337,8 @@ addLayer("unlock", {
             body() { return "I decided to take Ashley back to my little prison cell for the night. After all, I did have a bookshelf, and she enjoyed reading. " +
                 "It was normal for half an hour! I found a few dystopian novels, which I enjoy, and read away with her. It all changed when she picked up a totally black book, " +
                 "except with one word on the cover: \"GUIDE.\" It was very thin and small, not much larger than A5 paper. Inside? Weird diagrams and grids and bars and numbers and letters. " +
-                "There was one golden-yellow dot at the top, three dots below it from blue to green, then below that four pink dots, below that a singular red-pink dot, " +
-                "then a deep blue dot next to a light green one, and below all of that was a purple dot. There was an arrow pointing to the purple dot all the way at the bottom. " +
+                "There was a purple dot at the very top, above a golden-yellow dot, three dots below it from blue to green, then below that four pink dots, below that a singular red-pink dot, " +
+                "then a deep blue dot next to a light green one. There was an arrow pointing to the purple dot all the way at the top. " +
                 "\"Dark Matter\" was written next to it... no idea what it means. And by the way, your fresh Core Boosters can help you! I bet they indirectly influence your Constructor."
             },
             unlocked() {return player.corebooster.points.gte(1) || player.planetary.unlocked},

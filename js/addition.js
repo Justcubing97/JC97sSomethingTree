@@ -232,7 +232,7 @@ addLayer("addition", {
                 setClickableState("addition", 13, "Inactive")
                 setClickableState("addition", 14, "Inactive")
             },
-            unlocked() {return hasChallenge("arithmetic", 21)},
+            unlocked() {return hasUpgrade("arithmetic", 33)},
         },
     },
     milestones: {

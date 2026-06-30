@@ -49,7 +49,7 @@ addLayer("arithmetic", {
         let dMult = new Decimal(1)
         if (hasUpgrade("polygon", 11)) dMult = dMult.mul(1000)
         dMult = dMult.mul(player.polygon.triEffect)
-        //if (hasUpgrade("multiplication", 72)) dMult = dMult.mul(upgradeEffect("multiplication", 72))
+        if (hasUpgrade("multiplication", 72)) dMult = dMult.mul(upgradeEffect("multiplication", 72))
         if (hasChallenge("arithmetic", 22)) dMult = dMult.mul("1e10")
         if (inChallenge("polygon", 11) && hasUpgrade("primitive", 33)) dMult = dMult.mul("1e50")
 

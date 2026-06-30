@@ -12,11 +12,16 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5",
+	num: "0.5.1",
 	name: "Planetary Fragment update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5.1</h3><br>
+		- Whoops! Readded an upgrade effect that made you stuck at 1e111 Operation Power. <br>
+		- Changed the content of D11. <br>
+		- Changed the unlock condition of the 5th Addition booster. <br>
+		- Endgame: 1 Planetary Fragment. <br>
 	<h3>v0.5</h3><br>
 		- Planetary Fragment layer. <br>
 		- Added the Constructor Sacrifice. <br>
