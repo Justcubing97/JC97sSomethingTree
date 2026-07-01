@@ -12,11 +12,16 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5.2",
+	num: "0.5.3",
 	name: "Planetary Fragment update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5.3</h3><br>
+		- Edited the hardcap logic for Multiplication. <br>
+		- Buffed the 1st Planetary Milestone and Planet Power. <br>
+		- Fixed a bug with the Unlock layer - GOD I HATE LOGARITHMS- <br>
+		- Endgame: 1 Planetary Fragment. <br>
 	<h3>v0.5.2</h3><br>
 		- Added a reset button for Core Boosters. <br>
 		- Edited a save file that for some reason had residual Core Boosters. <br>

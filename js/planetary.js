@@ -114,7 +114,7 @@ addLayer("planetary", {
     milestones: {
         1: {
             requirementDescription: "1: 1 total Planetary Fragment",
-            effectDescription: "Keep generation for Fundamentality, Numbers, and Operation Power.",
+            effectDescription: "Keep generation for Fundamentality, Numbers, and Operation Power. /100 all Constructor polygon construction times. x100 Shapes. Raise the Point Addition booster harcap to 1e2500. ^1.5 Operation Power.",
             done() { return player.planetary.total.gte(1) },
         },
     },
@@ -180,7 +180,7 @@ addLayer("planetary", {
 
         //FINAL!!!
         player.planetary.planetPower = player.planetary.planetPower.add(mult.mul(diff))
-        player.planetary.planetPowerEffect = player.planetary.planetPower.add(1).pow(player.planetary.planetPower.add(1).log(2).mul(player.planetary.planetPower.add(1).log(10)))
+        player.planetary.planetPowerEffect = player.planetary.planetPower.add(1).pow(player.planetary.planetPower.add(1).log(2).mul(player.planetary.planetPower.add(1).log(1.5)))
     },
     tooltip() {return format(player.planetary.points) + " Planetary Fragments (+" + format(getResetGain("planetary")) + " Planetary Fragments on reset)"},
 })

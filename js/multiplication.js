@@ -6,6 +6,7 @@ addLayer("multiplication", {
         unlocked: false,
 		points: new Decimal(0),
         effect: new Decimal(0),
+        isAbleToReset: false,
     }},
     color: "#FF50FF",
     requires() {
@@ -106,48 +107,8 @@ addLayer("multiplication", {
         if (hasMilestone("division", 9)) return "multiplying Points and Number Cores by x" + format(player.multiplication.effect)
         return "multiplying Points by x" + format(player.multiplication.effect)
     },
-    onPrestige(){
-        let current = player.multiplication.points
-        let offset = getResetGain("multiplication")
-        if (current.add(offset).gte("2.15e9")) {
-            let difference = current.add(offset).sub("2.15e9")
-            player.multiplication.points = player.multiplication.points.sub(difference)
-            if (hasMilestone("division", 9)) player.multiplication.points = player.multiplication.points.add(difference)
-        }
-
-        if (current.add(offset).gte("1e7")) {
-            let difference = current.add(offset).sub("1e7")
-            player.multiplication.points = player.multiplication.points.sub(difference)
-            if (hasMilestone("corebooster", 1)) player.multiplication.points = player.multiplication.points.add(difference)
-        }
-
-        if (current.add(offset).gte("250000")) {
-            let difference = current.add(offset).sub("250000")
-            player.multiplication.points = player.multiplication.points.sub(difference)
-            if (hasUpgrade("primitive", 35)) player.multiplication.points = player.multiplication.points.add(difference)
-        }
-
-        if (current.add(offset).gte("40000")) {
-            let difference = current.add(offset).sub("40000")
-            player.multiplication.points = player.multiplication.points.sub(difference)
-            if (hasUpgrade("primitive", 31)) player.multiplication.points = player.multiplication.points.add(difference)
-        }
-
-        if (current.add(offset).gte("5000")) {
-            let difference = current.add(offset).sub("5000")
-            player.multiplication.points = player.multiplication.points.sub(difference)
-            if (hasUpgrade("arithmetic", 36)) player.multiplication.points = player.multiplication.points.add(difference)
-        }
-
-        if (current.add(offset).gte("600")) {
-            let difference = current.add(offset).sub("600")
-            player.multiplication.points = player.multiplication.points.sub(difference)
-            if (hasMilestone("division", 4)) player.multiplication.points = player.multiplication.points.add(difference)
-        }
-    },
     resetsNothing() {return true},
     canBuyMax() {return true},
-    autoPrestige() {return player.dimension.points.gte(5)},
     tabFormat: {
         "Main": {
             content: [
@@ -582,6 +543,64 @@ addLayer("multiplication", {
             unlocked() {return hasMilestone("polygon", 6) || player.planetary.unlocked},
         },
     },
+    canReset() {
+        if (player.multiplication.points.gte("600") && !hasMilestone("division", 4)) {
+            return false;
+        }
+        if (player.multiplication.points.gte("5000") && !hasUpgrade("arithmetic", 36)) {
+            return false;
+        }
+        if (player.multiplication.points.gte("4e4") && !hasUpgrade("primitive", 31)) {
+            return false;
+        }
+        if (player.multiplication.points.gte("250000") && !hasUpgrade("primitive", 35)) {
+            return false;
+        }
+        if (player.multiplication.points.gte("1e7") && !hasMilestone("corebooster", 1)) {
+            return false;
+        }
+        if (player.multiplication.points.gte("215e7") && !hasMilestone("division", 9)) {
+            return false;
+        }
+
+        if (player.arithmetic.points.gte(getNextAt("multiplication"))) return true;
+        
+        return false;
+    },
+    update(diff){
+        player.multiplication.isAbleToReset = false
+        if (canReset("multiplication")) player.multiplication.isAbleToReset = true
+
+        if (player.multiplication.points.gte("600") && !hasMilestone("division", 4)) {
+            player.multiplication.points = new Decimal("600")
+            player.multiplication.isAbleToReset = false
+        }
+        if (player.multiplication.points.gte("5000") && !hasUpgrade("arithmetic", 36)) {
+            player.multiplication.points = new Decimal("5000")
+            player.multiplication.isAbleToReset = false
+        }
+        if (player.multiplication.points.gte("4e4") && !hasUpgrade("primitive", 31)) {
+            player.multiplication.points = new Decimal("4e4")
+            player.multiplication.isAbleToReset = false
+        }
+        if (player.multiplication.points.gte("250000") && !hasUpgrade("primitive", 35)) {
+            player.multiplication.points = new Decimal("250000")
+            player.multiplication.isAbleToReset = false
+        }
+        if (player.multiplication.points.gte("1e7") && !hasMilestone("corebooster", 1)) {
+            player.multiplication.points = new Decimal("1e7")
+            player.multiplication.isAbleToReset = false
+        }
+        if (player.multiplication.points.gte("215e7") && !hasMilestone("division", 9)) {
+            player.multiplication.points = new Decimal("215e7")
+            player.multiplication.isAbleToReset = false
+        }
+
+        if (player.dimension.points.gte(5) && player.multiplication.isAbleToReset) {
+            if (canReset(this.layer)) doReset(this.layer)
+        }
+    },
+
     tooltip() {
         let able = canReset("multiplication")
         if (!able) return format(player.multiplication.points) + " Multiplication (Unable to gain)"

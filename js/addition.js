@@ -165,12 +165,14 @@ addLayer("addition", {
 
                 //final
                 if (getClickableState("division", 11) == "Active") base = base.pow(0.5)
-                if (base.gt("1e500")) return new Decimal("1e500")
+                if (hasMilestone("planetary", 1) && base.gt("1e2500")) return new Decimal("1e2500")
+                else if (base.gt("1e500")) return new Decimal("1e500")
                 return base
             },
             display() {
                 let cap = ""
-                if (clickableEffect("addition", 13).gte("1e500")) cap = ", CAPPED"
+                if (hasMilestone("planetary", 1) && clickableEffect("addition", 13).gt("1e2500")) cap = ", CAPPED"
+                else if (clickableEffect("addition", 13).gte("1e500")) cap = ", CAPPED"
                 return "Addition adds to Points base: +" + format(clickableEffect("addition", 13)) + " (" + getClickableState("addition", 13) + cap + ")"
             },
             canClick() {return true},

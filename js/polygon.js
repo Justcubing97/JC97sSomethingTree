@@ -38,12 +38,13 @@ addLayer("polygon", {
         if (player.dimension.points.gte(4)) mult = mult.mul(4)
         if (hasUpgrade("arithmetic", 31)) mult = mult.mul(25)
         if (hasUpgrade("multiplication", 81)) mult = mult.mul(upgradeEffect("multiplication", 81))
-        if (hasUpgrade("division", 16)) mult = mult.pow(1.01)
         if (hasUpgrade("arithmetic", 37)) mult = mult.mul(player.corebooster.e5)
         if (hasMilestone("division", 7)) mult = mult.mul(10)
         if (hasUpgrade("multiplication", 102)) mult = mult.mul(upgradeEffect("multiplication", 102))
         if (hasUpgrade("subtraction", 24)) mult = mult.mul("1e10")
+        if (hasMilestone("planetary", 1)) mult = mult.mul(100)
         //exp
+        if (hasUpgrade("division", 16)) mult = mult.pow(1.01)
         //other hypers
         //final effects
         return mult
@@ -329,6 +330,7 @@ addLayer("polygon", {
                 player.polygon.constrBaseTime = player.polygon.constrBaseTime.mul(buyableEffect("polygon", 11))
                 if (hasMilestone("addition", 3)) player.polygon.constrBaseTime = player.polygon.constrBaseTime.div(10)
                 if (hasUpgrade("subtraction", 17)) player.polygon.constrBaseTime = player.polygon.constrBaseTime.div(3)
+                if (hasMilestone("planetary", 1)) player.polygon.constrBaseTime = player.polygon.constrBaseTime.div(100)
 
                 //Specific time shifts
                 //tri

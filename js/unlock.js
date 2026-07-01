@@ -177,15 +177,15 @@ addLayer("unlock", {
             display() {
                 let text = "Your next layer is at "
                 if (!hasUpgrade("unlock", 11)) text += "1 Unlock Point, unlocking the Fundamental layer. <br> Progress: " + player.unlock.points.div(1).mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 12)) text += "100,000 Unlock Points, unlocking the Primitive layer. <br> Progress: " + player.unlock.points.log10().div("5").mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 13)) text += "1e20 Unlock Points, unlocking the Arithmetic layer. <br> Progress: " + player.unlock.points.log10().div("20").mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 14)) text += "1e50 Unlock Points, unlocking the Dimension sub-layer. <br> Progress: " + player.unlock.points.log10().div("50").mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 15)) text += "1e400 Unlock Points, unlocking the Polygon layer. <br> Progress: " + player.unlock.points.log10().div("400").mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 16)) text += "1e925 Unlock Points, unlocking the Number Core sub-layer. <br> Progress: " + player.unlock.points.log10().div("925").mul(100).toFixed(2) + "%"
-                else if (!hasUpgrade("unlock", 17)) text += "1e1550 Unlock Points, unlocking the Core Booster sub-layer. <br> Progress: " + player.unlock.points.log10().div("1550").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 12)) text += "100,000 Unlock Points, unlocking the Primitive layer. <br> Progress: " + player.unlock.points.add(1).log10().div("5").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 13)) text += "1e20 Unlock Points, unlocking the Arithmetic layer. <br> Progress: " + player.unlock.points.add(1).log10().div("20").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 14)) text += "1e50 Unlock Points, unlocking the Dimension sub-layer. <br> Progress: " + player.unlock.points.add(1).log10().div("50").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 15)) text += "1e400 Unlock Points, unlocking the Polygon layer. <br> Progress: " + player.unlock.points.add(1).log10().div("400").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 16)) text += "1e925 Unlock Points, unlocking the Number Core sub-layer. <br> Progress: " + player.unlock.points.add(1).log10().div("925").mul(100).toFixed(2) + "%"
+                else if (!hasUpgrade("unlock", 17)) text += "1e1550 Unlock Points, unlocking the Core Booster sub-layer. <br> Progress: " + player.unlock.points.add(1).log10().div("1550").mul(100).toFixed(2) + "%"
                 else if (!hasUpgrade("unlock", 21)) {
-                    if (player.unlock.points.gte("e6e6")) text += "e6,000,000 Unlock Points, unlocking the Planetary Fragment layer. <br> Progress: " + player.unlock.points.log10().div("6e6").mul(100).toFixed(2) + "%"
-                    else text += "e6,000,000 Unlock Points, unlocking the ??? layer. <br> Progress: " + player.unlock.points.log10().div("6e6").mul(100).toFixed(2) + "%"
+                    if (player.unlock.points.gte("e6e6")) text += "e6,000,000 Unlock Points, unlocking the Planetary Fragment layer. <br> Progress: " + player.unlock.points.add(1).log10().div("6e6").mul(100).toFixed(2) + "%"
+                    else text += "e6,000,000 Unlock Points, unlocking the ??? layer. <br> Progress: " + player.unlock.points.add(1).log10().div("6e6").mul(100).toFixed(2) + "%"
                 }
                 else text = "You have unlocked all layers! Congratulations! (For now...)"
                 return text
@@ -193,13 +193,13 @@ addLayer("unlock", {
             progress() {
                 let prog = new Decimal(0)
                 if (!hasUpgrade("unlock", 11)) prog = player.unlock.points.div(1)
-                else if (!hasUpgrade("unlock", 12)) prog = player.unlock.points.log10().div("5")
-                else if (!hasUpgrade("unlock", 13)) prog = player.unlock.points.log10().div("20")
-                else if (!hasUpgrade("unlock", 14)) prog = player.unlock.points.log10().div("50")
-                else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.log10().div("400")
-                else if (!hasUpgrade("unlock", 16)) prog = player.unlock.points.log10().div("925")
-                else if (!hasUpgrade("unlock", 17)) prog = player.unlock.points.log10().div("1550")  
-                else if (!hasUpgrade("unlock", 21)) prog = player.unlock.points.log10().div("6e6")    
+                else if (!hasUpgrade("unlock", 12)) prog = player.unlock.points.add(1).log10().div("5")
+                else if (!hasUpgrade("unlock", 13)) prog = player.unlock.points.add(1).log10().div("20")
+                else if (!hasUpgrade("unlock", 14)) prog = player.unlock.points.add(1).log10().div("50")
+                else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.add(1).log10().div("400")
+                else if (!hasUpgrade("unlock", 16)) prog = player.unlock.points.add(1).log10().div("925")
+                else if (!hasUpgrade("unlock", 17)) prog = player.unlock.points.add(1).log10().div("1550")  
+                else if (!hasUpgrade("unlock", 21)) prog = player.unlock.points.add(1).log10().div("6e6")    
                 else prog = new Decimal(1)
 
                 player.unlock.nextLayerProgress = prog
