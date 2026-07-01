@@ -140,7 +140,7 @@ addLayer("multiplication", {
         if (current.add(offset).gte("600")) {
             let difference = current.add(offset).sub("600")
             player.multiplication.points = player.multiplication.points.sub(difference)
-            if (hasMilestone("division", 5)) player.multiplication.points = player.multiplication.points.add(difference)
+            if (hasMilestone("division", 4)) player.multiplication.points = player.multiplication.points.add(difference)
         }
     },
     resetsNothing() {return true},
@@ -409,7 +409,7 @@ addLayer("multiplication", {
             title: "Straightforward Mathematics",
             effect() {
                 let base = getBuyableAmount("polygon", 12)
-                base = new Decimal(base).tetrate(3).add(1).log(15)
+                base = new Decimal(base).tetrate(3).add(1).log(10)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 72))},

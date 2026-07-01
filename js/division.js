@@ -240,14 +240,14 @@ addLayer("division", {
         },
         4: {
             requirementDescription: "4: 15,000,000 Division",
-            effectDescription: "Triangles boost Squares and Points.",
+            effectDescription: "Triangles boost Squares and Points and REMOVE THE FIRST MULTIPLICATION HARDCAP.",
             done() { return player.division.points.gte("15e6") },
             unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
         },
         5: {
             requirementDescription: "5: 5e9 Division",
-            effectDescription: "REMOVE THE FIRST MULTIPLICATION HARDCAP.",
-            done() { return player.division.points.gte("15e6") },
+            effectDescription: "x150 Operation Power after softcap.",
+            done() { return player.division.points.gte("5e9") },
             unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
         },
         6: {

@@ -52,6 +52,7 @@ addLayer("arithmetic", {
         if (hasUpgrade("multiplication", 72)) dMult = dMult.mul(upgradeEffect("multiplication", 72))
         if (hasChallenge("arithmetic", 22)) dMult = dMult.mul("1e10")
         if (inChallenge("polygon", 11) && hasUpgrade("primitive", 33)) dMult = dMult.mul("1e50")
+        if (hasMilestone("division", 5)) dMult = dMult.mul(150)
 
         if (player.dimension.points.gte(4)) dMult = dMult.pow(1.01)
         if (player.polygon.pentagons.gte(1)) dMult = dMult.pow(player.polygon.penEffect)
