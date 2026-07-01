@@ -136,6 +136,10 @@ addLayer("corebooster", {
         "prestige-button",
         ["display-text", function() { return "You have " + format(player.numbercore.points) + " Number Cores"}],
         "blank",
+        "clickables",
+        "blank",
+        ["display-text", function() { return "<i>Core Boosters come bundled with a free Core Booster!"}],
+        "blank",
         ["display-text", function() { return "<h3>GAINING CORE BOOSTERS WILL FORCE POLYGON RESET.</h3>"}],
         "blank",
         ["display-text", function() { return "<h2>You have " + format(player.corebooster.useful) + " useful Core Boosters, which..."}],
@@ -203,6 +207,22 @@ addLayer("corebooster", {
             effectDescription: "x500 Division and ^1.01 Multiplication.",
             done() { return player.corebooster.useful.gte(12500) },
             unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
+        },
+    },
+    clickables: {
+        11: {
+            title: "Reset Core Boosters",
+            display: "Reset Core Boosters. This will cause a Polygon reset and set your Core Boosters to zero. Useful if you are stuck because of Core Boosters and want to max them.",
+            canClick() {return true},
+            onClick() {
+                doReset("polygon", true)
+                player.corebooster.points = new Decimal(0)
+            },
+            style() {
+                return {
+                    "width": "150px",
+                }
+            }
         },
     },
 

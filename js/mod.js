@@ -12,11 +12,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5.1",
+	num: "0.5.2",
 	name: "Planetary Fragment update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5.2</h3><br>
+		- Added a reset button for Core Boosters. <br>
+		- Edited a save file that for some reason had residual Core Boosters. <br>
+		- Endgame: 1 Planetary Fragment. <br>
 	<h3>v0.5.1</h3><br>
 		- Whoops! Readded an upgrade effect that made you stuck at 1e111 Operation Power. <br>
 		- Changed the content of D11. <br>

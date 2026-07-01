@@ -65,7 +65,7 @@ addLayer("arithmetic", {
     softcap() {return new Decimal("1e100")},
     softcapPower() {
         let power = new Decimal(0.25)
-        if (hasAchievement("achievements", 55)) power = new Decimal(0.1)
+        if (hasAchievement("achievements", 54)) power = new Decimal(0.1)
         else if (player.arithmetic.points.gte("1e100")) power = new Decimal(1).div(player.arithmetic.points.div("1e90").pow(0.1))
 
         let HARD = new Decimal("1e2500")

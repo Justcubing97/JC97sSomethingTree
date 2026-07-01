@@ -82,10 +82,12 @@ addLayer("multiplication", {
 
         let keptBuyables = []
         if (hasUpgrade("polygon", 15)) keptBuyables.push(getBuyableAmount("multiplication", 11))
+        if (layers[resettingLayer].name == "planetary") keptBuyables = []
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
         if (hasMilestone("polygon", 9)) keep.push("points")
+        if (layers[resettingLayer].name == "planetary") keep = []
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
