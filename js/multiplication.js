@@ -409,7 +409,7 @@ addLayer("multiplication", {
             title: "Straightforward Mathematics",
             effect() {
                 let base = getBuyableAmount("polygon", 12)
-                base = new Decimal(base).tetrate(3).add(1).log(10)
+                base = new Decimal(base).tetrate(3).add(1).log(2)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 72))},
