@@ -171,9 +171,9 @@ addLayer("corebooster", {
     ],
     milestones: {
         1: {
-            requirementDescription: "1: 180 useful Core Boosters",
+            requirementDescription: "1: 130 useful Core Boosters",
             effectDescription: "The first Core Booster effect now affects Points at an increased rate. Remove the 5th Multiplication hardcap.",
-            done() { return player.corebooster.useful.gte(180) },
+            done() { return player.corebooster.useful.gte(130) },
             unlocked() {return hasMilestone("division", 8) || player.planetary.unlocked}
         },
         2: {
@@ -189,17 +189,17 @@ addLayer("corebooster", {
             unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         4: {
-            requirementDescription: "4: 7,777 useful Core Boosters",
+            requirementDescription: "4: 2,222 useful Core Boosters",
             effectDescription() {
                 let text = "Division boosts Points."
                 let base = player.division.points
-                let exp = new Decimal(25)
+                let exp = new Decimal(100)
                 base = base.pow(exp)
 
                 text += " Currently: x" + format(base)
                 return text
             },
-            done() { return player.corebooster.useful.gte(7777) },
+            done() { return player.corebooster.useful.gte(2222) },
             unlocked() {return hasMilestone("corebooster", this.id - 1) || player.planetary.unlocked}
         },
         5: {

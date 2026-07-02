@@ -278,7 +278,7 @@ addLayer("primitive", {
         36: {
             title: "Repetition++",
             description: "Unlock another Fundamentality buyable, and improve \"Unhardcapped\".",
-            cost: new Decimal("1e161875"),
+            cost: new Decimal("1e135575"),
             unlocked() {return hasMilestone("primitive", 13) || player.planetary.unlocked},
         },
         37: {

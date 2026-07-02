@@ -147,7 +147,7 @@ function getPointGen() {
 	if (hasUpgrade("division", 21)) gain = gain.mul(upgradeEffect("division", 21))
 	if (hasMilestone("corebooster", 4)){
         let base = player.division.points
-        let exp = new Decimal(25)
+        let exp = new Decimal(100)
         base = base.pow(exp)
 		gain = gain.mul(base)
 	}

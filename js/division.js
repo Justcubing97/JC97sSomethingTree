@@ -43,10 +43,12 @@ addLayer("division", {
         if (hasUpgrade("multiplication", 102)) mult = mult.mul(upgradeEffect("multiplication", 102))
         if (hasUpgrade("subtraction", 24)) mult = mult.mul("1e10")
         if (hasMilestone("corebooster", 5)) mult = mult.mul("500")
+        if (hasUpgrade("subtraction", 22)) mult = mult.mul("1e6")
         //exp
         if (hasMilestone("corebooster", 2)) mult = mult.pow("1.1")
         if (hasMilestone("division", 10)) mult = mult.pow("1.1")
-        if (hasUpgrade("subtraction", 27)) mult = mult.pow("1.3")
+        if (hasUpgrade("subtraction", 27)) mult = mult.pow("1.35")
+        if (hasUpgrade("subtraction", 23)) mult = mult.pow("1.05")
         //other hypers
         player.division.currencyMulti = mult
         return new Decimal(1)
@@ -281,9 +283,9 @@ addLayer("division", {
             unlocked() {return player.dimension.points.gte(5) || player.planetary.unlocked},
         },
         11: {
-            requirementDescription: "11: 1e75 Division",
+            requirementDescription: "11: 1e85 Division",
             effectDescription: "Seriously, Core Boosters aren't supposed to replicate! Useful Core Boosters passively gain 0.01% of your Core Boosters.",
-            done() { return player.division.points.gte("1e75") },
+            done() { return player.division.points.gte("1e85") },
             unlocked() {return hasMilestone("division", 10) || player.planetary.unlocked},
         },
     },
@@ -383,19 +385,19 @@ addLayer("division", {
         25: {
             title: "I know you want the next layer",
             description: "x1e500 Subtraction.",
-            cost: new Decimal("1e64"),
+            cost: new Decimal("5e68"),
             unlocked() {return hasUpgrade("division", 17) || player.planetary.unlocked},
         },
         26: {
             title: "Just a few more upgrades",
-            description: "^1.001 Points.",
-            cost: new Decimal("1e80"),
+            description: "^1.001 Points and improve Hexagon's effect.",
+            cost: new Decimal("1e87"),
             unlocked() {return hasUpgrade("division", 25) || player.planetary.unlocked},
         },
         27: {
             title: "NEXT LAYER IMMINENT",
             description: "^1.2 Points and x1e10 Shapes after softcap.",
-            cost: new Decimal("1e100"),
+            cost: new Decimal("1e120"),
             unlocked() {return hasUpgrade("division", 26) || player.planetary.unlocked},
         },
     },

@@ -117,14 +117,17 @@ addLayer("subtraction", {
         22: {
             title: "Inverted",
             description: "x1e15 Addition. Wait, isn't this supposed to be a BIG boost at this point??",
-            cost: new Decimal("1e92109"),
+            cost: new Decimal("1e92000"),
             unlocked(){return player.subtraction.points.gte("1e50000") || hasUpgrade(this.layer, this.id) || player.planetary.unlocked},
+            tooltip() {
+                if (hasUpgrade(this.layer, this.id)) return "x10,000 Division too."
+            }
         },
         23: {
             title: "Hyper Subtraction",
-            description: "/1e25 to the costs of the compass and straightedge levels.",
-            cost: new Decimal("1e100000"),
-            unlocked(){return player.subtraction.points.gte("1e95000") || hasUpgrade(this.layer, this.id) || player.planetary.unlocked},
+            description: "/1e25 to the costs of the compass and straightedge levels. ^1.05 Division.",
+            cost: new Decimal("1e96000"),
+            unlocked(){return player.subtraction.points.gte("1e94000") || hasUpgrade(this.layer, this.id) || player.planetary.unlocked},
         },
         24: {
             title: "Finishing Rows",
@@ -146,7 +149,7 @@ addLayer("subtraction", {
         },
         27: {
             title: "Subtractive Farewell",
-            description: "^1.3 Division.",
+            description: "^1.35 Division.",
             cost: new Decimal("1e240000"),
             unlocked(){return player.subtraction.points.gte("1e220000") || hasUpgrade(this.layer, this.id) || player.planetary.unlocked},
         },

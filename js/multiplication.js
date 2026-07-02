@@ -448,7 +448,7 @@ addLayer("multiplication", {
         93: {
             title: "Overpowered",
             description: "^1.25 Number Cores.",
-            cost: new Decimal("1e11"),
+            cost: new Decimal("1e13"),
             canAfford() {
                 if (player.multiplication.points.lt("1e11")) return false
                 return hasUpgrade("multiplication", 81)
@@ -495,9 +495,9 @@ addLayer("multiplication", {
         101: {
             title: "Five. Hundred. Shapes.",
             description: "x1,000,000 Shapes after softcap.",
-            cost: new Decimal("2e11"),
+            cost: new Decimal("1e18"),
             canAfford() {
-                if (player.multiplication.points.lt("2e11")) return false
+                if (player.multiplication.points.lt("1e18")) return false
                 return hasUpgrade("multiplication", 93)
             },
             pay() {return new Decimal(0)},
@@ -512,9 +512,9 @@ addLayer("multiplication", {
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 102))},
             description: "15 free levels for the compass. The straightedge effect boosts Shapes and Division at a reduced rate.",
-            cost: new Decimal("3e18"),
+            cost: new Decimal("1e20"),
             canAfford() {
-                if (player.multiplication.points.lt("3e18")) return false
+                if (player.multiplication.points.lt("1e20")) return false
                 return hasUpgrade("multiplication", 93)
             },
             pay() {return new Decimal(0)},

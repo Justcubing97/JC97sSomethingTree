@@ -413,10 +413,10 @@ addLayer("polygon", {
                     new Decimal("1e1350"),
                     new Decimal("1e2920"),
                     new Decimal("1e3650"),
-                    new Decimal("1e4145"),
-                    new Decimal("1e14615"),
-                    new Decimal("1e24485"),
-                    new Decimal("1e30450"),
+                    new Decimal("1e4060"),
+                    new Decimal("1e22570"),
+                    new Decimal("1e25290"),
+                    new Decimal("1e27225"),
                 ]
                 return list[challengeCompletions(this.layer, this.id)]
             },
@@ -514,6 +514,9 @@ addLayer("polygon", {
             if (tmp.polygon.buyables[11].cost.lte(player.polygon.points)) setBuyableAmount("polygon", 11, getBuyableAmount("polygon", 11).add(1))
             if (tmp.polygon.buyables[12].cost.lte(player.polygon.points)) setBuyableAmount("polygon", 12, getBuyableAmount("polygon", 12).add(1))
         }
+
+        //Effect boosts
+        if (hasUpgrade("division", 26)) player.polygon.hexEffect = player.polygon.hexEffect.mul(1.1)
     },
 
     branches: [["planetary", "#FFFFFF", 10]],

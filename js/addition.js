@@ -289,13 +289,13 @@ addLayer("addition", {
             unlocked() {return player.dimension.points.gte(5) || player.planetary.unlocked},
         },
         7: {
-            requirementDescription: "7: 1e450,000 Addition",
+            requirementDescription: "7: 1e400,200 Addition",
             effectDescription() {
                 let text = "TENTH ROW. And the Constructor compass level boosts \"Primitive Boost\". Currently: ^"
                 text += format(getBuyableAmount("polygon", 11).add(1))
                 return text
             },
-            done() { return player.addition.points.gte("1e450000") },
+            done() { return player.addition.points.gte("1e400200") },
             unlocked() {return player.dimension.points.gte(5) || player.planetary.unlocked},
         },
     },
