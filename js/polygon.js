@@ -21,6 +21,7 @@ addLayer("polygon", {
         hexEffect: new Decimal(1),
 
         constrNextGain: new Decimal(1),
+        hardcap: new Decimal(1),
     }},
     color: "#2050FF",
     requires: new Decimal("1e80"), // Can be a function that takes requirement increases into account
@@ -47,6 +48,7 @@ addLayer("polygon", {
         if (hasUpgrade("division", 16)) mult = mult.pow(1.01)
         //other hypers
         //final effects
+
         return mult
     },
     gainExp() { // Calculate the exponent on main currency from bonuses
@@ -58,6 +60,19 @@ addLayer("polygon", {
         {key: "s", description: "S: Reset for Shapes", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.polygon.unlocked},
+    resetDescription: "Polygonify for ",
+    onPrestige() {
+        player.polygon.resets = player.polygon.resets.add(1)
+        player.polygon.softcap = new Decimal(1)
+    },
+    effect() {
+        let base = player.polygon.points.add(1).pow(3.33)
+        if (base.gte("1e200")) base = base.pow(0.02).mul("1e200")
+        player.polygon.effect = base
+    },
+    effectDescription() {
+        return "multiplying Fundamental buyable 1's effect, Multiplication's effect, and \"Arithmetic Combination\" by x" + format(player.polygon.effect)
+    },
     softcap() {return new Decimal("1e50")},
     directMult() {
         let dMult = new Decimal(1)
@@ -72,21 +87,6 @@ addLayer("polygon", {
         let power = new Decimal(0.05)
         player.polygon.softcap = power
         return power
-    },
-    resetDescription: "Polygonify for ",
-    onPrestige() {
-        player.polygon.resets = player.polygon.resets.add(1)
-        player.polygon.softcap = new Decimal(1)
-
-        if (player.polygon.points.gte("1e1000")) player.polygon.points = new Decimal("1e1000")
-    },
-    effect() {
-        let base = player.polygon.points.add(1).pow(3.33)
-        if (base.gte("1e200")) base = base.pow(0.02).mul("1e200")
-        player.polygon.effect = base
-    },
-    effectDescription() {
-        return "multiplying Fundamental buyable 1's effect, Multiplication's effect, and \"Arithmetic Combination\" by x" + format(player.polygon.effect)
     },
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
@@ -114,8 +114,9 @@ addLayer("polygon", {
                 ["display-text", function() { return "You have Polygonified " + format(player.polygon.resets) + " time(s)" }],
                 "blank",
                 ["display-text", function() {
+                    if (getResetGain("polygon").gte(player.polygon.hardcap)) return "Shapes <i>are</i> physical objects in The Void, by the way, so to prevent injuries and deaths...<br><br> <b>Shape gain is hardcapped at " + player.polygon.hardcap + ".</b><br><br> But this hardcap can be delayed, just like Operation Power! It's the equivalent of giving the Void Masters more real estate! (This probably makes no sense if you don't care about the lore, but the hardcap value is in there somewhere.)"
                     if (getResetGain("polygon").lt("1e50")) return ""
-                    return "Polygon gain is softcapped by ^" + format(player.polygon.softcap) + "!"
+                    return "Shape gain is softcapped by ^" + format(player.polygon.softcap) + "!"
                 }],
                 "blank",
                 "milestones",
@@ -130,11 +131,6 @@ addLayer("polygon", {
                 "prestige-button",
                 ["display-text", function() { return "You have " + format(player.arithmetic.points) + " Operation Power" }],
                 ["display-text", function() { return "You have Polygonified " + format(player.polygon.resets) + " time(s)" }],
-                "blank",
-                ["display-text", function() {
-                    if (getResetGain("polygon").lt("1e50")) return ""
-                    return "Polygon gain is softcapped by ^" + format(player.polygon.softcap) + "!"
-                }],
                 "blank",
                 ["display-text", function() { return "<b>Unlocking the Constructor unlocks a 4th buyable for Number Cores, gives +1 upgrade in the 5th row of TMT, and unlocks the 6th row of TMT. Also, x5 Division." }],
                 "blank",
@@ -243,6 +239,7 @@ addLayer("polygon", {
                 let base = player.subtraction.points
                 base = base.pow(0.001)
                 if (base.eq(0)) base = new Decimal(1)
+                if (base.gte("1e250")) return new Decimal("1e250")
                 return base
             },
             effectDisplay(){
@@ -439,18 +436,18 @@ addLayer("polygon", {
 
         //Local gains
         let triBase = effect
-        if (hasUpgrade("multiplication", 81)) triBase = triBase.mul(player.polygon.hexagons.pow(0.8))
+        if (hasUpgrade("multiplication", 81)) triBase = triBase.mul(player.polygon.hexagons.pow(0.8).add(1))
 
         if (player.polygon.triangles.gte("1e50")) triBase = triBase.div(player.polygon.triangles.pow(0.1))
                 
         let squBase = effect
         if (hasMilestone("division", 4) && !inChallenge("polygon", 11)) squBase = squBase.mul(player.polygon.triEffect.add(1).pow("0.5"))
-        if (hasUpgrade("multiplication", 81)) squBase = squBase.mul(player.polygon.hexagons.pow(0.8))
+        if (hasUpgrade("multiplication", 81)) squBase = squBase.mul(player.polygon.hexagons.pow(0.8).add(1))
 
         if (player.polygon.squares.gte("1e50")) squBase = squBase.div(player.polygon.squares.pow(0.125))
 
         let penBase = effect
-        if (hasUpgrade("multiplication", 81)) penBase = penBase.mul(player.polygon.hexagons.pow(0.8))
+        if (hasUpgrade("multiplication", 81)) penBase = penBase.mul(player.polygon.hexagons.pow(0.8).add(1))
 
         if (player.polygon.pentagons.gte("1e50")) penBase = penBase.div(player.polygon.pentagons.pow(0.1))
 
@@ -517,8 +514,49 @@ addLayer("polygon", {
 
         //Effect boosts
         if (hasUpgrade("division", 26)) player.polygon.hexEffect = player.polygon.hexEffect.mul(1.1)
+
+        //Hardcap
+        let HARD = new Decimal("1e200")
+        player.polygon.hardcap = HARD
+        if (player.polygon.points.gte(HARD)) player.polygon.points = new Decimal(HARD)
+    },
+
+    canReset() {
+        if (player.polygon.hardcap.eq(player.polygon.points)) return false
+        return player.arithmetic.points.gte("1e80")
+    },
+
+    glowColor() {
+        let layer = "polygon"
+        for (id in tmp[layer].upgrades){
+            if (isPlainObject(layers[layer].upgrades[id])){
+                if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked){
+                    return "red"
+                }
+            }
+        }
+
+        for (const id of [11, 12]) {
+            if (canBuyBuyable(layer, id)) {
+                return "cyan"
+            }
+        }
+
+        return ""
+    },
+    shouldNotify() {
+        let layer = "polygon"
+        for (const id of [11, 12]) {
+            if (canBuyBuyable("polygon", id) && hasMilestone("division", 3)) {
+                return true
+            }
+        }
+        return false
     },
 
     branches: [["planetary", "#FFFFFF", 10]],
-    tooltip() {return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"},
+    tooltip() {
+        if (player.polygon.hardcap.eq(player.polygon.points)) return format(player.polygon.points) + " Shapes (Hardcapped at " + player.polygon.hardcap + ")"
+        return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"
+    },
 })

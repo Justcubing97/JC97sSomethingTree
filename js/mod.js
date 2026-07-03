@@ -12,15 +12,21 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5.3",
+	num: "0.5.4",
 	name: "Planetary Fragment update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5.4</h3><br>
+		- Added buyable QoL - the layer node lights up cyan when a buyable is affordable. <br>
+		- Minor naming changes. <br>
+		- More content in the Planetary Layer. <br>
+		- Endgame: 3 Planetary Fragments. <br>
 	<h3>v0.5.3</h3><br>
 		- Edited the hardcap logic for Multiplication. <br>
 		- Buffed the 1st Planetary Milestone and Planet Power. <br>
 		- Fixed a bug with the Unlock layer - GOD I HATE LOGARITHMS- <br>
+		- Changed progression in the Constructor Sacrifice. <br>
 		- Endgame: 1 Planetary Fragment. <br>
 	<h3>v0.5.2</h3><br>
 		- Added a reset button for Core Boosters. <br>
@@ -51,6 +57,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Division layer. <br>
 		- Number Core layer. <br>
 		- Endgame: 10 Number Cores. <br>
+		<i>0.4.5 was skipped because 0.4.6 added TWO layers instead of the usual one/bug fix/QoL feature.</i>
 	<h3>v0.4.4</h3><br>
 		- Adjusted progression in Arithmetic layer. <br>
 		- Endgame: 5 Polygonifications. <br>
@@ -155,6 +162,7 @@ function getPointGen() {
 
 	//Planetary+ multiplications!
 	if (player.planetary.planetPower.gt(0)) gain = gain.mul(player.planetary.planetPowerEffect)
+
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
 	if (inChallenge("arithmetic", 11)) gain = gain.pow(0.8)
@@ -172,6 +180,7 @@ function getPointGen() {
 	if (hasUpgrade("division", 27)) gain = gain.pow(1.2)
 
 	//Planetary+ exponents!
+	if (hasMilestone("planetary", 2)) gain = gain.pow(2)
 
 	//other hypers
 	//final
@@ -209,7 +218,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.planetary.points.gte(new Decimal(1)))
+	return (player.planetary.points.gte(new Decimal(5)))
 }
 
 

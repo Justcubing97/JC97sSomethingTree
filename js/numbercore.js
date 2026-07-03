@@ -180,6 +180,45 @@ addLayer("numbercore", {
             },
         },
     },
+
+    glowColor() {
+        let layer = "numbercore"
+        for (id in tmp[layer].upgrades){
+            if (isPlainObject(layers[layer].upgrades[id])){
+                if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked){
+                    return "red"
+                }
+            }
+        }
+
+        for (const id of [11, 12, 13, 21, 22]) {
+            if (canBuyBuyable(layer, id)) {
+                return "cyan"
+            }
+        }
+
+        return ""
+    },
+    shouldNotify() {
+        let layer = "numbercore"
+        for (const id of [11, 12, 13, 21, 22]) {
+            if (canBuyBuyable("numbercore", id)) {
+                return true
+            }
+        }
+        return false
+    },
+
+    automate() {
+        let layer = "numbercore"
+        for (const id of [11, 12, 13, 21, 22]) {
+            if (canBuyBuyable(layer, id) && hasMilestone("planetary", 2)) {
+                player[layer].points = player[layer].points.sub(tmp[layer].buyables[id].cost)
+                setBuyableAmount(layer, id, getBuyableAmount(layer, id).add(1))
+            }
+        }
+    },
+
     branches: [["corebooster", "#80e040", 5]],
     tooltip() {return format(player.numbercore.points) + " Number Cores (+" + format(getResetGain("numbercore")) + " Number Cores/sec)"},
 
@@ -223,7 +262,7 @@ addLayer("numbercore", {
                 if (a.gte(150)) {b = b.pow("2"); e = e.add(100)}
                 if (a.gte(175)) {b = b.pow("1.43"); e = e.mul(1.01)}
                 if (a.gte(200)) {b = b.pow("2"); e = e.mul(7.5)}
-                if (a.gte(225)) {b = b.pow("10"); e = e.mul(25)}
+                if (a.gte(225)) {b = b.pow("2"); e = e.mul(2)}
                 break;
         }
         return [b, e, a]

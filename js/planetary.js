@@ -17,6 +17,7 @@ addLayer("planetary", {
         neptuneGenAmt: new Decimal(0),
         planetPower: new Decimal(0),
         planetPowerEffect: new Decimal(0),
+        pPps: new Decimal(0),
     }},
     color: "#80E0FF",
     requires: new Decimal("1e150"), // Can be a function that takes requirement increases into account
@@ -97,6 +98,7 @@ addLayer("planetary", {
                 ["display-text", function() { return "You have " + format(player.planetary.total) + " total Planetary Fragments" }],
                 "blank",
                 ["display-text", function() { return "<h2>You have " + format(player.planetary.planetPower) + " Planet Power, multiplying Points by x" + format(player.planetary.planetPowerEffect)}],
+                ["display-text", function() { return "<h3>You are gaining " + format(player.planetary.pPps) + " Planet Power per second."}],
                 "blank",
                 "buyables",
             ],
@@ -116,6 +118,31 @@ addLayer("planetary", {
             requirementDescription: "1: 1 total Planetary Fragment",
             effectDescription: "Keep generation for Fundamentality, Numbers, and Operation Power. /100 all Constructor polygon construction times. x100 Shapes. Raise the Point Addition booster hardcap to 1e2500. ^1.5 Operation Power.",
             done() { return player.planetary.total.gte(1) },
+            unlocked () {return true},
+        },
+        2: {
+            requirementDescription: "2: 2 total Planetary Fragments",
+            effectDescription: "Square Point gain, x1e10 Division, x100 Multiplication, and autobuy Fundamental and Number Core buyables.",
+            done() { return player.planetary.total.gte(2) },
+            unlocked() {return hasMilestone(this.layer, this.id - 1)},
+        },
+        3: {
+            requirementDescription: "3: 3 total Planetary Fragments",
+            effectDescription: "Keep all Arithmetic upgrades and uncap \"Mutual Relationship\".",
+            done() { return player.planetary.total.gte(3) },
+            unlocked() {return hasMilestone(this.layer, this.id - 1)},
+        },
+        4: {
+            requirementDescription: "4: 5 total Planetary Fragments",
+            effectDescription: "Keep all Fundamental and Primitive upgrades up to this point. Start with the first three Multiplication hardcaps removed.",
+            done() { return player.planetary.total.gte(5) },
+            unlocked() {return hasMilestone(this.layer, this.id - 1)},
+        },
+        5: {
+            requirementDescription: "5: 15 total Planetary Fragments",
+            effectDescription: "Automate the Multiplication buyable and unlock another one. Keep the Fundamentality buyables.",
+            done() { return player.planetary.total.gte(15) },
+            unlocked() {return hasMilestone(this.layer, this.id - 1)},
         },
     },
 
@@ -140,7 +167,7 @@ addLayer("planetary", {
             },
             effect(x) {
                 let base = new Decimal(1.1)
-                let effect = base.pow(x)
+                let effect = base.pow(player.planetary.mercuryGenAmt)
                 effect = effect.div(1.1)
                 return effect
             },
@@ -176,11 +203,42 @@ addLayer("planetary", {
 
     update(diff){
         let mult = new Decimal(0)
-        if (getBuyableAmount("planetary", 11).gte(1)) mult = mult.add(player.planetary.mercuryGenAmt)
+        if (getBuyableAmount("planetary", 11).gte(1)) mult = mult.add(buyableEffect("planetary", 11)).mul(getBuyableAmount("planetary", 11))
+
+        player.planetary.pPps = mult
 
         //FINAL!!!
         player.planetary.planetPower = player.planetary.planetPower.add(mult.mul(diff))
         player.planetary.planetPowerEffect = player.planetary.planetPower.add(1).pow(player.planetary.planetPower.add(1).log(2).mul(player.planetary.planetPower.add(1).log(1.5)))
     },
+
+    glowColor() {
+        let layer = "planetary"
+        for (id in tmp[layer].upgrades){
+            if (isPlainObject(layers[layer].upgrades[id])){
+                if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked){
+                    return "red"
+                }
+            }
+        }
+
+        for (const id of [11, 12]) {
+            if (canBuyBuyable(layer, id)) {
+                return "cyan"
+            }
+        }
+
+        return ""
+    },
+    shouldNotify() {
+        let layer = "planetary"
+        for (const id of [11, 12]) {
+            if (canBuyBuyable("planetary", id)) {
+                return true
+            }
+        }
+        return false
+    },
+    
     tooltip() {return format(player.planetary.points) + " Planetary Fragments (+" + format(getResetGain("planetary")) + " Planetary Fragments on reset)"},
 })

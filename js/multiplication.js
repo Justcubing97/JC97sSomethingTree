@@ -49,6 +49,7 @@ addLayer("multiplication", {
         if (hasUpgrade("division", 11)) dMult = dMult.mul(upgradeEffect("division", 11))
         if (hasMilestone("primitive", 12)) dMult = dMult.mul(1.1)
         if (hasUpgrade("subtraction", 25)) dMult = dMult.mul(1000)
+        if (hasMilestone("planetary", 2)) dMult = dMult.mul(100)
 
         if (hasMilestone("primitive", 14)) dMult = dMult.pow(1.05)
         if (maxedChallenge("polygon", 11)) dMult = dMult.pow(1.2)
@@ -66,8 +67,8 @@ addLayer("multiplication", {
 
         //everything else
         if (hasUpgrade("polygon", 13)) keptUpgrades.push(11, 21, 22, 31, 32)
-        if (hasUpgrade("fundamental", 43) || hasUpgrade("division", 14)) keptUpgrades.push(41, 42, 51, 52)
-        if (hasUpgrade("division", 15)) keptUpgrades.push(61, 63, 64, 71, 72, 73)
+        if (hasUpgrade("fundamental", 43) || hasUpgrade("division", 14)) keptUpgrades.push(41, 42, 43, 51, 52)
+        if (hasUpgrade("division", 15)) keptUpgrades.push(61, 62,63, 64, 71, 72, 73)
         if (hasUpgrade("fundamental", 46)) keptUpgrades.push(81)
 
         if (hasUpgrade("multiplication", 91)) keptUpgrades.push(91)
@@ -372,7 +373,7 @@ addLayer("multiplication", {
             title: "Straightforward Mathematics",
             effect() {
                 let base = getBuyableAmount("polygon", 12)
-                base = new Decimal(base).tetrate(3).add(1).log(2)
+                base = new Decimal(base).add(1).tetrate(3).add(1).log(2)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 72))},
@@ -436,7 +437,7 @@ addLayer("multiplication", {
         },
         92: {
             title: "Less Defects",
-            description: "Have more effective Core Boosters.",
+            description: "Have more useful Core Boosters.",
             cost: new Decimal("1e7"),
             canAfford() {
                 if (player.multiplication.points.lt("1e7")) return false
@@ -542,6 +543,24 @@ addLayer("multiplication", {
             },
             unlocked() {return hasMilestone("polygon", 6) || player.planetary.unlocked},
         },
+        12: {
+            cost(x) {
+                let base = new Decimal(10).pow(0.5).pow(x).mul("1e40")
+                return base
+            },
+            title: "Number Core Passiveness",
+            display() { return "Number Cores boost Division. " + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Require: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            effect(x) {
+                let base = player.numbercore.points
+                let effect = base.add(1).log(12)
+                return effect
+            },
+            unlocked() {return hasMilestone("planetary", 5)},
+        },
     },
     canReset() {
         if (player.multiplication.points.gte("600") && !hasMilestone("division", 4)) {
@@ -571,15 +590,15 @@ addLayer("multiplication", {
         player.multiplication.isAbleToReset = false
         if (canReset("multiplication")) player.multiplication.isAbleToReset = true
 
-        if (player.multiplication.points.gte("600") && !hasMilestone("division", 4)) {
+        if (player.multiplication.points.gte("600") && !hasMilestone("division", 4) && !hasMilestone("planetary", 4)) {
             player.multiplication.points = new Decimal("600")
             player.multiplication.isAbleToReset = false
         }
-        if (player.multiplication.points.gte("5000") && !hasUpgrade("arithmetic", 36)) {
+        if (player.multiplication.points.gte("5000") && !hasUpgrade("arithmetic", 36) && !hasMilestone("planetary", 4)) {
             player.multiplication.points = new Decimal("5000")
             player.multiplication.isAbleToReset = false
         }
-        if (player.multiplication.points.gte("4e4") && !hasUpgrade("primitive", 31)) {
+        if (player.multiplication.points.gte("4e4") && !hasUpgrade("primitive", 31) && !hasMilestone("planetary", 4)) {
             player.multiplication.points = new Decimal("4e4")
             player.multiplication.isAbleToReset = false
         }
@@ -598,6 +617,43 @@ addLayer("multiplication", {
 
         if (player.dimension.points.gte(5) && player.multiplication.isAbleToReset) {
             if (canReset(this.layer)) doReset(this.layer)
+        }
+    },
+
+    glowColor() {
+        let layer = "multiplication"
+        for (id in tmp[layer].upgrades){
+            if (isPlainObject(layers[layer].upgrades[id])){
+                if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked){
+                    return "red"
+                }
+            }
+        }
+
+        for (const id of [11, 12]) {
+            if (canBuyBuyable(layer, id)) {
+                return "cyan"
+            }
+        }
+
+        return ""
+    },
+    shouldNotify() {
+        let layer = "multiplication"
+        for (const id of [11, 12]) {
+            if (canBuyBuyable("multiplication", id)) {
+                return true
+            }
+        }
+        return false
+    },
+
+    automate() {
+        let layer = "multiplication"
+        for (const id of [11, 12]) {
+            if (canBuyBuyable(layer, id) && hasMilestone("planetary", 5)) {
+                setBuyableAmount(layer, id, getBuyableAmount(layer, id).add(1))
+            }
         }
     },
 

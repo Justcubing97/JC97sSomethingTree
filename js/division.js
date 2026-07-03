@@ -44,6 +44,7 @@ addLayer("division", {
         if (hasUpgrade("subtraction", 24)) mult = mult.mul("1e10")
         if (hasMilestone("corebooster", 5)) mult = mult.mul("500")
         if (hasUpgrade("subtraction", 22)) mult = mult.mul("1e6")
+        if (hasMilestone("planetary", 2)) mult = mult.mul("1e10")
         //exp
         if (hasMilestone("corebooster", 2)) mult = mult.pow("1.1")
         if (hasMilestone("division", 10)) mult = mult.pow("1.1")

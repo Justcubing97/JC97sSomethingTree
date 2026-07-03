@@ -111,6 +111,7 @@ addLayer("primitive", {
         if (hasUpgrade("primitive", 36)) keptUpgrades.push(36)
         if (hasUpgrade("primitive", 37)) keptUpgrades.push(37)
         if (layers[resettingLayer].name == "planetary") keptUpgrades = []
+        if (hasMilestone("planetary", 4)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 26, 27, 31, 32, 33, 34, 35, 36, 37)
 
         let keptBuyables = []
 

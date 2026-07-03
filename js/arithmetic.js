@@ -102,8 +102,10 @@ addLayer("arithmetic", {
         if (hasUpgrade("arithmetic", 35)) keptUpgrades.push(35)
         if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(36)
         if (hasUpgrade("arithmetic", 36)) keptUpgrades.push(37)
+
         if (layers[resettingLayer].name == "planetary") keptUpgrades = []
         if (hasMilestone("planetary", 1)) keptUpgrades.push(12)
+        if (hasMilestone("planetary", 3)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 26, 27, 31, 32, 33, 34, 35, 36, 37)
 
         let keptChallenges = []
         if (hasMilestone("polygon", 8)) keptChallenges.push(11, 12, 13)

@@ -347,7 +347,7 @@ addLayer("unlock", {
         d12: {
             title: "Document 12: What is Universal Essence?",
             body() { return "We found out that \"Dark Matter\" requires Portals and a ton a math. It doesn't mention anything about the Constructor or Core Boosters... I guess I was wrong. " +
-                "Anyway, Portals require \"Universal Essence,\" which I have no idea how to get. Ashley looks equally perplexed. We decided to travel to the Centroid for lunch." +
+                "Anyway, Portals require \"Universal Essence,\" which I have no idea how to get. Ashley looks equally perplexed. We decided to travel to the Centroid for lunch. " +
                 "After getting the mini Miku statue I accidentally left in the hospital floor, I sat down in a very peculiar pentagon-based chair (I love pentagons). " +
                 "Oh, right. In the Centroid is the expansive cafeteria, which looks no different than a prison cafeteria. The concrete walls are a break from the eternal black, though. " +
                 "Ashley sat down with her friends that she made before I was mysteriously teleported here. I tried talking to people about Dark Matter and Universal Essence, " +
@@ -376,7 +376,7 @@ addLayer("unlock", {
         d14: {
             title: "Document 14: Brief Nothingness",
             body() { return "We would stay in the Centroid cafeteria for who knows how long. A few other irrationally scared humans also remained here. " +
-                "Ashley didn't move a lot, leaning into my side like she was my girlfriend (for the record, we are NOT dating). Also, really proud of you for " +
+                "Ashley didn't move a lot, leaning into my side like she was my girlfriend (for the record, we are NOT dating... not yet at least). Also, really proud of you for " +
                 "having a Planetary Fragment in JST. Those can be used on the 8 Planetary Generators. Anyway... after about an hour, we received an announcement " +
                 "from the Void Masters, which TL;DR means it is now safe to venture outside as the Sacrificed Polygons have been contained in the \"Nullzone\". " +
                 "My best guess is that the Nullzone is the real prison or containment center of The Void, where all the anomalies go. " +

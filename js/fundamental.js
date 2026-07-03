@@ -122,6 +122,7 @@ addLayer("fundamental", {
         if (hasUpgrade("fundamental", 46)) keptUpgrades.push(45, 46)
         if (hasUpgrade("fundamental", 47)) keptUpgrades.push(47)
         if (layers[resettingLayer].name == "planetary") keptUpgrades = [23]
+        if (hasMilestone("planetary", 4)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 24, 25, 26, 27, 31, 32, 33, 34, 35, 36, 37, 41, 42, 43, 44, 45, 46, 47)
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -129,7 +130,7 @@ addLayer("fundamental", {
         if (hasAchievement("achievements", 34)) keptBuyables.push(getBuyableAmount("fundamental", 13))
         if (hasMilestone("polygon", 9)) keptBuyables.push(getBuyableAmount("fundamental", 21))
         if (hasMilestone("corebooster", 2)) keptBuyables.push(getBuyableAmount("fundamental", 22))
-        if (layers[resettingLayer].name == "planetary") keptBuyables = []
+        if (layers[resettingLayer].name == "planetary" && !hasMilestone("planetary", 5)) keptBuyables = []
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -248,7 +249,7 @@ addLayer("fundamental", {
             cost: new Decimal(25000),
             unlocked() {return hasUpgrade("fundamental", 17) || player.primitive.unlocked},
             effect() {
-                if (player.points.add(1).pow(0.25).pow(buyableEffect("fundamental", 12)).gte("1e10000")) return new Decimal("1e10000")
+                if (player.points.add(1).pow(0.25).pow(buyableEffect("fundamental", 12)).gte("1e10000") && !hasMilestone("planetary", 3)) return new Decimal("1e10000")
                 if (inChallenge("arithmetic", 11) || getClickableState("division", 11) == "Active") return player.points.add(1).pow(0.25)
                 return player.points.add(1).pow(0.25).pow(buyableEffect("fundamental", 12))
             },
@@ -571,6 +572,45 @@ addLayer("fundamental", {
             purchaseLimit: new Decimal(100)
         },
     },
+
+    glowColor() {
+        let layer = "fundamental"
+        for (id in tmp[layer].upgrades){
+            if (isPlainObject(layers[layer].upgrades[id])){
+                if (canAffordUpgrade(layer, id) && !hasUpgrade(layer, id) && tmp[layer].upgrades[id].unlocked){
+                    return "red"
+                }
+            }
+        }
+
+        for (const id of [11, 12, 13, 21, 22]) {
+            if (canBuyBuyable(layer, id)) {
+                return "cyan"
+            }
+        }
+
+        return ""
+    },
+    shouldNotify() {
+        let layer = "fundamental"
+        for (const id of [11, 12, 13, 21, 22]) {
+            if (canBuyBuyable("fundamental", id)) {
+                return true
+            }
+        }
+        return false
+    },
+
+    automate() {
+        let layer = "fundamental"
+        for (const id of [11, 12, 13, 21, 22]) {
+            if (canBuyBuyable(layer, id) && hasMilestone("planetary", 2)) {
+                player[layer].points = player[layer].points.sub(tmp[layer].buyables[id].cost)
+                setBuyableAmount(layer, id, getBuyableAmount(layer, id).add(1))
+            }
+        }
+    },
+
     branches: [["primitive", "#FFFFFF", 10]],
     tooltip() {return format(player.fundamental.points) + " Fundamentality (+" + format(getResetGain("fundamental")) + " Fundamentality on reset)"},
 })
