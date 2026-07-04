@@ -557,6 +557,7 @@ addLayer("multiplication", {
             effect(x) {
                 let base = player.numbercore.points
                 let effect = base.add(1).log(12)
+                effect = effect.mul(new Decimal(1.5).pow(getBuyableAmount(this.layer, this.id)))
                 return effect
             },
             unlocked() {return hasMilestone("planetary", 5)},

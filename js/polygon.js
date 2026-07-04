@@ -114,7 +114,7 @@ addLayer("polygon", {
                 ["display-text", function() { return "You have Polygonified " + format(player.polygon.resets) + " time(s)" }],
                 "blank",
                 ["display-text", function() {
-                    if (getResetGain("polygon").gte(player.polygon.hardcap)) return "Shapes <i>are</i> physical objects in The Void, by the way, so to prevent injuries and deaths...<br><br> <b>Shape gain is hardcapped at " + player.polygon.hardcap + ".</b><br><br> But this hardcap can be delayed, just like Operation Power! It's the equivalent of giving the Void Masters more real estate! (This probably makes no sense if you don't care about the lore, but the hardcap value is in there somewhere.)"
+                    if (getResetGain("polygon").gte(player.polygon.hardcap)) return "Shapes <i>are</i> physical objects in The Void, by the way, so to prevent injuries and deaths...<br><br> <b>Shape gain is hardcapped at " + format(player.polygon.hardcap) + ".</b><br><br> But this hardcap can be delayed, just like Operation Power! It's the equivalent of giving the Void Masters more real estate! (This probably makes no sense if you don't care about the lore, but the hardcap value is in there somewhere.)"
                     if (getResetGain("polygon").lt("1e50")) return ""
                     return "Shape gain is softcapped by ^" + format(player.polygon.softcap) + "!"
                 }],
@@ -125,12 +125,18 @@ addLayer("polygon", {
             ],
         },
         "Constructor": {
-            unlocked() {return hasMilestone("division", 3)},
+            unlocked() {return hasMilestone("division", 3) || hasMilestone("planetary", 6)},
             content: [
                 "main-display",
                 "prestige-button",
                 ["display-text", function() { return "You have " + format(player.arithmetic.points) + " Operation Power" }],
                 ["display-text", function() { return "You have Polygonified " + format(player.polygon.resets) + " time(s)" }],
+                "blank",
+                ["display-text", function() {
+                    if (getResetGain("polygon").gte(player.polygon.hardcap)) return "Shapes <i>are</i> physical objects in The Void, by the way, so to prevent injuries and deaths...<br><br> <b>Shape gain is hardcapped at " + format(player.polygon.hardcap) + ".</b><br><br> But this hardcap can be delayed, just like Operation Power! It's the equivalent of giving the Void Masters more real estate! (This probably makes no sense if you don't care about the lore, but the hardcap value is in there somewhere.)"
+                    if (getResetGain("polygon").lt("1e50")) return ""
+                    return "Shape gain is softcapped by ^" + format(player.polygon.softcap) + "!"
+                }],
                 "blank",
                 ["display-text", function() { return "<b>Unlocking the Constructor unlocks a 4th buyable for Number Cores, gives +1 upgrade in the 5th row of TMT, and unlocks the 6th row of TMT. Also, x5 Division." }],
                 "blank",
@@ -474,7 +480,7 @@ addLayer("polygon", {
         else if (getClickableState("polygon", 11) == "Hexagon") player.polygon.constrNextGain = hexBase
 
         //Timer + addition
-        if (hasMilestone("division", 3)){
+        if (hasMilestone("division", 3) || hasMilestone("planetary", 6)){
             player.polygon.constrCurrentTime = player.polygon.constrCurrentTime.sub(diff)
             if (player.polygon.constrCurrentTime.lte(0)) {
                 player.polygon.constrCurrentTime = player.polygon.constrBaseTime
@@ -517,6 +523,9 @@ addLayer("polygon", {
 
         //Hardcap
         let HARD = new Decimal("1e200")
+        if (hasUpgrade("planetary", 11)) HARD = HARD.mul(upgradeEffect("planetary", 11))
+        if (hasAchievement("planetary", 22)) HARD = HARD.mul("1e25")
+
         player.polygon.hardcap = HARD
         if (player.polygon.points.gte(HARD)) player.polygon.points = new Decimal(HARD)
     },
@@ -556,7 +565,7 @@ addLayer("polygon", {
 
     branches: [["planetary", "#FFFFFF", 10]],
     tooltip() {
-        if (player.polygon.hardcap.eq(player.polygon.points)) return format(player.polygon.points) + " Shapes (Hardcapped at " + player.polygon.hardcap + ")"
+        if (player.polygon.hardcap.eq(player.polygon.points)) return format(player.polygon.points) + " Shapes (Hardcapped at " + format(player.polygon.hardcap) + ")"
         return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"
     },
 })

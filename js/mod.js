@@ -21,6 +21,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added buyable QoL - the layer node lights up cyan when a buyable is affordable. <br>
 		- Minor naming changes. <br>
 		- More content in the Planetary Layer. <br>
+		- Slightly changed currency displays in nodes. <br>
 		- Endgame: 3 Planetary Fragments. <br>
 	<h3>v0.5.3</h3><br>
 		- Edited the hardcap logic for Multiplication. <br>
@@ -161,7 +162,8 @@ function getPointGen() {
 	if (maxedChallenge("polygon", 11)) gain = gain.mul("1e5000")
 
 	//Planetary+ multiplications!
-	if (player.planetary.planetPower.gt(0)) gain = gain.mul(player.planetary.planetPowerEffect)
+	if (player.planetary.planetPower.gt(0) && getClickableState("planetary", 12)) gain = gain.mul(player.planetary.planetPowerEffect)
+	else if (player.planetary.planetPower.gt(0)) gain = gain.div(player.planetary.planetPowerEffect.pow(0.75))
 
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)

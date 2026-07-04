@@ -130,7 +130,14 @@ addLayer("fundamental", {
         if (hasAchievement("achievements", 34)) keptBuyables.push(getBuyableAmount("fundamental", 13))
         if (hasMilestone("polygon", 9)) keptBuyables.push(getBuyableAmount("fundamental", 21))
         if (hasMilestone("corebooster", 2)) keptBuyables.push(getBuyableAmount("fundamental", 22))
-        if (layers[resettingLayer].name == "planetary" && !hasMilestone("planetary", 5)) keptBuyables = []
+        if (layers[resettingLayer].name == "planetary") keptBuyables = []
+        if (hasMilestone("planetary", 5)) keptBuyables = [
+            getBuyableAmount("fundamental", 11),
+            getBuyableAmount("fundamental", 12),
+            getBuyableAmount("fundamental", 13),
+            getBuyableAmount("fundamental", 21),
+            getBuyableAmount("fundamental", 22),
+        ]
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];

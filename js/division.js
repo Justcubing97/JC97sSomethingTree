@@ -366,7 +366,7 @@ addLayer("division", {
             unlocked() {return hasUpgrade("division", 17) || player.planetary.unlocked},
         },
         23: {
-            title: "King Sammelot Final Form",
+            title: "King Sammelot Buffed",
             description: "REAL FIVE FIVE! Improve \"Embrace the Quotients\".",
             cost: new Decimal("5.55e55"),
             unlocked() {return hasUpgrade("division", 17) || player.planetary.unlocked},
