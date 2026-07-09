@@ -22,6 +22,7 @@ addLayer("polygon", {
 
         constrNextGain: new Decimal(1),
         hardcap: new Decimal(1),
+        FU51KEEP: new Decimal(1),
     }},
     color: "#2050FF",
     requires: new Decimal("1e80"), // Can be a function that takes requirement increases into account
@@ -46,6 +47,7 @@ addLayer("polygon", {
         if (hasMilestone("planetary", 1)) mult = mult.mul(100)
         //exp
         if (hasUpgrade("division", 16)) mult = mult.pow(1.01)
+        if (inChallenge("arithmetic", 23)) mult = mult.pow(0.025)
         //other hypers
         //final effects
 
@@ -62,8 +64,13 @@ addLayer("polygon", {
     layerShown(){return player.polygon.unlocked},
     resetDescription: "Polygonify for ",
     onPrestige() {
-        player.polygon.resets = player.polygon.resets.add(1)
+        let mult = decimalOne
+        if (hasMilestone("planetary", 9)) mult = mult.mul("1e6")
+
+        player.polygon.resets = player.polygon.resets.add(mult)
         player.polygon.softcap = new Decimal(1)
+
+        player.polygon.FU51KEEP = upgradeEffect("fundamental", 51)
     },
     effect() {
         let base = player.polygon.points.add(1).pow(3.33)
@@ -94,8 +101,12 @@ addLayer("polygon", {
 
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
+        if (hasMilestone("planetary", 7)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17)
 
         let keptBuyables = []
+
+        let keptPolygonifications = new Decimal(0)
+        if (hasMilestone("planetary", 10)) keptPolygonifications = player.polygon.resets
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -104,6 +115,9 @@ addLayer("polygon", {
         layerDataReset(this.layer, keep);
 
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
+        if (hasAchievement("planetary", 23)) player[this.layer].challenges[11] = 10
+        player[this.layer].upgrades.push(...keptUpgrades)
+        if (hasMilestone("planetary", 10)) player.polygon.resets = keptPolygonifications
     },
     tabFormat: {
         "Main": {
@@ -144,10 +158,9 @@ addLayer("polygon", {
                 "blank",
                 ["bar", "level"],
                 "blank",
-                ["clickable", 11],
-                "blank",
+                ["clickables", [1]],
                 ["display-text", function() {
-                    if (inChallenge("polygon", 11)) return "You have constructed <b>" + format(player.polygon.triangles) + " Triangles</b>, but you are currently sacrificing Triangles, so they do not do anything."
+                    if (inChallenge("polygon", 11)) return "You have constructed <b>" + format(player.polygon.triangles) + " Triangles</b>, but you are currently sacrificing the Constructor, so they do not do anything."
                     let text = "You have constructed <b>" + format(player.polygon.triangles) + " Triangles</b>, multiplying Operation power (after softcap) by x" + format(player.polygon.triEffect)
                     if (hasMilestone("division", 4)) text += ", Squares by x" + format(player.polygon.triEffect.add(1).pow("0.5")) + ", Points by x" + format(player.polygon.triEffect.add(1).pow("100"))
                     return text
@@ -277,7 +290,7 @@ addLayer("polygon", {
         16: {
             effect(){
                 let base = player.polygon.points
-                base = base.log(10).add(1)
+                base = base.add(1).log(10).add(1)
                 return base
             },
             effectDisplay(){
@@ -298,7 +311,7 @@ addLayer("polygon", {
     bars: {
         level: {
             direction: RIGHT,
-            width: 400,
+            width: 750,
             height: 75,
             display() {
                 let chosen = getClickableState("polygon", 11) || "triangle"
@@ -345,6 +358,19 @@ addLayer("polygon", {
 
                 player.polygon.constrCurrentTime = player.polygon.constrBaseTime
             },
+        },
+        12: {
+            title: "Disable Constructor",
+            display() {
+                return "Disabling the Constructor will stop construction and generation of ALL Constructor polygons. <b>Currently: Construction is " + getClickableState("polygon", 12)
+            },
+            canClick() {return true},
+            onClick() {
+                if (getClickableState("polygon", 12) == "Enabled") setClickableState("polygon", 12, "Disabled")
+                else setClickableState("polygon", 12, "Enabled")
+            },
+            unlocked() {return hasMilestone("planetary", 6)},
+            style() {return {"width": "150px"}},
         },
     },
     buyables: {
@@ -461,6 +487,13 @@ addLayer("polygon", {
 
         if (player.polygon.hexagons.gte("1e50")) hexBase = hexBase.div(player.polygon.hexagons.pow(0.1))
 
+        if (hasAchievement("planetary", 31)){
+            triBase = triBase.pow(1.1)
+            squBase = squBase.pow(1.1)
+            penBase = penBase.pow(1.1)
+            hexBase = hexBase.pow(1.1)
+        }
+
         //Sacrifices
         if (maxedChallenge("polygon", 11)){
             triBase = triBase.pow(1.27)
@@ -485,10 +518,10 @@ addLayer("polygon", {
             if (player.polygon.constrCurrentTime.lte(0)) {
                 player.polygon.constrCurrentTime = player.polygon.constrBaseTime
 
-                if (getClickableState("polygon", 11) == "Triangle") player.polygon.triangles = player.polygon.triangles.add(triBase)
-                else if (getClickableState("polygon", 11) == "Square") player.polygon.squares = player.polygon.squares.add(squBase)
-                else if (getClickableState("polygon", 11) == "Pentagon") player.polygon.pentagons = player.polygon.pentagons.add(penBase)
-                else if (getClickableState("polygon", 11) == "Hexagon") player.polygon.hexagons = player.polygon.hexagons.add(hexBase)
+                if (getClickableState("polygon", 11) == "Triangle" && getClickableState("polygon", 12) == "Enabled") player.polygon.triangles = player.polygon.triangles.add(triBase)
+                else if (getClickableState("polygon", 11) == "Square" && getClickableState("polygon", 12) == "Enabled") player.polygon.squares = player.polygon.squares.add(squBase)
+                else if (getClickableState("polygon", 11) == "Pentagon" && getClickableState("polygon", 12) == "Enabled") player.polygon.pentagons = player.polygon.pentagons.add(penBase)
+                else if (getClickableState("polygon", 11) == "Hexagon" && getClickableState("polygon", 12) == "Enabled") player.polygon.hexagons = player.polygon.hexagons.add(hexBase)
             }
         }
 
@@ -525,9 +558,12 @@ addLayer("polygon", {
         let HARD = new Decimal("1e200")
         if (hasUpgrade("planetary", 11)) HARD = HARD.mul(upgradeEffect("planetary", 11))
         if (hasAchievement("planetary", 22)) HARD = HARD.mul("1e25")
+        if (hasMilestone("planetary", 8)) HARD = HARD.mul("1e10")
+        HARD = HARD.mul(new Decimal.pow("1e6", getBuyableAmount("planetary", 21)))
+        if (hasUpgrade("fundamental", 51)) HARD = HARD.mul(player.polygon.FU51KEEP)
 
         player.polygon.hardcap = HARD
-        if (player.polygon.points.gte(HARD)) player.polygon.points = new Decimal(HARD)
+        if (player.polygon.points.gte(HARD)) player.polygon.points = HARD
     },
 
     canReset() {

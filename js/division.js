@@ -45,6 +45,7 @@ addLayer("division", {
         if (hasMilestone("corebooster", 5)) mult = mult.mul("500")
         if (hasUpgrade("subtraction", 22)) mult = mult.mul("1e6")
         if (hasMilestone("planetary", 2)) mult = mult.mul("1e10")
+        mult = mult.mul(buyableEffect("multiplication", 12))
         //exp
         if (hasMilestone("corebooster", 2)) mult = mult.pow("1.1")
         if (hasMilestone("division", 10)) mult = mult.pow("1.1")
@@ -118,6 +119,7 @@ addLayer("division", {
 
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
+        if (hasMilestone("planetary", 10)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 26, 27)
 
         let keptBuyables = []
 
@@ -125,7 +127,10 @@ addLayer("division", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = ["points", "upgrades", "milestones", "total"];
-        if (layers[resettingLayer].name == "planetary") keep = []
+        if (layers[resettingLayer].name == "planetary"){
+            if (hasAchievement("planetary", 14)) keep = ["milestones"]
+            else keep = []
+        }
 
         // Stage 4, do the actual data reset
         if (resettingLayer == "division") doReset("polygon", true)
@@ -133,6 +138,7 @@ addLayer("division", {
 
         // Stage 5, add back in the specific subfeatures you saved earlier
         player.division.resets = keptResetAmount
+        player[this.layer].upgrades.push(...keptUpgrades)
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
     tabFormat: {
         "Main": {

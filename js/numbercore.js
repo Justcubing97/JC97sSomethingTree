@@ -38,6 +38,7 @@ addLayer("numbercore", {
         if (hasMilestone("division", 6)) mult = mult.pow(1.1)
         if (hasUpgrade("multiplication", 93)) mult = mult.pow(1.25)
         if (maxedChallenge("polygon", 11)) mult = mult.pow(1.01)
+        if (hasAchievement("planetary", 21)) mult = mult.pow(1.25)
         //other hypers
         //final
         return mult
@@ -74,7 +75,7 @@ addLayer("numbercore", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = ["buyables"];
-        if (layers[resettingLayer].name == "planetary") keep = []
+        if (layers[resettingLayer].name == "planetary" && !hasMilestone("planetary", 7)) keep = []
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
@@ -179,6 +180,26 @@ addLayer("numbercore", {
                 return [new Decimal("1.5").pow(x), new Decimal("1.2").pow(x)]
             },
         },
+        23: {
+            cost(x) {
+                let base = new Decimal("1e1500000")
+                let expscal = new Decimal("0")
+                let final = tmp.numbercore.buyableScalings_NUMBERCORE(base, expscal, x, 3)
+                return final[0].pow(x.add(final[1])).mul("e2700000")
+            },
+            title: "Fundamental Expansion",
+            display() { return "Unlock another Fundamental upgrade per purchase. All of the extra upgrades are kept." + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/7" + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: +" + format(this.effect(), 0) + " upgrades" },
+            canAfford() { return player[this.layer].points.gte(this.cost())},
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            unlocked() {return hasUpgrade("arithmetic", 31) || player.planetary.unlocked},
+            effect(x) {
+                return x
+            },
+            purchaseLimit: 7
+        },
     },
 
     glowColor() {
@@ -212,7 +233,7 @@ addLayer("numbercore", {
     automate() {
         let layer = "numbercore"
         for (const id of [11, 12, 13, 21, 22]) {
-            if (canBuyBuyable(layer, id) && hasMilestone("planetary", 2)) {
+            if (canBuyBuyable(layer, id) && hasMilestone("planetary", 2) && player.numbercore.PM2NCT) {
                 player[layer].points = player[layer].points.sub(tmp[layer].buyables[id].cost)
                 setBuyableAmount(layer, id, getBuyableAmount(layer, id).add(1))
             }
@@ -245,6 +266,7 @@ addLayer("numbercore", {
                 if (a.gte(200)) {b = b.pow("1.35"); e = e.mul(4)}
                 if (a.gte(225)) {b = b.pow("1.6"); e = e.mul(1.5)}
                 if (a.gte(250)) {b = b.pow("2"); e = e.mul(5)}
+                if (a.gte(1000)) {b = b.pow("5"); e = e.mul(10)}
                 break;
             case 2:
                 if (a.gte(10)) b = b.add("25")
@@ -263,6 +285,10 @@ addLayer("numbercore", {
                 if (a.gte(175)) {b = b.pow("1.43"); e = e.mul(1.01)}
                 if (a.gte(200)) {b = b.pow("2"); e = e.mul(7.5)}
                 if (a.gte(225)) {b = b.pow("2"); e = e.mul(2)}
+                if (a.gte(1000)) {b = b.pow("5"); e = e.mul(10)}
+                break;
+            case 3:
+                if (a.gte(10)) b = b.pow("1.1")
                 break;
         }
         return [b, e, a]

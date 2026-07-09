@@ -165,6 +165,7 @@ addLayer("unlock", {
                 }],
                 "blank",
                 ["infobox", "d14"],
+                ["infobox", "d15"],
             ],
             unlocked() { return player.planetary.points.gte(1) || getBuyableAmount("planetary", 11).gte(1)}
         },
@@ -387,7 +388,19 @@ addLayer("unlock", {
                 "but the Planetary Generators will provide a massive jumpstart!"
             },
             unlocked() {return player.planetary.points.gte(1) || getBuyableAmount("planetary", 11).gte(1)},
-        }
+        },
+
+        d15: {
+            title: "Document 15: Separation",
+            body() { return "So, uhh... one of the Void Masters called me in for \"testing.\" He confirmed that it would be similar to Aperture Science-type testing. " +
+                "However, instead of portals and the Companion Cube, I get Sokoban-style puzzles instead. It isn't the worst thing in the world " +
+                "(in fact, I kinda love these types of grid-based pushing box puzzles), but it was 3-dimensional pushing box puzzles. " +
+                "For context, I fell asleep in the cafeteria while Ashley curled into me like some yandere seeking warmth. It was only when she woke up " +
+                "that she realized I had gone missing. What was it like in the \"Voidtesting?\" Pretty mundane. It is very Aperture-coded. " +
+                "But the chambers, they get gradually more difficult... and... the <i>chambers... don't... end...</i> (internally: nice, you have planetary boosters.)"
+            },
+            unlocked() {return hasChallenge("arithmetic",  6)},
+        },
     },
     update(diff){
         if (hasUpgrade("unlock", 11)) player.fundamental.unlocked = true

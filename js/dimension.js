@@ -51,6 +51,7 @@ addLayer("dimension", {
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
+        if (hasAchievement("planetary", 24)) player.dimension.points = new Decimal(5)
 
         // Stage 5, add back in the specific subfeatures you saved earlier
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER

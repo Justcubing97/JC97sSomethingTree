@@ -12,17 +12,23 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5.4",
+	num: "0.5.5",
 	name: "Planetary Fragment update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5.5</h3><br>
+		- More Planetary Generators. <br>
+		- Functionality for more Planetary Challenges. <br>
+		- More content! <br>
+		- Fixed a Planet Power bug. <br>
+		- Endgame: complete Arithmetic Challenge 6. <br>
 	<h3>v0.5.4</h3><br>
 		- Added buyable QoL - the layer node lights up cyan when a buyable is affordable. <br>
 		- Minor naming changes. <br>
 		- More content in the Planetary Layer. <br>
 		- Slightly changed currency displays in nodes. <br>
-		- Endgame: 3 Planetary Fragments. <br>
+		- Endgame: Planetary Challenges 1 and 6 completed. <br>
 	<h3>v0.5.3</h3><br>
 		- Edited the hardcap logic for Multiplication. <br>
 		- Buffed the 1st Planetary Milestone and Planet Power. <br>
@@ -58,7 +64,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Division layer. <br>
 		- Number Core layer. <br>
 		- Endgame: 10 Number Cores. <br>
-		<i>0.4.5 was skipped because 0.4.6 added TWO layers instead of the usual one/bug fix/QoL feature.</i>
+		<i>0.4.5 was skipped because 0.4.6 added TWO layers instead of the usual one bug fix/QoL feature/layer.</i> <br>
 	<h3>v0.4.4</h3><br>
 		- Adjusted progression in Arithmetic layer. <br>
 		- Endgame: 5 Polygonifications. <br>
@@ -163,7 +169,7 @@ function getPointGen() {
 
 	//Planetary+ multiplications!
 	if (player.planetary.planetPower.gt(0) && getClickableState("planetary", 12)) gain = gain.mul(player.planetary.planetPowerEffect)
-	else if (player.planetary.planetPower.gt(0)) gain = gain.div(player.planetary.planetPowerEffect.pow(0.75))
+	else if (player.planetary.planetPower.gt(0)) gain = gain.div(player.planetary.planetPowerEffect.pow(2.5))
 
 	//exp
 	if (hasUpgrade("arithmetic", 15)) gain = gain.pow(1.1)
@@ -180,6 +186,8 @@ function getPointGen() {
 	if (hasUpgrade("division", 16)) gain = gain.pow(1.01)
 	if (hasUpgrade("division", 26)) gain = gain.pow(1.001)
 	if (hasUpgrade("division", 27)) gain = gain.pow(1.2)
+	if (inChallenge("arithmetic", 23)) gain = gain.pow(0.005)
+	if (hasUpgrade("fundamental", 52)) gain = gain.pow(1.05)
 
 	//Planetary+ exponents!
 	if (hasMilestone("planetary", 2)) gain = gain.pow(2)
@@ -209,7 +217,7 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 1 Planetary Fragment",
+	"Current endgame: Complete Arithmetic Challenge 6",
 	"Justcubing97's Something Tree by Justcubing97",
 	"<i>Check out the Unlock Layer every so often... there might be more documents you can read.</i>",
 	function() {
@@ -220,7 +228,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.planetary.points.gte(new Decimal(5)))
+	return (hasChallenge("arithmetic", 23))
 }
 
 

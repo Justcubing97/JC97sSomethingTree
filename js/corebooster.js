@@ -248,6 +248,8 @@ addLayer("corebooster", {
             }
         }
 
+        if (player.corebooster.useful.gte("1e6")) player.corebooster.useful = new Decimal("1e6")
+
         let e1b = player.corebooster.useful
         e1b = e1b.add(1).log(20).add(1)
         if (hasAchievement("achievements", 53)) e1b = e1b.pow(3)
@@ -272,6 +274,14 @@ addLayer("corebooster", {
         e5b = e5b.add(1).pow(1.5)
         if (!hasMilestone("primitive", 11)) player.corebooster.e5 = new Decimal(1)
         else player.corebooster.e5 = e5b
+
+        if (inChallenge("arithmetic", 23)){
+            player.corebooster.e1 = new Decimal(1)
+            player.corebooster.e2 = new Decimal(1)
+            player.corebooster.e3 = new Decimal(1)
+            player.corebooster.e4 = new Decimal(1)
+            player.corebooster.e5 = new Decimal(1)
+        }
     },
     tooltip() {return format(player.corebooster.points) + " (" + format(player.corebooster.useful) + " Useful) Core Boosters (" + format(getNextAt("corebooster")) + " Number Cores for next Core Booster)"},
 })

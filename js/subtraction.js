@@ -51,6 +51,7 @@ addLayer("subtraction", {
 
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
+        if (hasMilestone("planetary", 8)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 23, 24, 25, 26, 27)
 
         let keptBuyables = []
 
@@ -62,6 +63,7 @@ addLayer("subtraction", {
         layerDataReset(this.layer, keep);
 
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
+        player[this.layer].upgrades.push(...keptUpgrades)
     },
     upgrades: {
         11: {

@@ -31,6 +31,7 @@ addLayer("arithmetic", {
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         if (inChallenge("polygon", 11)) mult = mult.pow(0.1)
         if (hasMilestone("planetary", 1)) mult = mult.pow(1.5)
+        if (inChallenge("arithmetic", 23)) mult = mult.pow(0.005)
         //other hypers
         //final effects
         if (hasUpgrade("multiplication", 32)) mult = mult.div(5)
@@ -112,6 +113,7 @@ addLayer("arithmetic", {
         if (hasUpgrade("division", 14)) keptChallenges.push(21)
         if (hasUpgrade("fundamental", 46)) keptChallenges.push(22)
         if (layers[resettingLayer].name == "planetary") keptChallenges = []
+        if (hasMilestone("planetary", 9)) keptChallenges.push(11, 12, 13, 21, 22)
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -340,6 +342,17 @@ addLayer("arithmetic", {
             unlocked() {return hasUpgrade("arithmetic", 32) || player.planetary.unlocked},
             onEnter() {player.arithmetic.points = new Decimal(0)},
             onExit() {player.arithmetic.points = new Decimal(0)},
+        },
+        23: {
+            name: "Everything at Once",
+            challengeDescription: "<i>\"If you thought it couldn't get worse, you're sorely mistaken.\"</i> You are in the previous five Arithmetic Challenges. Also, ^0.005 Points, Fundamentality, Numbers, and Operation Power. ^0.025 Shapes. Core Booster effects do not work. <i>This challenge resets Shapes.</i>",
+            goalDescription: "Have 1e400,000 Operation Power.",
+            rewardDescription: "Unlock Planetary Boosters.",
+            countsAs: [11, 12, 13, 21, 22],
+            canComplete: function() {return player.arithmetic.points.gte("1e400000")},
+            unlocked() {return hasMilestone("planetary", 9)},
+            onEnter() {player.polygon.points = new Decimal(0)},
+            onExit() {player.polygon.points = new Decimal(0)},
         },
     },
     branches: [["addition", "#FF00FF", 5], ["subtraction", "#FF00FF", 5], ["multiplication", "#FF00FF", 5], ["division", "#FF00FF", 5], ["polygon", "#FFFFFF", 10]],

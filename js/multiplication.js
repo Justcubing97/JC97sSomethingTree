@@ -80,6 +80,8 @@ addLayer("multiplication", {
         if (hasUpgrade("multiplication", 101)) keptUpgrades.push(101)
         if (hasUpgrade("multiplication", 102)) keptUpgrades.push(102)
         if (layers[resettingLayer].name == "planetary") keptUpgrades = []
+
+        if (hasMilestone("planetary", 8)) keptUpgrades.push(11, 21, 22, 31, 32, 41, 42, 43, 51, 52, 61, 62, 63, 64, 71, 72, 73, 81, 91, 92, 93, 94, 95, 101, 102)
         
 
         let keptBuyables = []
@@ -90,7 +92,7 @@ addLayer("multiplication", {
         let keep = [];
         if (hasMilestone("polygon", 9)) keep.push("points")
         if (layers[resettingLayer].name == "planetary") keep = []
-
+    
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
 
@@ -556,7 +558,7 @@ addLayer("multiplication", {
             },
             effect(x) {
                 let base = player.numbercore.points
-                let effect = base.add(1).log(12)
+                let effect = base.add(1).log(10)
                 effect = effect.mul(new Decimal(1.5).pow(getBuyableAmount(this.layer, this.id)))
                 return effect
             },
@@ -603,15 +605,15 @@ addLayer("multiplication", {
             player.multiplication.points = new Decimal("4e4")
             player.multiplication.isAbleToReset = false
         }
-        if (player.multiplication.points.gte("250000") && !hasUpgrade("primitive", 35)) {
+        if (player.multiplication.points.gte("250000") && !hasUpgrade("primitive", 35) && !hasAchievement("planetary", 13)) {
             player.multiplication.points = new Decimal("250000")
             player.multiplication.isAbleToReset = false
         }
-        if (player.multiplication.points.gte("1e7") && !hasMilestone("corebooster", 1)) {
+        if (player.multiplication.points.gte("1e7") && !hasMilestone("corebooster", 1) && !hasAchievement("planetary", 13)) {
             player.multiplication.points = new Decimal("1e7")
             player.multiplication.isAbleToReset = false
         }
-        if (player.multiplication.points.gte("215e7") && !hasMilestone("division", 9)) {
+        if (player.multiplication.points.gte("215e7") && !hasMilestone("division", 9) && !hasAchievement("planetary", 13)) {
             player.multiplication.points = new Decimal("215e7")
             player.multiplication.isAbleToReset = false
         }

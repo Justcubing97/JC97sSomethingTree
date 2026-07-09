@@ -34,6 +34,7 @@ addLayer("fundamental", {
         //exp
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
+        if (inChallenge("arithmetic", 23)) mult = mult.pow(0.005)
         //other hypers
         return mult
     },
@@ -66,6 +67,7 @@ addLayer("fundamental", {
         if (hasUpgrade("division", 16)) dMult = dMult.pow(1.01)
         if (hasMilestone("primitive", 14)) dMult = dMult.pow(1.35)
         if (maxedChallenge("polygon", 11)) dMult = dMult.pow(1.01)
+        
         return dMult
     },
     softcapPower() {
@@ -123,6 +125,8 @@ addLayer("fundamental", {
         if (hasUpgrade("fundamental", 47)) keptUpgrades.push(47)
         if (layers[resettingLayer].name == "planetary") keptUpgrades = [23]
         if (hasMilestone("planetary", 4)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 24, 25, 26, 27, 31, 32, 33, 34, 35, 36, 37, 41, 42, 43, 44, 45, 46, 47)
+        if (hasUpgrade("fundamental", 51)) keptUpgrades.push(51)
+        if (hasUpgrade("fundamental", 52)) keptUpgrades.push(52)
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -414,6 +418,25 @@ addLayer("fundamental", {
             cost: new Decimal("1e20600"),
             unlocked() {return hasUpgrade("fundamental", 46) || player.planetary.unlocked},
         },
+
+        51: {
+            title: "THE ENDLESS COST GAP",
+            effect() {
+                let effect = player.fundamental.points
+                effect = effect.add(1).slog(1.1).pow(1.5)
+                return effect
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
+            description: "Fundamentality delays the Shape hardcap at an INSANELY reduced rate.",
+            cost: new Decimal("e295000000"),
+            unlocked() {return getBuyableAmount("numbercore", 23).gte(1)},
+        },
+        52: {
+            title: "Steady OoMs",
+            description: "^1.05 Points.",
+            cost: new Decimal("e375000000"),
+            unlocked() {return getBuyableAmount("numbercore", 23).gte(2)},
+        },
     },
     buyables: {
         11: {
@@ -449,6 +472,8 @@ addLayer("fundamental", {
                 if (player.polygon.points.gte(1)) effect = effect.mul(player.polygon.effect)
                 if (hasUpgrade("multiplication", 61)) effect = effect.pow(1.1)
                 if (player.dimension.points.gte(4)) effect = effect.pow(1.2)
+                
+                if (hasUpgrade("planetary", 14)) effect = effect.pow(upgradeEffect("planetary", 14))
                 return effect
             },
             unlocked() {return hasUpgrade("primitive", 13) || player.arithmetic.unlocked},
@@ -611,7 +636,7 @@ addLayer("fundamental", {
     automate() {
         let layer = "fundamental"
         for (const id of [11, 12, 13, 21, 22]) {
-            if (canBuyBuyable(layer, id) && hasMilestone("planetary", 2)) {
+            if (canBuyBuyable(layer, id) && hasMilestone("planetary", 2) && player.fundamental.PM2FT) {
                 player[layer].points = player[layer].points.sub(tmp[layer].buyables[id].cost)
                 setBuyableAmount(layer, id, getBuyableAmount(layer, id).add(1))
             }

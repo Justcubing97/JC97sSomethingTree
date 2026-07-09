@@ -35,7 +35,7 @@ addLayer("achievements", {
 
         //IF AN ACHIEVEMENT HAS A REWARD, ADD IT TO A LIST LIKE "rewardList[INTERNAL LAYER NAME HERE]"
         let rewardListPlanetary = ["24","35","46","53","54"]
-        if (resettingLayer == "planetary"){
+        if (resettingLayer == "planetary" && !hasAchievement("achievements", 62)){
           for (var i = 0; i < rewardListPlanetary.length; i++){
             let index = player.achievements.achievements.indexOf(rewardListPlanetary[i])
             if (index > -1) player.achievements.achievements.splice(index, 1)
@@ -260,6 +260,20 @@ achievements: {
     name: "Astronomical Achievement",
     done(){return player.planetary.points.gte(1)},
     tooltip:"Planetary reset for the first time.",
+    unlocked() {return true},
+  },
+  62: {
+    name: "Restriction Adaptation X",
+    done(){return hasAchievement("planetary", 11) && 
+      hasAchievement("planetary", 12) && 
+      hasAchievement("planetary", 13) && 
+      hasAchievement("planetary", 14) && 
+      hasAchievement("planetary", 21) && 
+      hasAchievement("planetary", 22) && 
+      hasAchievement("planetary", 23) && 
+      hasAchievement("planetary", 24) 
+    },
+    tooltip:"Have 8 Planetary Challenges completed. Reward: keep achievement 11, 19, 27, 31, and 32.",
     unlocked() {return true},
   },
 },

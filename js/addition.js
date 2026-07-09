@@ -190,6 +190,7 @@ addLayer("addition", {
         14: {
             title: "Add to Number Cores",
             effect() {
+                if (hasMilestone("planetary", 9)) setClickableState("addition", 14, "ALWAYS ACTIVE")
                 let base = player.addition.points
                 let exp = new Decimal(0.003)
                 if (hasUpgrade("multiplication", 63)) exp = exp.add(0.007)
@@ -207,7 +208,7 @@ addLayer("addition", {
                 setClickableState("addition", 13, "Inactive")
                 setClickableState("addition", 15, "Inactive")
             },
-            unlocked() {return hasChallenge("arithmetic", 21)},
+            unlocked() {return hasChallenge("arithmetic", 21) || hasMilestone("planetary", 9)},
         },
 
         15: {
