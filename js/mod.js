@@ -12,13 +12,12 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5.5",
+	num: "0.5.6",
 	name: "Planetary Fragment update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
 	<h3>v0.5.6</h3><br>
-		- Fixed a possible Planetary-Division bug. <br>
 		- Fixed a Division line saying \"Next Division at NaN Numbers\". <br>
 		- Fixed a Constructor bug. <br>
 		- Endgame: complete Arithmetic Challenge 6. <br>
