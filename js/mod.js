@@ -103,7 +103,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Added Unlock, Fundamental, and Primitive layers. <br>
 		- Endgame: 1e15 Numbers. <br>`
 
-let winText = `Congratulations! You have reached the end of JST for now, as of v0.4.8. `
+let winText = `Congratulations! You have reached the end of JST for now, as of ${VERSION.num}. `
 
 // If you add new functions anywhere inside of a layer, and those functions have an effect when called, add them here.
 // (The ones here are examples, all official functions are already taken care of)
