@@ -510,7 +510,7 @@ addLayer("multiplication", {
             title: "Constructor Enhancement",
             effect() {
                 let base = buyableEffect("polygon", 12)
-                base = base.pow(0.1)
+                base = base.add(1).pow(0.1)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 102))},

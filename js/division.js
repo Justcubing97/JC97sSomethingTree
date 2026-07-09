@@ -45,7 +45,7 @@ addLayer("division", {
         if (hasMilestone("corebooster", 5)) mult = mult.mul("500")
         if (hasUpgrade("subtraction", 22)) mult = mult.mul("1e6")
         if (hasMilestone("planetary", 2)) mult = mult.mul("1e10")
-        mult = mult.mul(buyableEffect("multiplication", 12))
+        if (getBuyableAmount("multiplication", 12).gte("1")) mult = mult.mul(buyableEffect("multiplication", 12))
         //exp
         if (hasMilestone("corebooster", 2)) mult = mult.pow("1.1")
         if (hasMilestone("division", 10)) mult = mult.pow("1.1")

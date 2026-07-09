@@ -97,6 +97,7 @@ addLayer("polygon", {
     },
     doReset(resettingLayer) {
         // Stage 1, almost always needed, makes resetting this layer not delete your progress
+        setClickableState("polygon", 12, "Enabled")
         if (layers[resettingLayer].row <= this.row) return;
 
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
