@@ -171,7 +171,7 @@ addLayer("planetary", {
                     "width": "150px",
                 }
             },
-            unlocked() {return hasMilestone("planetary", 6)}
+            unlocked() {return true}
         },
         13: {
             title: "Square Root Planet Power and Halve ALL Generator Amounts",
