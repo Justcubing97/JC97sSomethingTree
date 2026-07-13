@@ -27,6 +27,7 @@ let changelog = `<h1>Changelog:</h1><br>
 		- Revised Shape hardcap logic. <br>
 		- And of course... MORE PLANETARY CONTENT! <br>
 		- Endgame: 1e640 Shapes. <br>
+		(the next day i had to fix a MAJOR bug with the 7th funda upgrade!)
 	<h3>v0.5.6</h3><br>
 		- Fixed a Division line saying \"Next Division at NaN Numbers\". <br>
 		- Fixed a Constructor bug. <br>
