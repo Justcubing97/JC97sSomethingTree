@@ -86,7 +86,7 @@ addLayer("primitive", {
     },
     row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "p", description: "P: Reset for Numbers", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "P", description: "SHIFT+P: Reset for Numbers", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.primitive.unlocked},
     layerDataReset() { if (hasMilestone("primitive", 2)) return ["23"]},

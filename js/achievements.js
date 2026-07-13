@@ -276,5 +276,11 @@ achievements: {
     tooltip:"Have 8 Planetary Challenges completed. Reward: keep achievement 11, 19, 27, 31, and 32.",
     unlocked() {return true},
   },
+  63: {
+    name: "This is Big Number time.",
+    done(){return hasUpgrade("polygon", 21)},
+    tooltip:"Have the 8th Polygon upgrade. It's tetration time.",
+    unlocked() {return true},
+  },
 },
 })

@@ -32,10 +32,12 @@ addLayer("planetary", {
         //add
         if (hasAchievement("planetary", 24)) mult = mult.add(2)
         if (hasMilestone("planetary", 8)) mult = mult.add(4)
+        if (hasUpgrade("polygon", 22)) mult = mult.add(25)
         //mul
         if (hasAchievement("planetary", 11)) mult = mult.mul(3)
         if (hasAchievement("planetary", 12)) mult = mult.mul(5)
         if (hasAchievement("planetary", 32)) mult = mult.mul(12)
+        mult = mult.mul(player.pbooster.e1)
         //exp 
         //other hypers
         //final
@@ -51,7 +53,7 @@ addLayer("planetary", {
     },
     row: 6, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "P", description: "P: Reset for Planetary Fragments", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "L", description: "SHIFT+L: Reset for Planetary Fragments", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.planetary.unlocked},
     passiveGeneration() {return false},
@@ -110,6 +112,11 @@ addLayer("planetary", {
                 ["display-text", function() {
                     let text = "<h3>Planet Power gain is heavily softcapped after 1e10,000!</h3>"
                     if (player.planetary.planetPower.lt("1e10000")) return ""
+                    return text
+                }],
+                ["display-text", function() {
+                    let text = "<h3>Planet Power gain is heavily supercapped after 1e100,000!</h3>"
+                    if (player.planetary.planetPower.lt("1e100000")) return ""
                     return text
                 }],
                 "blank",
@@ -243,6 +250,18 @@ addLayer("planetary", {
             effectDisplay() {return "^" + format(upgradeEffect(this.layer, this.id))},
             description: "Bought Earth Generators raise Fundamental buyable 1's effect.",
             cost: new Decimal("200000"),
+            unlocked() {return hasMilestone("planetary", 1)},
+        },
+        15: {
+            title: "Unbreakable Constructor",
+            description: "Keep the compass and straightedge levels.",
+            cost: new Decimal("1e7"),
+            unlocked() {return hasMilestone("planetary", 1)},
+        },
+        16: {
+            title: "Buyable Mania IS real.",
+            description: "Unlock another Number Core buyable. Keep the 8th and 9th Polygon upgrades.",
+            cost: new Decimal("1e9"),
             unlocked() {return hasMilestone("planetary", 1)},
         },
     },
@@ -393,6 +412,32 @@ addLayer("planetary", {
             },
             unlocked() {return hasUpgrade("planetary", 13)},
         },
+        22: {
+            cost(x) {
+                let base = new Decimal(10).pow(x).mul("1e7")
+                return base
+            },
+            title: "Mars Generator",
+            display() {
+                let text = "Generates Earth Generators based on its amount. BONUS: x100 Division per bought Mars Generator." + "\n" + "Amount: " + format(player.planetary.marsGenAmt) + " (" + getBuyableAmount(this.layer, this.id) + ")" + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: "
+                if (getBuyableAmount(this.layer, this.id).eq(0)) text += "Buy a generator to start generating!"
+                else text += "+" + format(this.effect().mul(getBuyableAmount(this.layer, this.id))) + " Earth Generators/s"
+                return text
+            },
+            canAfford() { return player[this.layer].points.gte(this.cost()) },
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+                player.planetary.marsGenAmt = player.planetary.marsGenAmt.add(1)
+            },
+            effect(x) {
+                let base = new Decimal(1.4)
+                let effect = base.pow(player.planetary.marsGenAmt)
+                effect = effect.div(1.4)
+                return effect
+            },
+            unlocked() {return getBuyableAmount("planetary", 11).gte(40)},
+        },
     },
 
     infoboxes: {
@@ -519,8 +564,8 @@ addLayer("planetary", {
         },
         31: {
             name: "<h1>9: Interrupted Challenges<br>",
-            done(){return getResetGain("polygon").gte("1e880") && inChallenge("polygon", 11) && inChallenge("arithmetic", 22)},
-            goalTooltip() {return "The next Planetary Challenges are a little different. Have a reset gain of 1e880 Shapes while in Constructor Sacrifice and Arithmetic Challenge 5."},
+            done(){return player.primitive.points.gte("e7403828") && player.polygon.points.eq("0") && inChallenge("polygon", 11) && inChallenge("arithmetic", 22)},
+            goalTooltip() {return "The next Planetary Challenges are a little different. Have e7,403,828 Numbers and 0 Shapes while in Constructor Sacrifice and Arithmetic Challenge 5."},
             doneTooltip() {return "This Planetary Challenge is completed. ^1.1 the gain of all Constructor Polygons, and Unlock another Number Core buyable (NOT AUTOMATED)."},
             unlocked() {return hasMilestone("planetary", 9)},
             style() {return {
@@ -531,9 +576,9 @@ addLayer("planetary", {
         },
         32: {
             name: "<h1>10: Hypernerfed Progression<br>",
-            done(){return player.points.gte("1e1970") && inChallenge("arithmetic", 23)},
-            goalTooltip() {return "Have 1e1970 Points while in Arithmetic Challenge 6. Recommended to wait for max useful Core Boosters (1,000,000)."},
-            doneTooltip() {return "This Planetary Challenge is completed. You should be able to get e120M points by now. Improve \"Polygonal Care\" and x12 Planetary Fragments!"},
+            done(){return player.primitive.points.gte("e16240") && inChallenge("arithmetic", 23)},
+            goalTooltip() {return "Have 1e16,240 Numbers while in Arithmetic Challenge 6. Recommended to wait for max useful Core Boosters (1,000,000)."},
+            doneTooltip() {return "This Planetary Challenge is completed. You should be able to get e125M-e126M points by now. Improve \"Polygonal Care,\" x12 Planetary Fragments, and x1e5000 Operation power after softcap!"},
             unlocked() {return hasMilestone("planetary", 9)},
             style() {return {
                 "width": "200px",
@@ -547,6 +592,10 @@ addLayer("planetary", {
         let mult = new Decimal(0)
 
         mult = new Decimal(0)
+        if (getBuyableAmount("planetary", 22).gte(1)) mult = mult.add(buyableEffect("planetary", 22)).mul(getBuyableAmount("planetary", 22))
+        player.planetary.earthGenAmt = player.planetary.earthGenAmt.add(mult.mul(diff))
+
+        mult = new Decimal(0)
         if (getBuyableAmount("planetary", 21).gte(1)) mult = mult.add(buyableEffect("planetary", 21)).mul(getBuyableAmount("planetary", 21))
         player.planetary.venusGenAmt = player.planetary.venusGenAmt.add(mult.mul(diff))
 
@@ -557,7 +606,8 @@ addLayer("planetary", {
         mult = new Decimal(0)
         if (getBuyableAmount("planetary", 11).gte(1)) mult = mult.add(buyableEffect("planetary", 11)).mul(getBuyableAmount("planetary", 11))
 
-        if (mult.gte("1e10000")) mult = mult.log(10 ).mul("1e9996")
+        if (mult.gte("1e10000")) mult = mult.log(10).mul("1e9996")
+        if (mult.gte("e1e5")) mult = mult.log(10).mul("1e99995")
         player.planetary.pPps = mult
 
         //FINAL!!!
@@ -596,6 +646,7 @@ addLayer("planetary", {
         }
         return false
     },
-    
+
+    branches: [["pbooster", "#60C0FF", 5]],
     tooltip() {return format(player.planetary.points) + " Planetary Fragments (+" + format(getResetGain("planetary")) + " Planetary Fragments on reset)"},
 })

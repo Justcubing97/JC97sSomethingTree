@@ -20,13 +20,15 @@ addLayer("multiplication", {
         let final = new Decimal(4)
         let nerf = new Decimal(0)
         if (hasUpgrade("subtraction", 14)) nerf = nerf.add(1)
+        if (hasMilestone("pbooster", 1)) nerf = nerf.add(1)
         final = final.sub(nerf)
-        if (player.multiplication.points.gte("600")) final = final.add(3)
-        if (player.multiplication.points.gte("5000")) final = final.add(6)
-        if (player.multiplication.points.gte("40000")) final = final.add(10)
-        if (player.multiplication.points.gte("250000")) final = final.add(35)
-        if (player.multiplication.points.gte("1e7")) final = final.add(100)
-        if (player.multiplication.points.gte("2.15e9")) final = final.add(750)
+
+        if (player.multiplication.points.gte("600") && !hasMilestone("pbooster", 1)) final = final.add(3)
+        if (player.multiplication.points.gte("5000") && !hasMilestone("pbooster", 1)) final = final.add(6)
+        if (player.multiplication.points.gte("40000") && !hasMilestone("pbooster", 1)) final = final.add(10)
+        if (player.multiplication.points.gte("250000") && !hasMilestone("pbooster", 1)) final = final.add(35)
+        if (player.multiplication.points.gte("1e7") && !hasMilestone("pbooster", 1)) final = final.add(100)
+        if (player.multiplication.points.gte("2.15e9") && !hasMilestone("pbooster", 1)) final = final.add(750)
         return final
     }, // Prestige currency exponent
     gainMult() { // Calculate the multiplier for main currency from bonuses
@@ -42,6 +44,9 @@ addLayer("multiplication", {
         return exp
     },
     row: 3, // Row the layer is in on the tree (0 is the first row)
+    hotkeys: [
+        {key: "M", description: "SHIFT+M: Reset for Multiplication", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
     layerShown(){return hasChallenge("arithmetic", 12) || hasMilestone("polygon", 5) || player.planetary.unlocked},
     directMult() {
         let dMult = new Decimal(1)
@@ -85,8 +90,10 @@ addLayer("multiplication", {
         
 
         let keptBuyables = []
-        if (hasUpgrade("polygon", 15)) keptBuyables.push(getBuyableAmount("multiplication", 11))
-        if (layers[resettingLayer].name == "planetary") keptBuyables = []
+        if (layers[resettingLayer].name == "planetary"){
+            if (hasMilestone("pbooster", 2)) keptBuyables.push(getBuyableAmount("multiplication", 11))
+        } else if (hasUpgrade("polygon", 15) && layers[resettingLayer].name != "planetary") keptBuyables.push(getBuyableAmount("multiplication", 11))
+        if (hasMilestone("pbooster", 2)) keptBuyables.push(getBuyableAmount("multiplication", 12))
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -99,6 +106,7 @@ addLayer("multiplication", {
         // Stage 5, add back in the specific subfeatures you saved earlier in Stage 2
         player[this.layer].upgrades.push(...keptUpgrades)
         setBuyableAmount("multiplication", 11, keptBuyables[0] || new Decimal(0))
+        setBuyableAmount("multiplication", 12, keptBuyables[1] || new Decimal(0))
     },
     effect() {
         let final = player.multiplication.points.add(1).pow(10)
@@ -130,6 +138,7 @@ addLayer("multiplication", {
                 ["upgrades", [8]],"blank",
                 ["upgrades", [9]],"blank",
                 ["upgrades", [10]],"blank",
+                ["upgrades", [11]],"blank",
             ],
         },
         "Buyables": {
@@ -464,7 +473,7 @@ addLayer("multiplication", {
             title: "Numerical Ease",
             effect() {
                 let base = player.primitive.points
-                base = base.add(1).log(1000)
+                base = base.add(1).log(1000).add(1)
                 return base
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 94))},
@@ -481,8 +490,8 @@ addLayer("multiplication", {
             title: "NO DIFFERENCE",
             effect() {
                 let base = player.subtraction.points
-                base = base.slog().div(1.5)
-                return base
+                base = base.add(1).slog().div(1.5)
+                return Decimal.max(base, decimalOne)
             },
             effectDisplay() {return "x" + format(upgradeEffect("multiplication", 95))},
             description: "Subtraction boosts Core Boosters.",
@@ -503,6 +512,7 @@ addLayer("multiplication", {
                 if (player.multiplication.points.lt("1e18")) return false
                 return hasUpgrade("multiplication", 93)
             },
+            branches: [[111, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("addition", 7) || player.planetary.unlocked},
         },
@@ -520,9 +530,28 @@ addLayer("multiplication", {
                 if (player.multiplication.points.lt("1e20")) return false
                 return hasUpgrade("multiplication", 93)
             },
+            branches: [[111, "#FFFFFF", 10]],
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("addition", 7) || player.planetary.unlocked},
             onPurchase() {addBuyables("polygon", 11, new Decimal(15))}
+        },
+
+        111: {
+            title: "Literally Multiplying",
+            effect() {
+                let base = player.multiplication.points
+                if (base.gte("1e200")) base = base.pow(0.25).mul("1e150")
+                return Decimal.max(base, decimalOne)
+            },
+            effectDisplay() {return "x" + format(upgradeEffect("multiplication", this.id))},
+            description: "Multiplication multiplies the Shape hardcap.",
+            cost: new Decimal("1e132"),
+            canAfford() {
+                if (player.multiplication.points.lt("1e132")) return false
+                return hasUpgrade("multiplication", 101) && hasUpgrade("multiplication", 102)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("pbooster", 1)},
         },
     },
     buyables: {
@@ -532,7 +561,7 @@ addLayer("multiplication", {
                 return base
             },
             title: "Actual Multiplying Boost",
-            display() { return "Multiplies Points and Addition by 250 per purchase. (Require: only needs x, does not subtract / Cost: does subtract currency)" + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Require: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
+            display() { return "Multiplies Points and Addition by 250 per purchase. (Require: only needs x, does not subtract / Cost: does subtract currency)" + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "/600" + "\n" + "Require: " + format(this.cost()) + "\n" + "Effect: x" + format(this.effect()) },
             canAfford() { return player[this.layer].points.gte(this.cost()) },
             buy() {
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
@@ -544,6 +573,7 @@ addLayer("multiplication", {
                 return effect
             },
             unlocked() {return hasMilestone("polygon", 6) || player.planetary.unlocked},
+            purchaseLimit: 600
         },
         12: {
             cost(x) {
@@ -558,8 +588,9 @@ addLayer("multiplication", {
             },
             effect(x) {
                 let base = player.numbercore.points
-                let effect = base.add(1).log(10)
+                let effect = base.add(1).log(10).add(1)
                 effect = effect.mul(new Decimal(1.5).pow(getBuyableAmount(this.layer, this.id)))
+                effect = effect.pow(buyableEffect("numbercore", 31)[0])
                 return effect
             },
             unlocked() {return hasMilestone("planetary", 5)},

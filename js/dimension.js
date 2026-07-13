@@ -31,7 +31,7 @@ addLayer("dimension", {
     },
     row: 5, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "d", description: "D: Reset for a Dimension", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "D", description: "SHIFT+D: Reset for a Dimension", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.dimension.unlocked},
     canBuyMax() {return false},

@@ -44,7 +44,7 @@ addLayer("arithmetic", {
     },
     row: 4, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "a", description: "A: Reset for Operation Power", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "A", description: "SHIFT+A: Reset for Operation Power", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.arithmetic.unlocked},
     directMult() {
@@ -55,6 +55,7 @@ addLayer("arithmetic", {
         if (hasChallenge("arithmetic", 22)) dMult = dMult.mul("1e10")
         if (inChallenge("polygon", 11) && hasUpgrade("primitive", 33)) dMult = dMult.mul("1e50")
         if (hasMilestone("division", 5)) dMult = dMult.mul(150)
+        if (hasAchievement("planetary", 32)) dMult = dMult.mul("1e5000")
 
         if (player.dimension.points.gte(4)) dMult = dMult.pow(1.01)
         if (player.polygon.pentagons.gte(1)) dMult = dMult.pow(player.polygon.penEffect)
@@ -114,6 +115,7 @@ addLayer("arithmetic", {
         if (hasUpgrade("fundamental", 46)) keptChallenges.push(22)
         if (layers[resettingLayer].name == "planetary") keptChallenges = []
         if (hasMilestone("planetary", 9)) keptChallenges.push(11, 12, 13, 21, 22)
+        if (hasChallenge("arithmetic", 23)) keptChallenges.push(23)
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -345,14 +347,24 @@ addLayer("arithmetic", {
         },
         23: {
             name: "Everything at Once",
-            challengeDescription: "<i>\"If you thought it couldn't get worse, you're sorely mistaken.\"</i> You are in the previous five Arithmetic Challenges. Also, ^0.005 Points, Fundamentality, Numbers, and Operation Power. ^0.025 Shapes. Core Booster effects do not work. <i>This challenge resets Shapes.</i>",
-            goalDescription: "Have 1e400,000 Operation Power.",
-            rewardDescription: "Unlock Planetary Boosters.",
+            challengeDescription: "<i>\"If you thought it couldn't get worse, you're sorely mistaken.\"</i> You are in the previous five Arithmetic Challenges. Also, ^0.005 Points, Fundamentality, Numbers, and Operation Power. ^0.025 Shapes. Core Booster effects do not work. <i>This challenge resets Operation Power, Multiplication, Division and Shapes.</i>",
+            goalDescription: "Have 1e5320 Points.",
+            rewardDescription: "^1.5 Unlock Points.",
             countsAs: [11, 12, 13, 21, 22],
-            canComplete: function() {return player.arithmetic.points.gte("1e400000")},
+            canComplete: function() {return player.points.gte("1e5320")},
             unlocked() {return hasMilestone("planetary", 9)},
-            onEnter() {player.polygon.points = new Decimal(0)},
-            onExit() {player.polygon.points = new Decimal(0)},
+            onEnter() {
+                player.arithmetic.points = new Decimal(0)
+                player.division.points = new Decimal(0)
+                player.multiplication.points = new Decimal(0)
+                player.polygon.points = new Decimal(0)
+            },
+            onExit() {
+                player.arithmetic.points = new Decimal(0)
+                player.division.points = new Decimal(0)
+                player.multiplication.points = new Decimal(0)
+                player.polygon.points = new Decimal(0)
+            },
         },
     },
     branches: [["addition", "#FF00FF", 5], ["subtraction", "#FF00FF", 5], ["multiplication", "#FF00FF", 5], ["division", "#FF00FF", 5], ["polygon", "#FFFFFF", 10]],

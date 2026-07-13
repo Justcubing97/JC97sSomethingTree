@@ -46,6 +46,9 @@ addLayer("division", {
         if (hasUpgrade("subtraction", 22)) mult = mult.mul("1e6")
         if (hasMilestone("planetary", 2)) mult = mult.mul("1e10")
         if (getBuyableAmount("multiplication", 12).gte("1")) mult = mult.mul(buyableEffect("multiplication", 12))
+        if (hasMilestone("pbooster", 1)) mult = mult.mul("1e25")
+        if (player.corebooster.e2.gte(1)) mult = mult.mul(player.corebooster.e2)
+        mult = mult.mul(new Decimal(100).pow(getBuyableAmount("planetary", 22)))
         //exp
         if (hasMilestone("corebooster", 2)) mult = mult.pow("1.1")
         if (hasMilestone("division", 10)) mult = mult.pow("1.1")
@@ -60,6 +63,9 @@ addLayer("division", {
         return exp
     },
     row: 3, // Row the layer is in on the tree (0 is the first row)
+    hotkeys: [
+        {key: "V", description: "SHIFT+V: Reset for Division", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+    ],
     layerShown(){return hasMilestone("polygon", 5) || player.planetary.unlocked},
     directMult() {
         let dMult = new Decimal(1)
@@ -409,7 +415,7 @@ addLayer("division", {
         },
     },
     tooltip() {
-        if (getClickableState("division", 11) == "Active") return format(player.division.points) + " Division (+" + format(getResetGain("division")) + " Division on reset)"
+        if (getClickableState("division", 11) == "Active" || hasMilestone("division", 10)) return format(player.division.points) + " Division (+" + format(getResetGain("division")) + " Division on reset)"
         return format(player.division.points) + " Division (not in Long Division)"
     },
 })

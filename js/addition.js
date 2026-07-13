@@ -217,7 +217,7 @@ addLayer("addition", {
                 let base = player.addition.points
                 let exp = new Decimal(0.02)
                 base = base.pow(exp).add(1)
-
+ 
                 if (base.gt("1e125")) return new Decimal("1e125")
                 return base
             },

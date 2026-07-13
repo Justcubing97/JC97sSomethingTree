@@ -54,7 +54,7 @@ addLayer("corebooster", {
     },
     row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "B", description: "B: Reset for Core Boosters", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "B", description: "SHIFT+B: Reset for Core Boosters", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.corebooster.unlocked},
     passiveGeneration() {return false},
@@ -257,7 +257,8 @@ addLayer("corebooster", {
 
         let e2b = player.corebooster.useful
         e2b = e2b.add(1).pow(0.5)
-        if (hasAchievement("achievements", 53)) e1b = e1b.pow(2)
+        if (hasAchievement("achievements", 53)) e2b = e2b.pow(2)
+        if (hasUpgrade("fundamental", 53)) e2b = e2b.pow(3)
         player.corebooster.e2 = e2b
 
         let e3b = player.corebooster.useful

@@ -33,12 +33,15 @@ addLayer("numbercore", {
         if (hasMilestone("addition", 3)) mult = mult.mul("1e100")
         if (hasUpgrade("primitive", 31)) mult = mult.mul("1e200")
     	if (hasMilestone("division", 9)) mult = mult.mul(player.multiplication.effect.add(1))
+        mult = mult.mul(buyableEffect("numbercore", 31)[1])
         //exp
         if (hasAchievement("achievements", 53)) mult = mult.pow(1.2)
         if (hasMilestone("division", 6)) mult = mult.pow(1.1)
         if (hasUpgrade("multiplication", 93)) mult = mult.pow(1.25)
         if (maxedChallenge("polygon", 11)) mult = mult.pow(1.01)
         if (hasAchievement("planetary", 21)) mult = mult.pow(1.25)
+        if (hasMilestone("pbooster", 1)) mult = mult.pow(1.3)
+        if (hasUpgrade("fundamental", 54)) mult = mult.pow(1.01)
         //other hypers
         //final
         return mult
@@ -53,7 +56,7 @@ addLayer("numbercore", {
     },
     row: 2, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "c", description: "C: Reset for Number Cores", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "N", description: "SHIFT+C: Reset for Number Cores", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.numbercore.unlocked || player.dimension.points.gte(4)},
     passiveGeneration() {if (player.numbercore.unlocked) return 1},
@@ -61,7 +64,11 @@ addLayer("numbercore", {
     resetsNothing() {return true},
     prestigeButtonText() {return "This button does absolutely nothing. Number Cores are gained passively, okay?"},
 
-    softcap() {return new Decimal("1e10000")},
+    softcap() {
+        let base = new Decimal("1e10000")
+        if (hasUpgrade("polygon", 23)) base = new Decimal("e1e6")
+        return base
+    },
     softcapPower() {return new Decimal(0.5)},
 
     doReset(resettingLayer) {
@@ -199,6 +206,26 @@ addLayer("numbercore", {
                 return x
             },
             purchaseLimit: 7
+        },
+        31: {
+            cost(x) {
+                return new Decimal("1e5e5").pow(x).mul("e6e6")
+            },
+            title: "Protest Against Scaling!",
+            display() { return "Improve the second Multiplication buyable, x1e100,000 Number Cores, and x1e10 to the Shapes hardcap per purchase." + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: ^" + format(this.effect()[0]) + ", x" + format(this.effect()[1]) + ", x" + format(this.effect()[2]) },
+            canAfford() { return player[this.layer].points.gte(this.cost())},
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            unlocked() {return hasUpgrade("arithmetic", 31) || player.planetary.unlocked},
+            effect(x) {
+                let base = getBuyableAmount(this.layer, this.id)
+                let e1 = base.add(1).pow(0.175)
+                let e2 = new Decimal("1e100000").pow(base)
+                let e3 = new Decimal("1e10").pow(base)
+                return [e1, e2, e3]
+            },
         },
     },
 

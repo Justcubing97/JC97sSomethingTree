@@ -21,7 +21,8 @@ addLayer("polygon", {
         hexEffect: new Decimal(1),
 
         constrNextGain: new Decimal(1),
-        hardcap: new Decimal(1),
+        hardcap: new Decimal("1e200"),
+        bestHardcapDelay: new Decimal("1e200"),
         FU51KEEP: new Decimal(1),
     }},
     color: "#2050FF",
@@ -59,7 +60,7 @@ addLayer("polygon", {
     },
     row: 5, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "s", description: "S: Reset for Shapes", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "S", description: "SHIFT+S: Reset for Shapes", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.polygon.unlocked},
     resetDescription: "Polygonify for ",
@@ -103,11 +104,15 @@ addLayer("polygon", {
         // Stage 2, track which specific subfeatures you want to keep, e.g. Upgrade 11, Challenge 32, Buyable 12
         let keptUpgrades = []
         if (hasMilestone("planetary", 7)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17)
+        if (hasUpgrade("planetary", 16)) keptUpgrades.push(21, 22)
 
         let keptBuyables = []
+        if (hasUpgrade("planetary", 15)) keptBuyables.push(getBuyableAmount("polygon", 11), getBuyableAmount("polygon", 12))
 
         let keptPolygonifications = new Decimal(0)
         if (hasMilestone("planetary", 10)) keptPolygonifications = player.polygon.resets
+
+        let keptBHD = player.polygon.bestHardcapDelay
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
@@ -119,6 +124,10 @@ addLayer("polygon", {
         if (hasAchievement("planetary", 23)) player[this.layer].challenges[11] = 10
         player[this.layer].upgrades.push(...keptUpgrades)
         if (hasMilestone("planetary", 10)) player.polygon.resets = keptPolygonifications
+        player.polygon.bestHardcapDelay = keptBHD
+
+        setBuyableAmount("polygon", 11, keptBuyables[0] || new Decimal(0))
+        setBuyableAmount("polygon", 12, keptBuyables[1] || new Decimal(0))
     },
     tabFormat: {
         "Main": {
@@ -308,6 +317,25 @@ addLayer("polygon", {
             cost: new Decimal("50e6"),
             unlocked() {return hasMilestone("division", 3) || player.planetary.unlocked},
         },
+
+        21: {
+            title: "TETRATION????",
+            description: "Tetrate Points to ^^1+10<sup>-12</sup>",
+            cost: new Decimal("1e560"),
+            unlocked() {return hasMilestone("pbooster", 2)},
+        },  
+        22: {
+            title: "Additive Constant Boost",
+            description: "+25 Planetary Fragments.",
+            cost: new Decimal("1e570"),
+            unlocked() {return hasMilestone("pbooster", 2)},
+        }, 
+        23: {
+            title: "Number Cores Lifesaver",
+            description: "Delay the Number Cores softcap to e1e6.",
+            cost: new Decimal("1e615"),
+            unlocked() {return hasMilestone("pbooster", 2)},
+        },    
     },
     bars: {
         level: {
@@ -562,9 +590,25 @@ addLayer("polygon", {
         if (hasMilestone("planetary", 8)) HARD = HARD.mul("1e10")
         HARD = HARD.mul(new Decimal.pow("1e6", getBuyableAmount("planetary", 21)))
         if (hasUpgrade("fundamental", 51)) HARD = HARD.mul(player.polygon.FU51KEEP)
+        if (hasUpgrade("fundamental", 53)) HARD = HARD.mul("1e50")
+        if (hasUpgrade("multiplication", 111)) HARD = HARD.mul(upgradeEffect("multiplication", 111))
+        HARD = HARD.mul(buyableEffect("numbercore", 31)[2])
 
-        player.polygon.hardcap = HARD
-        if (player.polygon.points.gte(HARD)) player.polygon.points = HARD
+        player.polygon.bestHardcapDelay = Decimal.max(HARD, player.polygon.bestHardcapDelay)
+        player.polygon.hardcap = player.polygon.bestHardcapDelay
+
+        if (player.polygon.points.gte(player.polygon.bestHardcapDelay)) player.polygon.points = player.polygon.bestHardcapDelay
+    },
+
+    getResetGain(){
+        let layer = "polygon"
+		if (tmp[layer].baseAmount.lt(tmp[layer].requires)) return decimalZero
+		let gain = tmp[layer].baseAmount.div(tmp[layer].requires).pow(tmp[layer].exponent).times(tmp[layer].gainMult).pow(tmp[layer].gainExp)
+		if (gain.gte(tmp[layer].softcap)) gain = gain.pow(tmp[layer].softcapPower).times(tmp[layer].softcap.pow(decimalOne.sub(tmp[layer].softcapPower)))
+		gain = gain.times(tmp[layer].directMult)
+
+        gain = Decimal.min(gain, player.polygon.bestHardcapDelay)
+		return gain.floor().max(0);
     },
 
     canReset() {
@@ -600,7 +644,7 @@ addLayer("polygon", {
         return false
     },
 
-    branches: [["planetary", "#FFFFFF", 10]],
+    branches: [["planetary", "#FFFFFF", 10], ["pbooster", "#60C0FF", 5]],
     tooltip() {
         if (player.polygon.hardcap.eq(player.polygon.points)) return format(player.polygon.points) + " Shapes (Hardcapped at " + format(player.polygon.hardcap) + ")"
         return format(player.polygon.points) + " Shapes (+" + format(getResetGain("polygon")) + " Shapes on reset)"

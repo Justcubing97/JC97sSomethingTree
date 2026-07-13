@@ -23,7 +23,8 @@ addLayer("unlock", {
         if (hasUpgrade("fundamental", 37)) mult = mult.mul(1e10)
         if (hasUpgrade("polygon", 12)) mult = mult.mul("1e40")
         if (hasUpgrade("multiplication", 73)) mult = mult.mul("1e100")
-        //exp in gainExp
+        if (hasChallenge("arithmetic", 23)) mult = mult.mul("e100000")
+        //exp
         //other hypers
         return mult
     },
@@ -48,9 +49,10 @@ addLayer("unlock", {
         let exp = new Decimal(1)
         return exp
     },
+    softcapPower() {return new Decimal(1)},
     row: 0, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "u", description: "U: Reset for Unlock Points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "U", description: "SHIFT+U: Reset for Unlock Points", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return true},
     upgrades: {
@@ -103,6 +105,13 @@ addLayer("unlock", {
             description: "Unlock the Planetary Fragment layer: the fourth major reset layer.",
             cost: new Decimal("e6000000"),
             unlocked() {return player.unlock.points.gte("e6e6")}
+        },
+
+        22: {
+            title: "Planetary Booster layer",
+            description: "Unlock the Planetary Booster layer: a sub-layer related to the Planetary layer.",
+            cost: new Decimal("e1275e4"),
+            unlocked() {return hasUpgrade("unlock", 21)}
         },
     },
     branches: [
@@ -188,6 +197,10 @@ addLayer("unlock", {
                     if (player.unlock.points.gte("e6e6")) text += "e6,000,000 Unlock Points, unlocking the Planetary Fragment layer. <br> Progress: " + player.unlock.points.add(1).log10().div("6e6").mul(100).toFixed(2) + "%"
                     else text += "e6,000,000 Unlock Points, unlocking the ??? layer. <br> Progress: " + player.unlock.points.add(1).log10().div("6e6").mul(100).toFixed(2) + "%"
                 }
+                else if (!hasUpgrade("unlock", 22)) {
+                    if (player.unlock.points.gte("e1275e4")) text += "e12,750,000 Unlock Points, unlocking the Planetary Booster layer. <br> Progress: " + player.unlock.points.add(1).log10().div("6e6").mul(100).toFixed(2) + "%"
+                    else text += "e12,750,000 Unlock Points, unlocking the ??? layer. <br> Progress: " + player.unlock.points.add(1).log10().div("1275e4").mul(100).toFixed(2) + "%"
+                }
                 else text = "You have unlocked all layers! Congratulations! (For now...)"
                 return text
             },
@@ -200,7 +213,8 @@ addLayer("unlock", {
                 else if (!hasUpgrade("unlock", 15)) prog = player.unlock.points.add(1).log10().div("400")
                 else if (!hasUpgrade("unlock", 16)) prog = player.unlock.points.add(1).log10().div("925")
                 else if (!hasUpgrade("unlock", 17)) prog = player.unlock.points.add(1).log10().div("1550")  
-                else if (!hasUpgrade("unlock", 21)) prog = player.unlock.points.add(1).log10().div("6e6")    
+                else if (!hasUpgrade("unlock", 21)) prog = player.unlock.points.add(1).log10().div("6e6") 
+                else if (!hasUpgrade("unlock", 22)) prog = player.unlock.points.add(1).log10().div("1275e4") 
                 else prog = new Decimal(1)
 
                 player.unlock.nextLayerProgress = prog
@@ -385,7 +399,7 @@ addLayer("unlock", {
                 "Anyway, as an avid Portal (and Portal 2) player and enjoyer, I used a technique called \"portal peeking\" to traverse the Labyrinth. " +
                 "(Portal peeking: 1, set up portals. 2, enter one portal and shoot the portal you exit from elsewhere. 3, quickly move back through the exit portal " +
                 "as the shot portal from 2 takes some time to land. 4, repeat.) <i>Side note: I did code it so that you lose all of your progress upon Planetary reset, " +
-                "but the Planetary Generators will provide a massive jumpstart!"
+                "but the Planetary Generators will provide a massive jumpstart! (note: for AC6: 1.5e90 multi)"
             },
             unlocked() {return player.planetary.points.gte(1) || getBuyableAmount("planetary", 11).gte(1)},
         },
@@ -397,29 +411,22 @@ addLayer("unlock", {
                 "(in fact, I kinda love these types of grid-based pushing box puzzles), but it was 3-dimensional pushing box puzzles. " +
                 "For context, I fell asleep in the cafeteria while Ashley curled into me like some yandere seeking warmth. It was only when she woke up " +
                 "that she realized I had gone missing. What was it like in the \"Voidtesting?\" Pretty mundane. It is very Aperture-coded. " +
-                "But the chambers, they get gradually more difficult... and... the <i>chambers... don't... end...</i> (internally: nice, you have planetary boosters.)"
+                "But the chambers, they get gradually more difficult... and... the <i>chambers... don't... end...</i> (internally: nice, you have planetary boosters. get 40 mercury generators for the next one.)"
             },
-            unlocked() {return hasChallenge("arithmetic",  6)},
+            unlocked() {return player.pbooster.unlocked}
         },
     },
     update(diff){
-        if (hasUpgrade("unlock", 11)) player.fundamental.unlocked = true
-        else player.fundamental.unlocked = false 
-        if (hasUpgrade("unlock", 12)) player.primitive.unlocked = true
-        else player.primitive.unlocked = false 
-        if (hasUpgrade("unlock", 13)) player.arithmetic.unlocked = true
-        else player.arithmetic.unlocked = false 
-        if (hasUpgrade("unlock", 14)) player.dimension.unlocked = true
-        else player.dimension.unlocked = false 
-        if (hasUpgrade("unlock", 15)) player.polygon.unlocked = true
-        else player.polygon.unlocked = false 
-        if (hasUpgrade("unlock", 16)) player.numbercore.unlocked = true
-        else player.numbercore.unlocked = false 
-        if (hasUpgrade("unlock", 17)) player.corebooster.unlocked = true
-        else player.corebooster.unlocked = false 
+        player.fundamental.unlocked = hasUpgrade("unlock", 11)
+        player.primitive.unlocked = hasUpgrade("unlock", 12)
+        player.arithmetic.unlocked = hasUpgrade("unlock", 13)
+        player.dimension.unlocked = hasUpgrade("unlock", 14)
+        player.polygon.unlocked = hasUpgrade("unlock", 15)
+        player.numbercore.unlocked = hasUpgrade("unlock", 16)
+        player.corebooster.unlocked = hasUpgrade("unlock", 17)
 
-        if (hasUpgrade("unlock", 21)) player.planetary.unlocked = true
-        else player.planetary.unlocked = false 
+        player.planetary.unlocked = hasUpgrade("unlock", 21)
+        player.pbooster.unlocked = hasUpgrade("unlock", 22)
     },
     resetsNothing: true,
     tooltip() {return format(player.unlock.points) + " Unlock Points (" + format(player.unlock.nextLayerProgress.mul(100)) + "% to next reset layer)"},

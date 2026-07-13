@@ -2,9 +2,10 @@ let modInfo = {
 	name: "Justcubing97's Something Tree",
 	author: "Justcubing97",
 	pointsName: "Points",
-	modFiles: ["achievements.js", "savebank.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "corebooster.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js", "planetary.js", "tree.js"],
+	modFiles: ["achievements.js", "savebank.js", "unlock.js", "fundamental.js", "primitive.js", "numbercore.js", "corebooster.js", "arithmetic.js", "addition.js", "subtraction.js", "multiplication.js", "division.js", "dimension.js", "polygon.js",
+		"planetary.js", "pbooster.js", "tree.js"],
 
-	discordName: "Justcubing97's Server",
+	discordName: "Justcubing97's Server (DO NOT USE)",
 	discordLink: "https://discord.gg/W7PMhx4mSs",
 	initialStartPoints: new Decimal (0), // Used for hard resets and new players
 	offlineLimit: 1,  // In hours
@@ -12,11 +13,20 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5.6",
-	name: "Planetary Fragment update",
+	num: "0.5.7",
+	name: "Planetary Boosters update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5.7</h3><br>
+		- Planetary Booster layer! <br>
+		- Adjusted ALL hotkeys. <br>
+		- Changed Arithmetic Challenge 6. <br>
+		- Fixed a minor Core Booster issue. <br>
+		- Changed the tooltip for Division a tiny bit. <br>
+		- Revised Shape hardcap logic. <br>
+		- And of course... MORE PLANETARY CONTENT! <br>
+		- Endgame: 1e640 Shapes. <br>
 	<h3>v0.5.6</h3><br>
 		- Fixed a Division line saying \"Next Division at NaN Numbers\". <br>
 		- Fixed a Constructor bug. <br>
@@ -167,10 +177,9 @@ function getPointGen() {
         let base = player.division.points
         let exp = new Decimal(100)
         base = base.pow(exp)
-		gain = gain.mul(base)
+		gain = gain.mul(Decimal.max(base, decimalOne))
 	}
 	if (maxedChallenge("polygon", 11)) gain = gain.mul("1e5000")
-
 	//Planetary+ multiplications!
 	if (player.planetary.planetPower.gt(0) && getClickableState("planetary", 12)) gain = gain.mul(player.planetary.planetPowerEffect)
 	else if (player.planetary.planetPower.gt(0)) gain = gain.div(player.planetary.planetPowerEffect.pow(2.5))
@@ -197,13 +206,14 @@ function getPointGen() {
 	if (hasMilestone("planetary", 2)) gain = gain.pow(2)
 
 	//other hypers
+	if (hasUpgrade("polygon", 21)) gain = gain.tetrate(decimalOne.add(decimalOne.div("1e12")))
+
 	//final
 	if (getClickableState("division", 11) == "Active") gain = gain.pow(0.3)
 	if (getClickableState("division", 11) == "Active" && hasMilestone("polygon", 7)) gain = gain.mul("1e10")
 	if (getClickableState("division", 11) == "Active") gain = gain.mul(buyableEffect("numbercore", 13))
 
 	if (hasUpgrade("fundamental", 47)) gain = gain.mul("1e100")
-
 
 	//SOFTCAP
 	if (gain.gt("e60e6")){
@@ -221,7 +231,7 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: Complete Arithmetic Challenge 6",
+	"Current endgame: 1e640 Shapes",
 	"Justcubing97's Something Tree by Justcubing97",
 	"<i>Check out the Unlock Layer every so often... there might be more documents you can read.</i>",
 	function() {
@@ -232,7 +242,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (hasChallenge("arithmetic", 23))
+	return (player.polygon.points.gte("1e640"))
 }
 
 

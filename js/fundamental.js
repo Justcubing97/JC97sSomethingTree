@@ -35,6 +35,7 @@ addLayer("fundamental", {
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         if (inChallenge("arithmetic", 23)) mult = mult.pow(0.005)
+        if (hasMilestone("pbooster", 1)) mult = mult.pow(1.3)
         //other hypers
         return mult
     },
@@ -44,7 +45,7 @@ addLayer("fundamental", {
     },
     row: 1, // Row the layer is in on the tree (0 is the first row)
     hotkeys: [
-        {key: "f", description: "F: Reset for Fundamentality", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
+        {key: "F", description: "SHIFT+F: Reset for Fundamentality", onPress(){if (canReset(this.layer)) doReset(this.layer)}},
     ],
     layerShown(){return player.fundamental.unlocked},
     passiveGeneration() {if (hasUpgrade("fundamental", 23) || hasUpgrade("arithmetic", 12)) return 1},
@@ -125,8 +126,10 @@ addLayer("fundamental", {
         if (hasUpgrade("fundamental", 47)) keptUpgrades.push(47)
         if (layers[resettingLayer].name == "planetary") keptUpgrades = [23]
         if (hasMilestone("planetary", 4)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17, 21, 22, 24, 25, 26, 27, 31, 32, 33, 34, 35, 36, 37, 41, 42, 43, 44, 45, 46, 47)
+
         if (hasUpgrade("fundamental", 51)) keptUpgrades.push(51)
         if (hasUpgrade("fundamental", 52)) keptUpgrades.push(52)
+        if (hasUpgrade("fundamental", 53)) keptUpgrades.push(53)
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -247,8 +250,12 @@ addLayer("fundamental", {
                 if (hasUpgrade("fundamental", 22)) base = base.pow(0.75)
                 else base = base.pow(0.33)
 
-                if (base.pow(buyableEffect("fundamental", 12)).gte("1e6500")) return new Decimal("1e6500")
+                if (base.pow(buyableEffect("fundamental", 12)).gte("1e6500") && !hasUpgrade("fundamental", 54)) return new Decimal("1e6500")
                 if (inChallenge("arithmetic", 11) || getClickableState("division", 11) == "Active") return base
+
+                let threshold = new Decimal("1e6500").div(new Decimal("1e6500").add(1).log(1.000001).pow(10000))
+                base = base.add(1).log(1.000001).pow(10000).mul(threshold)
+
                 return base.pow(buyableEffect("fundamental", 12))
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -424,6 +431,7 @@ addLayer("fundamental", {
             effect() {
                 let effect = player.fundamental.points
                 effect = effect.add(1).slog(1.1).pow(1.5)
+                if (hasMilestone("pbooster", 2)) effect = effect.mul(effect.add(1).pow(0.2).add(1)).pow(1.25)
                 return effect
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -436,6 +444,18 @@ addLayer("fundamental", {
             description: "^1.05 Points.",
             cost: new Decimal("e375000000"),
             unlocked() {return getBuyableAmount("numbercore", 23).gte(2)},
+        },
+        53: {
+            title: "MORE SHAPES!",
+            description: "x1e50 to the Shape hardcap. Additionally, improve Core Boosters' second effect.",
+            cost: new Decimal("e500000000"),
+            unlocked() {return getBuyableAmount("numbercore", 23).gte(3)},
+        },
+        54: {
+            title: "Progressing++",
+            description: "Uncap \"Progressing\", but its effect is softcapped after 1e6500. ^1.01 Number Cores.",
+            cost: new Decimal("e533000000"),
+            unlocked() {return getBuyableAmount("numbercore", 23).gte(4)},
         },
     },
     buyables: {
