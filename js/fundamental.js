@@ -254,7 +254,7 @@ addLayer("fundamental", {
                 if (inChallenge("arithmetic", 11) || getClickableState("division", 11) == "Active") return base
 
                 let threshold = new Decimal("1e6500").div(new Decimal("1e6500").add(1).log(1.000001).pow(10000))
-                base = base.add(1).log(1.000001).pow(10000).mul(threshold)
+                if (hasUpgrade("fundamental", 54)) base = base.add(1).log(1.000001).pow(10000).mul(threshold)
 
                 return base.pow(buyableEffect("fundamental", 12))
             },
