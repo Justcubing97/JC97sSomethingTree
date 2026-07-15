@@ -201,7 +201,7 @@ addLayer("numbercore", {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            unlocked() {return hasUpgrade("arithmetic", 31) || player.planetary.unlocked},
+            unlocked() {return hasUpgrade("planetary", 16)},
             effect(x) {
                 return x
             },
@@ -218,7 +218,7 @@ addLayer("numbercore", {
                 player[this.layer].points = player[this.layer].points.sub(this.cost())
                 setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
             },
-            unlocked() {return hasUpgrade("arithmetic", 31) || player.planetary.unlocked},
+            unlocked() {return hasAchievement("planetary", 31)},
             effect(x) {
                 let base = getBuyableAmount(this.layer, this.id)
                 let e1 = base.add(1).pow(0.175)

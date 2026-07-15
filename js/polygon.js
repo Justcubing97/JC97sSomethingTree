@@ -469,7 +469,7 @@ addLayer("polygon", {
                     new Decimal("1e1035"),
                     new Decimal("1e1200"),
                     new Decimal("1e1350"),
-                    new Decimal("1e2920"),
+                    new Decimal("1e2565"),
                     new Decimal("1e3650"),
                     new Decimal("1e4060"),
                     new Decimal("1e22570"),
