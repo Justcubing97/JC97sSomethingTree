@@ -185,6 +185,12 @@ addLayer("polygon", {
                 "blank",
                 ["buyables", [1]],
                 "blank",
+                ["display-text", function() {
+                    if (challengeCompletions("polygon", 11) < 5) return ""
+                    let text = "<b>Tip: Arithmetic reset..."
+                    return text
+                }],
+                "blank",
                 "challenges",
                 "blank",
                 ["display-text", function() {
