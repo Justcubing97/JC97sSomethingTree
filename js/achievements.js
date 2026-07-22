@@ -282,5 +282,11 @@ achievements: {
     tooltip:"Have the 8th Polygon upgrade. It's tetration time.",
     unlocked() {return true},
   },
+  64: {
+    name: "HELL YEAH",
+    done(){return player.polygon.points.gte("1e1000")},
+    tooltip:"Have 1e1000 Shapes.",
+    unlocked() {return true},
+  },
 },
 })

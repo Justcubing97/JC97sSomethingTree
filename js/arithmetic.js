@@ -32,6 +32,8 @@ addLayer("arithmetic", {
         if (inChallenge("polygon", 11)) mult = mult.pow(0.1)
         if (hasMilestone("planetary", 1)) mult = mult.pow(1.5)
         if (inChallenge("arithmetic", 23)) mult = mult.pow(0.005)
+
+        if (inChallenge("pbooster", 12)) mult = mult.log(10)
         //other hypers
         //final effects
         if (hasUpgrade("multiplication", 32)) mult = mult.div(5)

@@ -55,6 +55,8 @@ addLayer("division", {
         if (hasMilestone("division", 10)) mult = mult.pow("1.1")
         if (hasUpgrade("subtraction", 27)) mult = mult.pow("1.35")
         if (hasUpgrade("subtraction", 23)) mult = mult.pow("1.05")
+
+        if (inChallenge("pbooster", 12)) mult = mult.add(1).log(10)
         //other hypers
         player.division.currencyMulti = mult
         return new Decimal(1)

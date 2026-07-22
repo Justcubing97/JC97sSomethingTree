@@ -37,6 +37,8 @@ addLayer("fundamental", {
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         if (inChallenge("arithmetic", 23)) mult = mult.pow(0.005)
         if (hasMilestone("pbooster", 1)) mult = mult.pow(1.3)
+        
+	    if (inChallenge("pbooster", 12)) mult = mult.log(10)
         //other hypers
         return mult
     },
@@ -132,6 +134,9 @@ addLayer("fundamental", {
         if (hasUpgrade("fundamental", 52)) keptUpgrades.push(52)
         if (hasUpgrade("fundamental", 53)) keptUpgrades.push(53)
         if (hasUpgrade("fundamental", 54)) keptUpgrades.push(54)
+        if (hasUpgrade("fundamental", 55)) keptUpgrades.push(55)
+        if (hasUpgrade("fundamental", 56)) keptUpgrades.push(56)
+        if (hasUpgrade("fundamental", 57)) keptUpgrades.push(57)
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))
@@ -408,6 +413,7 @@ addLayer("fundamental", {
             effect() {
                 let effect = player.fundamental.points
                 effect = effect.add(1).pow(0.001)
+                if (hasChallenge("pbooster", 11)) effect = effect.mul(effect.add(1).pow(0.1))
                 return effect
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
@@ -458,6 +464,30 @@ addLayer("fundamental", {
             description: "Uncap \"Progressing\", but its effect is softcapped after 1e6500. ^1.01 Number Cores.",
             cost: new Decimal("e533000000"),
             unlocked() {return getBuyableAmount("numbercore", 23).gte(4)},
+        },
+        55: {
+            title: "Wrong Layer+",
+            description: "x1e20 to the Shape Hardcap and improve Pentagon's effect.",
+            cost: new Decimal("e555555555"),
+            unlocked() {return getBuyableAmount("numbercore", 23).gte(5)},
+        },
+        56: {
+            title: "NEED. MORE. QOL.",
+            description: "Keep the 11th row and 10th Polygon upgrade. +1 Planetary Boosters.",
+            cost: new Decimal("e560e6"),
+            unlocked() {return getBuyableAmount("numbercore", 23).gte(6)},
+        },
+        57: {
+            title: "Fifth Row Conclusion",
+            effect() {
+                let effect = player.fundamental.points
+                effect = effect.add(1).slog(1.5)
+                return effect
+            },
+            effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },
+            description: "Fundamentality multplies Planetary Fragments.",
+            cost: new Decimal("e615e6"),
+            unlocked() {return getBuyableAmount("numbercore", 23).gte(7)},
         },
     },
     buyables: {

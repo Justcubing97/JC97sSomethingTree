@@ -41,6 +41,8 @@ addLayer("primitive", {
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
         if (inChallenge("polygon", 12)) mult = mult.pow(0.001)
         if (inChallenge("arithmetic", 23)) mult = mult.pow(0.005)
+
+        if (inChallenge("pbooster", 12)) mult = mult.log(10)
         //other hypers
 
         //final

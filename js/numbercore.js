@@ -43,6 +43,9 @@ addLayer("numbercore", {
         if (hasMilestone("pbooster", 1)) mult = mult.pow(1.3)
         if (hasUpgrade("fundamental", 54)) mult = mult.pow(1.01)
         if (hasUpgrade("multiplication", 121)) mult = mult.pow(1.1)
+        if (hasChallenge("pbooster", 12)) mult = mult.pow(1.25)
+
+        if (inChallenge("pbooster", 12)) mult = mult.log(10)
         //other hypers
         //final
         return mult
@@ -228,6 +231,28 @@ addLayer("numbercore", {
                 return [e1, e2, e3]
             },
         },
+        32: {
+            cost(x) {
+                return new Decimal("e1e6").pow(x).mul("e15e6")
+            },
+            title: "Planetary Superpowering",
+            display() { return "^1.001 to the gain of Planet Power per purchase, and as a bonus, x1e25 to the Shape hardcap every third purchase (starts at 3)." + "\n" + "Bought: " + getBuyableAmount(this.layer, this.id) + "\n" + "Cost: " + format(this.cost()) + "\n" + "Effect: ^" + format(this.effect()[0], 4) + ", x" + format(this.effect()[1]) },
+            canAfford() { return player[this.layer].points.gte(this.cost())},
+            buy() {
+                player[this.layer].points = player[this.layer].points.sub(this.cost())
+                setBuyableAmount(this.layer, this.id, getBuyableAmount(this.layer, this.id).add(1))
+            },
+            unlocked() {return hasMilestone("dimension", 6)},
+            effect(x) {
+                let base = getBuyableAmount(this.layer, this.id)
+                base = new Decimal(1.001).pow(base)
+                let e1 = base
+                base = getBuyableAmount(this.layer, this.id)
+                base = base.div(3).floor()
+                let e2 = new Decimal("1e25").pow(base)
+                return [e1, e2]
+            },
+        },
     },
 
     glowColor() {
@@ -295,6 +320,7 @@ addLayer("numbercore", {
                 if (a.gte(225)) {b = b.pow("1.6"); e = e.mul(1.5)}
                 if (a.gte(250)) {b = b.pow("2"); e = e.mul(5)}
                 if (a.gte(1000)) {b = b.pow("5"); e = e.mul(10)}
+                if (a.gte(2000)) {b = b.pow("5"); e = e.mul(10)}
                 break;
             case 2:
                 if (a.gte(10)) b = b.add("25")
@@ -314,6 +340,7 @@ addLayer("numbercore", {
                 if (a.gte(200)) {b = b.pow("2"); e = e.mul(7.5)}
                 if (a.gte(225)) {b = b.pow("2"); e = e.mul(2)}
                 if (a.gte(1000)) {b = b.pow("5"); e = e.mul(10)}
+                if (a.gte(2000)) {b = b.pow("5"); e = e.mul(10)}
                 break;
             case 3:
                 if (a.gte(10)) b = b.pow("1.1")

@@ -61,6 +61,8 @@ addLayer("multiplication", {
         if (hasMilestone("primitive", 14)) dMult = dMult.pow(1.05)
         if (maxedChallenge("polygon", 11)) dMult = dMult.pow(1.2)
         if (hasMilestone("corebooster", 5)) dMult = dMult.pow(1.01)
+
+        if (inChallenge("pbooster", 12)) dMult = dMult.log(10)
         return dMult
     },
     doReset(resettingLayer) {
@@ -89,6 +91,7 @@ addLayer("multiplication", {
         if (layers[resettingLayer].name == "planetary") keptUpgrades = []
 
         if (hasMilestone("planetary", 8)) keptUpgrades.push(11, 21, 22, 31, 32, 41, 42, 43, 51, 52, 61, 62, 63, 64, 71, 72, 73, 81, 91, 92, 93, 94, 95, 101, 102)
+        if (hasUpgrade("fundamental", 56)) keptUpgrades.push(111)
         
 
         let keptBuyables = []

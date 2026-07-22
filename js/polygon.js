@@ -87,6 +87,7 @@ addLayer("polygon", {
         if (hasUpgrade("multiplication", 101)) dMult = dMult.mul("1e6")
         if (hasUpgrade("division", 24)) dMult = dMult.mul(upgradeEffect("division", 24))
         if (hasUpgrade("division", 27)) dMult = dMult.mul("1e10")
+        if (hasUpgrade("polygon", 24)) dMult = dMult.mul(5)
 
         if (hasUpgrade("subtraction", 26)) dMult = dMult.pow(1.01)
         return dMult
@@ -105,6 +106,9 @@ addLayer("polygon", {
         let keptUpgrades = []
         if (hasMilestone("planetary", 7)) keptUpgrades.push(11, 12, 13, 14, 15, 16, 17)
         if (hasUpgrade("planetary", 16)) keptUpgrades.push(21, 22)
+        if (hasUpgrade("fundamental", 56)) keptUpgrades.push(23)
+
+        if (hasUpgrade("polygon", 24)) keptUpgrades.push(24)
 
         let keptBuyables = []
         if (hasUpgrade("planetary", 15)) keptBuyables.push(getBuyableAmount("polygon", 11), getBuyableAmount("polygon", 12))
@@ -341,7 +345,27 @@ addLayer("polygon", {
             description: "Delay the Number Cores softcap to e1e6.",
             cost: new Decimal("1e615"),
             unlocked() {return hasMilestone("pbooster", 2)},
-        },    
+        },  
+        24: {
+            effect(){
+                let base = player.polygon.points
+                base = base.add(1).log("1e10").add(1)
+                return base
+            },
+            effectDisplay(){
+                return "x" + format(upgradeEffect(this.layer, this.id))
+            },
+            title: "Arbitrary n-gon",
+            description: "Shapes boost Planetary Fragments, and x5 Shapes after softcap.",
+            cost: new Decimal("1e820"),
+            unlocked() {return hasChallenge("pbooster", 11)},
+        },  
+        25: {
+            title: "Avid Challenger",
+            description: "Unlock two more Booster Challenges.",
+            cost: new Decimal("1e1024"),
+            unlocked() {return hasChallenge("pbooster", 11)},
+        }, 
     },
     bars: {
         level: {
@@ -596,6 +620,7 @@ addLayer("polygon", {
 
         //Effect boosts
         if (hasUpgrade("division", 26)) player.polygon.hexEffect = player.polygon.hexEffect.mul(1.1)
+        if (hasUpgrade("fundamental", 55)) player.polygon.penEffect = player.polygon.penEffect.mul(1.1)
 
         //Hardcap
         let HARD = new Decimal("1e200")
@@ -608,6 +633,9 @@ addLayer("polygon", {
         if (hasUpgrade("multiplication", 111)) HARD = HARD.mul(upgradeEffect("multiplication", 111))
         HARD = HARD.mul(buyableEffect("numbercore", 31)[2])
         if (hasMilestone("dimension", 6)) HARD = HARD.mul("1e10")
+        if (hasUpgrade("fundamental", 55)) HARD = HARD.mul("1e20")
+        if (hasChallenge("pbooster", 12)) HARD = HARD.mul("1e50")
+        HARD = HARD.mul(buyableEffect("numbercore", 32)[1])
 
         player.polygon.bestHardcapDelay = Decimal.max(HARD, player.polygon.bestHardcapDelay)
         player.polygon.hardcap = player.polygon.bestHardcapDelay

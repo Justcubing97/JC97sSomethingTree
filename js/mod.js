@@ -13,11 +13,15 @@ let modInfo = {
 
 // Set your version in num and name
 let VERSION = {
-	num: "0.5.7",
-	name: "Planetary Boosters update",
+	num: "0.5.8",
+	name: "Booster Challenges update",
 }
 
 let changelog = `<h1>Changelog:</h1><br>
+	<h3>v0.5.8</h3><br>
+		- THE 6TH DIMENSION NOW EXISTS! <br>
+		- Just more content in general. <br>
+		- Endgame: 12th Polygon upgrades. <br>
 	<h3>v0.5.7</h3><br>
 		- Planetary Booster layer! <br>
 		- Adjusted ALL hotkeys. <br>
@@ -182,7 +186,7 @@ function getPointGen() {
 	}
 	if (maxedChallenge("polygon", 11)) gain = gain.mul("1e5000")
 	//Planetary+ multiplications!
-	if (player.planetary.planetPower.gt(0) && getClickableState("planetary", 12)) gain = gain.mul(player.planetary.planetPowerEffect)
+	if (player.planetary.planetPower.gt(0) && getClickableState("planetary", 12) && !inChallenge("pbooster", 11)) gain = gain.mul(player.planetary.planetPowerEffect)
 	else if (player.planetary.planetPower.gt(0)) gain = gain.div(player.planetary.planetPowerEffect.pow(2.5))
 
 	//exp
@@ -223,6 +227,9 @@ function getPointGen() {
 		gain = remainder.mul("e60e6")
 	}
 
+	if (inChallenge("pbooster", 11)) gain = gain.log("1e6")
+	if (inChallenge("pbooster", 12)) gain = gain.log(10)
+
 	return gain
 }
 
@@ -232,7 +239,7 @@ function addedPlayerData() { return {
 
 // Display extra things at the top of the page
 var displayThings = [
-	"Current endgame: 1e640 Shapes",
+	"Current endgame: 12th Polygon upgrade",
 	"Justcubing97's Something Tree by Justcubing97",
 	"<i>Check out the Unlock Layer every so often... there might be more documents you can read.</i>",
 	function() {
@@ -243,7 +250,7 @@ var displayThings = [
 
 // Determines when the game "ends"
 function isEndgame() {
-	return (player.polygon.points.gte("1e640"))
+	return (hasUpgrade("polygon", 25))
 }
 
 

@@ -30,6 +30,8 @@ addLayer("subtraction", {
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasUpgrade("multiplication", 31)) mult = mult.pow(1.05)
         if (player.polygon.pentagons.gte(1)) mult = mult.pow(player.polygon.penEffect)
+
+        if (inChallenge("pbooster", 12)) mult = mult.log(10)
         //other hypers
         return mult
     },

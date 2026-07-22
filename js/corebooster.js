@@ -82,31 +82,6 @@ addLayer("corebooster", {
                 if (hasUpgrade("division", 22)) player.corebooster.useful = buff.mul(multi)
             }
         }
-
-        let e1b = player.corebooster.useful
-        e1b = e1b.add(1).log(20).add(1)
-        if (hasAchievement("achievements", 53)) e1b = e1b.pow(3)
-        player.corebooster.e1 = e1b
-
-        let e2b = player.corebooster.useful
-        e2b = e2b.add(1).pow(0.5)
-        if (hasAchievement("achievements", 53)) e1b = e1b.pow(2)
-        player.corebooster.e2 = e2b
-
-        let e3b = player.corebooster.useful
-        e3b = e3b.add(1).pow(0.25)
-        if (!hasAchievement("achievements", 53)) player.corebooster.e3 = new Decimal(1)
-        else player.corebooster.e3 = e3b
-
-        let e4b = player.corebooster.useful
-        e4b = e4b.add(1).pow(new Decimal(13).mul(player.corebooster.useful))
-        if (!hasMilestone("primitive", 11)) player.corebooster.e4 = new Decimal(1)
-        else player.corebooster.e4 = e4b
-
-        let e5b = player.corebooster.useful
-        e5b = e5b.add(1).pow(1.5)
-        if (!hasMilestone("primitive", 11)) player.corebooster.e5 = new Decimal(1)
-        else player.corebooster.e5 = e5b
     },
     autoPrestige() {return hasMilestone("corebooster", 3)},
     resetsNothing() {return hasMilestone("corebooster", 3)},
@@ -253,30 +228,34 @@ addLayer("corebooster", {
         let e1b = player.corebooster.useful
         e1b = e1b.add(1).log(20).add(1)
         if (hasAchievement("achievements", 53)) e1b = e1b.pow(3)
+        if (hasMilestone("pbooster", 3)) e1b = e1b.pow(player.pbooster.e2)
         player.corebooster.e1 = e1b
 
         let e2b = player.corebooster.useful
         e2b = e2b.add(1).pow(0.5)
         if (hasAchievement("achievements", 53)) e2b = e2b.pow(2)
-        if (hasUpgrade("fundamental", 53)) e2b = e2b.pow(3)
+        if (hasMilestone("pbooster", 3)) e2b = e2b.pow(player.pbooster.e2)
         player.corebooster.e2 = e2b
 
         let e3b = player.corebooster.useful
         e3b = e3b.add(1).pow(0.25)
+        if (hasMilestone("pbooster", 3)) e3b = e3b.pow(player.pbooster.e2)
         if (!hasAchievement("achievements", 53)) player.corebooster.e3 = new Decimal(1)
         else player.corebooster.e3 = e3b
 
         let e4b = player.corebooster.useful
         e4b = e4b.add(1).pow(new Decimal(13).mul(player.corebooster.useful))
+        if (hasMilestone("pbooster", 3)) e4b = e4b.pow(player.pbooster.e2)
         if (!hasMilestone("primitive", 11)) player.corebooster.e4 = new Decimal(1)
         else player.corebooster.e4 = e4b
 
         let e5b = player.corebooster.useful
         e5b = e5b.add(1).pow(1.5)
+        if (hasMilestone("pbooster", 3)) e5b = e5b.pow(player.pbooster.e2)
         if (!hasMilestone("primitive", 11)) player.corebooster.e5 = new Decimal(1)
         else player.corebooster.e5 = e5b
 
-        if (inChallenge("arithmetic", 23)){
+        if (inChallenge("arithmetic", 23) || inChallenge("pbooster", 11)){
             player.corebooster.e1 = new Decimal(1)
             player.corebooster.e2 = new Decimal(1)
             player.corebooster.e3 = new Decimal(1)

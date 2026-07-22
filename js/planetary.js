@@ -39,6 +39,8 @@ addLayer("planetary", {
         if (hasAchievement("planetary", 32)) mult = mult.mul(12)
         if (hasMilestone("dimension", 6)) mult = mult.mul(25)
         mult = mult.mul(player.pbooster.e1)
+        if (hasUpgrade("polygon", 24)) mult = mult.mul(upgradeEffect("polygon", 24))
+        if (hasUpgrade("fundamental", 57)) mult = mult.mul(upgradeEffect("fundamental", 57))
         //exp 
         //other hypers
         //final
@@ -263,6 +265,12 @@ addLayer("planetary", {
             title: "Buyable Mania IS real.",
             description: "Unlock another Number Core buyable. Keep the 8th and 9th Polygon upgrades.",
             cost: new Decimal("1e9"),
+            unlocked() {return hasMilestone("planetary", 1)},
+        },
+        17: {
+            title: "Re-Challenged",
+            description: "Unlock Booster Challenges.",
+            cost: new Decimal("1e14"),
             unlocked() {return hasMilestone("planetary", 1)},
         },
     },
@@ -609,6 +617,9 @@ addLayer("planetary", {
 
         if (mult.gte("1e10000")) mult = mult.log(10).mul("1e9996")
         if (mult.gte("e1e5")) mult = mult.log(10).mul("1e99995")
+        
+        mult = mult.pow(buyableEffect("numbercore", 32)[0])
+
         player.planetary.pPps = mult
 
         //FINAL!!!
