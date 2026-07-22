@@ -128,22 +128,22 @@ addLayer("pbooster", {
         ["display-text", function() { return "<h3>x" + format(player.pbooster.e1) + " to Planetary Fragments"}],
         "blank",
         ["display-text", function() {
-            if (!hasAchievement("achievements", 53) && !player.planetary.unlocked) return ""
-            return "<h3>/" + format(player.corebooster.e2) + " to Pentagon and Hexagon construction time"
+            if (!hasMilestone("pbooster", 2)) return ""
+            return "<h3>^" + format(player.pbooster.e2) + " to all Core Booster effects."
         }],
         "blank",
         ["display-text", function() {
-            if (!hasAchievement("achievements", 53) && !player.planetary.unlocked) return ""
+            if (true) return ""
             return "<h3>/" + format(player.corebooster.e3) + " to Pentagon and Hexagon construction time"
         }],
         "blank",
         ["display-text", function() {
-            if (!hasMilestone("primitive", 11) && !player.planetary.unlocked) return ""
+            if (true) return ""
             return "<h3>x" + format(player.corebooster.e4) + " to Points, Fundamentality, and Addition"
         }],
         "blank",
         ["display-text", function() {
-            if (!hasUpgrade("arithmetic", 37) && !player.planetary.unlocked) return ""
+            if (true) return ""
             return "<h3>x" + format(player.corebooster.e5) + " to Shapes and Division"
         }],
         "blank",
@@ -160,7 +160,7 @@ addLayer("pbooster", {
         },
         2: {
             requirementDescription: "2: 5 Planetary Boosters",
-            effectDescription: "Improve \"THE LARGEST COST GAP\" and unlock three Polygon upgrades. Keep the Multiplication buyables.",
+            effectDescription: "Improve \"THE LARGEST COST GAP\" and unlock three Polygon upgrades. Keep the Multiplication buyables, unlock the 12th row, and x1e10 Multiplication.",
             done() { return player.pbooster.points.gte(5) },
             unlocked() {return true}
         },
@@ -171,6 +171,10 @@ addLayer("pbooster", {
         let e1b = amount.add(1)
         e1b = e1b.pow(0.5)
         player.pbooster.e1 = e1b
+
+        let e2b = amount.add(1)
+        e2b = e2b.log(1000).div(15).add(1)
+        player.pbooster.e2 = e2b
     },
     tooltip() {return format(player.pbooster.points) + " Planetary Boosters (" + format(getNextAt("pbooster")) + " Shapes for next Planetary Booster)"},
 })

@@ -23,6 +23,7 @@ addLayer("subtraction", {
         if (hasUpgrade("division", 11)) mult = mult.mul(upgradeEffect("division", 11))
         if (hasUpgrade("division", 13)) mult = mult.mul("1e30")
         if (hasUpgrade("division", 25)) mult = mult.mul("1e500")
+        if (hasMilestone("dimension", 6)) mult = mult.mul("e1e6")
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
         if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)

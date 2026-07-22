@@ -34,6 +34,7 @@ addLayer("addition", {
             else mult = mult.mul(player.addition.points.add(1).pow(player.addition.points.add(1).log(100).div("1e7")))
         }
         if (hasUpgrade("subtraction", 22)) mult = mult.mul("1e15")
+        if (hasMilestone("dimension", 6)) mult = mult.mul("e1e6")
         //exp
         if (hasUpgrade("arithmetic", 15)) mult = mult.pow(1.1)
         if (hasMilestone("dimension", 3) && !inChallenge("arithmetic", 13) && !getClickableState("division", 11)) mult = mult.pow(1.5)

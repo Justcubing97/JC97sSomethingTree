@@ -37,6 +37,7 @@ addLayer("planetary", {
         if (hasAchievement("planetary", 11)) mult = mult.mul(3)
         if (hasAchievement("planetary", 12)) mult = mult.mul(5)
         if (hasAchievement("planetary", 32)) mult = mult.mul(12)
+        if (hasMilestone("dimension", 6)) mult = mult.mul(25)
         mult = mult.mul(player.pbooster.e1)
         //exp 
         //other hypers

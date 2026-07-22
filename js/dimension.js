@@ -47,11 +47,11 @@ addLayer("dimension", {
 
         // Stage 3, track which main features you want to keep - all upgrades, total points, specific toggles, etc.
         let keep = [];
-        //if (someOtherCondition) keep.push("milestones");
+        if (hasMilestone("dimension", 6)) keep.push("points", "milestones");
 
         // Stage 4, do the actual data reset
         layerDataReset(this.layer, keep);
-        if (hasAchievement("planetary", 24)) player.dimension.points = new Decimal(5)
+        if (hasAchievement("planetary", 24) && !hasMilestone("dimension", 6)) player.dimension.points = new Decimal(5)
 
         // Stage 5, add back in the specific subfeatures you saved earlier
     }, //THANK YOU ESCAPEE FROM THE TMT SERVER
@@ -83,6 +83,12 @@ addLayer("dimension", {
             effectDescription: "QoL time! Passively generate Multiplication if possible, the Addition booster for Points is always active, automatically upgrade the Constructor straightedge and compass, and REMOVE the Fundamentality ultracap and hypercap!",
             done() { return player.dimension.points.gte(5) },
             unlocked() { return hasUpgrade("arithmetic", 35) || player.planetary.unlocked}
+        },
+        6: {
+            requirementDescription: "THE 6TH DIMENSION",
+            effectDescription: "x1e10 to the Shape hardcap, Multiplication, and Division! Also, xe1e6 to Numbers, Fundamentality, Addition, and Subtraction. x25 Planetary Fragments, and +1 upgrade in the 12th row. And unlock another Number Core buyable (once again, buyable mania IS a real layer in this mod). <i>This Dimension and all others from here are kept until the next reset layer.</i>",
+            done() { return player.dimension.points.gte(6) },
+            unlocked() { return player.pbooster.unlocked}
         },
     },
     tooltip() {return format(player.dimension.points) + " Dimensions (" + format(getNextAt("dimension")) + " Numbers for next Dimension)"},

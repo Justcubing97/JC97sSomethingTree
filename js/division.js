@@ -49,6 +49,7 @@ addLayer("division", {
         if (hasMilestone("pbooster", 1)) mult = mult.mul("1e25")
         if (player.corebooster.e2.gte(1)) mult = mult.mul(player.corebooster.e2)
         mult = mult.mul(new Decimal(100).pow(getBuyableAmount("planetary", 22)))
+        if (hasMilestone("dimension", 6)) mult = mult.mul("1e10")
         //exp
         if (hasMilestone("corebooster", 2)) mult = mult.pow("1.1")
         if (hasMilestone("division", 10)) mult = mult.pow("1.1")

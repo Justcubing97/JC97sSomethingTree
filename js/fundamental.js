@@ -31,6 +31,7 @@ addLayer("fundamental", {
         if (hasUpgrade("subtraction", 13)) mult = mult.mul(100)
         if (hasUpgrade("multiplication", 41)) mult = mult.mul("1e25")
         mult = mult.mul(player.corebooster.e4)
+        if (hasMilestone("dimension", 6)) mult = mult.mul("e1e6")
         //exp
         if (inChallenge("arithmetic", 13)) mult = mult.pow(0.75)
         if (hasChallenge("arithmetic", 13)) mult = mult.pow(1.05)
@@ -130,6 +131,7 @@ addLayer("fundamental", {
         if (hasUpgrade("fundamental", 51)) keptUpgrades.push(51)
         if (hasUpgrade("fundamental", 52)) keptUpgrades.push(52)
         if (hasUpgrade("fundamental", 53)) keptUpgrades.push(53)
+        if (hasUpgrade("fundamental", 54)) keptUpgrades.push(54)
 
         let keptBuyables = []
         if (hasUpgrade("primitive", 21) || hasUpgrade("arithmetic", 16)) keptBuyables.push(getBuyableAmount("fundamental", 11))

@@ -42,6 +42,7 @@ addLayer("numbercore", {
         if (hasAchievement("planetary", 21)) mult = mult.pow(1.25)
         if (hasMilestone("pbooster", 1)) mult = mult.pow(1.3)
         if (hasUpgrade("fundamental", 54)) mult = mult.pow(1.01)
+        if (hasUpgrade("multiplication", 121)) mult = mult.pow(1.1)
         //other hypers
         //final
         return mult

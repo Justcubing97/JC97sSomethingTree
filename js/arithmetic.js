@@ -62,6 +62,7 @@ addLayer("arithmetic", {
         if (hasUpgrade("polygon", 17)) dMult = dMult.pow(1.3)
         if (hasUpgrade("division", 16)) dMult = dMult.pow(1.01)
         if (hasMilestone("primitive", 14)) dMult = dMult.pow(1.35)
+        if (hasUpgrade("multiplication", 122)) dMult = dMult.pow(1.1)
         
         return dMult
     },
@@ -198,7 +199,7 @@ addLayer("arithmetic", {
             effect() {
                 let effect = new Decimal(player.arithmetic.points).pow(1.2).add(1)
                 if (hasMilestone("addition", 1)) effect = effect.mul(player.arithmetic.points.pow(0.1).add(1))
-                if (effect.gte("e1500000")) return new Decimal("e1500000")
+                if (effect.gte("e1500000") && !hasUpgrade("multiplication", 122)) return new Decimal("e1500000")
                 return effect
             },
             description: "Operation Power boosts Points, Addition, and Subtraction.",

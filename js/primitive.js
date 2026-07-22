@@ -32,6 +32,8 @@ addLayer("primitive", {
         if (hasUpgrade("arithmetic", 23)) mult = mult.mul("1e5")
         if (hasUpgrade("multiplication", 43)) mult = mult.mul(25)
         if (getClickableState("division", 11) == "Active" && hasUpgrade("multiplication", 43)) mult = mult.mul(25)
+        if (hasUpgrade("multiplication", 122)) mult = mult.mul(upgradeEffect("arithmetic", 21))
+        if (hasMilestone("dimension", 6)) mult = mult.mul("e1e6")
         //exp 
         if (inChallenge("arithmetic", 11)) mult = mult.pow(0.8)
         if (hasUpgrade("fundamental", 41)) mult = mult.pow(upgradeEffect("fundamental", 41))
@@ -194,6 +196,7 @@ addLayer("primitive", {
 
                 exp = new Decimal(player.primitive.points.pow(exp)).add(1)
                 if (exp.gte("1e650")) exp = exp.log(1.01).mul("1e650")
+                if (hasUpgrade("multiplication", 121)) exp = exp.tetrate(1.003)
                 return exp
             },
             effectDisplay() { return "x" + format(upgradeEffect(this.layer, this.id)) },

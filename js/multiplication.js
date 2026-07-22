@@ -55,6 +55,8 @@ addLayer("multiplication", {
         if (hasMilestone("primitive", 12)) dMult = dMult.mul(1.1)
         if (hasUpgrade("subtraction", 25)) dMult = dMult.mul(1000)
         if (hasMilestone("planetary", 2)) dMult = dMult.mul(100)
+        if (hasMilestone("pbooster", 2)) dMult = dMult.mul("1e10")
+        if (hasMilestone("dimension", 6)) dMult = dMult.mul("1e10")
 
         if (hasMilestone("primitive", 14)) dMult = dMult.pow(1.05)
         if (maxedChallenge("polygon", 11)) dMult = dMult.pow(1.2)
@@ -128,17 +130,7 @@ addLayer("multiplication", {
                 "blank",
                 ["infobox", "treeLimit"],
                 "blank",
-                ["upgrades", [1]],"blank",
-                ["upgrades", [2]],"blank",
-                ["upgrades", [3]],"blank",
-                ["upgrades", [4]],"blank",
-                ["upgrades", [5]],"blank",
-                ["upgrades", [6]],"blank",
-                ["upgrades", [7]],"blank",
-                ["upgrades", [8]],"blank",
-                ["upgrades", [9]],"blank",
-                ["upgrades", [10]],"blank",
-                ["upgrades", [11]],"blank",
+                ["upgrade-tree", [[11], [21, 22], [31, 32], [41, 42, 43], [51, 52], [61, 62, 63, 64], [71, 72, 73], [81], [91, 92, 93, 94, 95], [101, 102], [111], [121, 122, 123]]]
             ],
         },
         "Buyables": {
@@ -552,6 +544,51 @@ addLayer("multiplication", {
             },
             pay() {return new Decimal(0)},
             unlocked() {return hasMilestone("pbooster", 1)},
+
+            branches: [[121, "#FFFFFF", 10], [122, "#FFFFFF", 10], [123, "#FFFFFF", 10]],
+        },
+
+        121: {
+            title: "Primitive Hyperfixation",
+            description: "^1.1 Number Cores and improve \"Slowing down?\" a TREMENDOUS amount.",
+            cost: new Decimal("1e170"),
+            canAfford() {
+                if (player.multiplication.points.lt("1e170")) return false
+                if (hasUpgrade(this.layer, 122) && !hasMilestone("dimension", 6)) return false
+                if (hasUpgrade(this.layer, 123) && !hasMilestone("dimension", 6)) return false
+                if (hasUpgrade(this.layer, 123) && hasUpgrade(this.layer, 122)) return false
+                return hasUpgrade("multiplication", 111)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("pbooster", 2)},
+        },
+        122: {
+            title: "Arithmetic Hyperfixation",
+            description: "^1.1 Operation Power after softcap and uncap \"Insane Math\", which now multiplies Numbers.",
+            cost: new Decimal("1e170"),
+            canAfford() {
+                if (player.multiplication.points.lt("1e170")) return false
+                if (hasUpgrade(this.layer, 121) && !hasMilestone("dimension", 6)) return false
+                if (hasUpgrade(this.layer, 123) && !hasMilestone("dimension", 6)) return false
+                if (hasUpgrade(this.layer, 121) && hasUpgrade(this.layer, 123)) return false
+                return hasUpgrade("multiplication", 111)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("pbooster", 2)},
+        },
+        123: {
+            title: "Polygonal Hyperfixation",
+            description: "^1.1 all Constructor polygon gains, and nerf the Triangle effect softcap.",
+            cost: new Decimal("1e170"),
+            canAfford() {
+                if (player.multiplication.points.lt("1e170")) return false
+                if (hasUpgrade(this.layer, 121) && !hasMilestone("dimension", 6)) return false
+                if (hasUpgrade(this.layer, 122) && !hasMilestone("dimension", 6)) return false
+                if (hasUpgrade(this.layer, 121) && hasUpgrade(this.layer, 122)) return false
+                return hasUpgrade("multiplication", 111)
+            },
+            pay() {return new Decimal(0)},
+            unlocked() {return hasMilestone("pbooster", 2)},
         },
     },
     buyables: {

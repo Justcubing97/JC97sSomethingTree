@@ -529,6 +529,13 @@ addLayer("polygon", {
             hexBase = hexBase.pow(1.1)
         }
 
+        if (hasUpgrade("multiplication", 123)){
+            triBase = triBase.pow(1.1)
+            squBase = squBase.pow(1.1)
+            penBase = penBase.pow(1.1)
+            hexBase = hexBase.pow(1.1)
+        }
+
         //Sacrifices
         if (maxedChallenge("polygon", 11)){
             triBase = triBase.pow(1.27)
@@ -573,7 +580,8 @@ addLayer("polygon", {
         if (player.polygon.hexEffect.gte("2.9")) player.polygon.hexEffect = player.polygon.hexEffect.pow(0.1).add(2.9)
 
         if (player.polygon.triEffect.gte("1e20")){
-            if (maxedChallenge("polygon", 11)) player.polygon.triEffect = new Decimal("1e20").mul(player.polygon.triEffect.log(10))
+            if (maxedChallenge("polygon", 11) && hasUpgrade("multiplication", 123)) player.polygon.triEffect = new Decimal("1e20").mul(player.polygon.triEffect.pow(0.001))
+            else if (maxedChallenge("polygon", 11)) player.polygon.triEffect = new Decimal("1e20").mul(player.polygon.triEffect.log(10))
             else player.polygon.triEffect = new Decimal("1e20")
         }
 
@@ -599,6 +607,7 @@ addLayer("polygon", {
         if (hasUpgrade("fundamental", 53)) HARD = HARD.mul("1e50")
         if (hasUpgrade("multiplication", 111)) HARD = HARD.mul(upgradeEffect("multiplication", 111))
         HARD = HARD.mul(buyableEffect("numbercore", 31)[2])
+        if (hasMilestone("dimension", 6)) HARD = HARD.mul("1e10")
 
         player.polygon.bestHardcapDelay = Decimal.max(HARD, player.polygon.bestHardcapDelay)
         player.polygon.hardcap = player.polygon.bestHardcapDelay
