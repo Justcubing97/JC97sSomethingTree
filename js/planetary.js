@@ -616,7 +616,8 @@ addLayer("planetary", {
         if (getBuyableAmount("planetary", 11).gte(1)) mult = mult.add(buyableEffect("planetary", 11)).mul(getBuyableAmount("planetary", 11))
 
         if (mult.gte("1e10000")) mult = mult.log(10).mul("1e9996")
-        if (mult.gte("e1e5")) mult = mult.log(10).mul("1e99995")
+        if (mult.gte("1e100000")) mult = mult.log(10).mul("1e99995")
+        if (mult.gte("1e1000000")) mult = mult.log(100).mul("1e99997")
         
         mult = mult.pow(buyableEffect("numbercore", 32)[0])
 
